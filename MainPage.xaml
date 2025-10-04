@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Моя Библиотека"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Заголовок -->
+            <Label Text="📚 Моя Библиотека" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   TextColor="{DynamicResource PrimaryTextColor}" />
+
+            <!-- Карточка текущей книги -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="📖 Текущая книга" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label x:Name="CurrentBookTitle" 
+                           Text="Нет активной книги" 
+                           FontSize="16" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,10,0,0" />
+                    
+                    <Label x:Name="CurrentBookAuthor" 
+                           Text="" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" />
+                    
+                    <ProgressBar x:Name="CurrentBookProgress" 
+                                 Progress="0" 
+                                 Margin="0,10,0,0" />
+                    
+                    <Label x:Name="CurrentBookProgressText" 
+                           Text="" 
+                           FontSize="12" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           HorizontalOptions="Center" />
+                    
+                    <Button x:Name="ViewCurrentBookButton" 
+                            Text="Просмотр" 
+                            BackgroundColor="{DynamicResource PrimaryColor}" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,15,0,0" 
+                            Clicked="OnViewCurrentBookClicked" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Меню действий -->
+            <Grid x:Name="menuGrid" ColumnDefinitions="*,*" RowDefinitions="*,*" ColumnSpacing="15" RowSpacing="15">
+                
+                <!-- Просмотр библиотеки -->
+                <Frame x:Name="libraryFrame" Grid.Row="0" Grid.Column="0" 
+                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                       CornerRadius="15" 
+                       Padding="20" 
+                       HasShadow="True">
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="📚" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Вся библиотека" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Просмотр всех книг" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Добавить книгу -->
+                <Frame x:Name="addBookFrame" Grid.Row="0" Grid.Column="1" 
+                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                       CornerRadius="15" 
+                       Padding="20" 
+                       HasShadow="True">
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="➕" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Добавить книгу" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Новая книга" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Статистика -->
+                <Frame x:Name="statsFrame" Grid.Row="1" Grid.Column="0" 
+                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                       CornerRadius="15" 
+                       Padding="20" 
+                       HasShadow="True">
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="📊" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Статистика" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Мой прогресс" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Настройки -->
+                <Frame x:Name="settingsFrame" Grid.Row="1" Grid.Column="1" 
+                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                       CornerRadius="15" 
+                       Padding="20" 
+                       HasShadow="True">
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="⚙️" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Настройки" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Конфигурация" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

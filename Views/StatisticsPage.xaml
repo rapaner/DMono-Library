@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.StatisticsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Статистика"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Общая статистика -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="📊 Общая статистика" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" 
+                          ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
+                        
+                        <Frame Grid.Row="0" Grid.Column="0" 
+                               BackgroundColor="{DynamicResource PrimaryColor}" 
+                               CornerRadius="10" 
+                               Padding="15">
+                            <StackLayout HorizontalOptions="Center">
+                                <Label x:Name="TotalBooksLabel" 
+                                       Text="0" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                                <Label Text="Всего книг" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Frame>
+                        
+                        <Frame Grid.Row="0" Grid.Column="1" 
+                               BackgroundColor="{DynamicResource SecondaryColor}" 
+                               CornerRadius="10" 
+                               Padding="15">
+                            <StackLayout HorizontalOptions="Center">
+                                <Label x:Name="ReadBooksLabel" 
+                                       Text="0" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                                <Label Text="Прочитано" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Frame>
+                        
+                        <Frame Grid.Row="1" Grid.Column="0" 
+                               BackgroundColor="Green" 
+                               CornerRadius="10" 
+                               Padding="15">
+                            <StackLayout HorizontalOptions="Center">
+                                <Label x:Name="CurrentBooksLabel" 
+                                       Text="0" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                                <Label Text="Читаю сейчас" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Frame>
+                        
+                        <Frame Grid.Row="1" Grid.Column="1" 
+                               BackgroundColor="Orange" 
+                               CornerRadius="10" 
+                               Padding="15">
+                            <StackLayout HorizontalOptions="Center">
+                                <Label x:Name="PlannedBooksLabel" 
+                                       Text="0" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                                <Label Text="В планах" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Frame>
+                        
+                        <Frame Grid.Row="2" Grid.ColumnSpan="2" 
+                               BackgroundColor="Purple" 
+                               CornerRadius="10" 
+                               Padding="15">
+                            <StackLayout HorizontalOptions="Center">
+                                <Label x:Name="TotalPagesLabel" 
+                                       Text="0" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                                <Label Text="Всего страниц прочитано" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Frame>
+                        
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Топ жанров -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="🏆 Популярные жанры" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <CollectionView x:Name="GenresCollectionView" 
+                                     Margin="0,15,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Padding="10">
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Genre}" 
+                                           FontSize="14" 
+                                           TextColor="{DynamicResource PrimaryTextColor}" />
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding Count, StringFormat='{0} книг'}" 
+                                           FontSize="14" 
+                                           TextColor="{DynamicResource SecondaryTextColor}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
+
+            <!-- Топ авторов -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="👨‍💼 Любимые авторы" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <CollectionView x:Name="AuthorsCollectionView" 
+                                     Margin="0,15,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Padding="10">
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Author}" 
+                                           FontSize="14" 
+                                           TextColor="{DynamicResource PrimaryTextColor}" />
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding Count, StringFormat='{0} книг'}" 
+                                           FontSize="14" 
+                                           TextColor="{DynamicResource SecondaryTextColor}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

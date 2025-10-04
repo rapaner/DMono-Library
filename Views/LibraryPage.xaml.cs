@@ -1,0 +1,124 @@
+using Library.Models;
+using Library.Services;
+using System.Collections.ObjectModel;
+
+namespace Library.Views;
+
+public partial class LibraryPage : ContentPage
+{
+    private readonly LibraryService _libraryService;
+    private ObservableCollection<BookViewModel> _books;
+    private string _currentFilter = "All";
+
+    public LibraryPage(LibraryService libraryService)
+    {
+        InitializeComponent();
+        _libraryService = libraryService;
+        _books = new ObservableCollection<BookViewModel>();
+        BooksCollectionView.ItemsSource = _books;
+        
+        _ = LoadBooks();
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LoadBooks();
+    }
+
+    private async Task LoadBooks()
+    {
+        _books.Clear();
+        
+        List<Book> books = _currentFilter switch
+        {
+            "Current" => await _libraryService.GetBooksByStatusAsync(true),
+            "Finished" => (await _libraryService.GetBooksByStatusAsync(false)).Where(b => b.DateFinished.HasValue).ToList(),
+            _ => await _libraryService.GetAllBooksAsync()
+        };
+
+        foreach (var book in books)
+        {
+            _books.Add(new BookViewModel(book));
+        }
+    }
+
+    private async void OnFilterChanged(object sender, EventArgs e)
+    {
+        var button = sender as Button;
+        
+        // Сбросить стили всех кнопок
+        AllBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
+        AllBooksButton.TextColor = Color.FromArgb("#333333");
+        CurrentBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
+        CurrentBooksButton.TextColor = Color.FromArgb("#333333");
+        FinishedBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
+        FinishedBooksButton.TextColor = Color.FromArgb("#333333");
+
+        // Установить стиль активной кнопки
+        if (button != null)
+        {
+            button.BackgroundColor = Color.FromArgb("#512BD4");
+            button.TextColor = Colors.White;
+        }
+
+        // Обновить фильтр
+        _currentFilter = button?.Text switch
+        {
+            "Читаю сейчас" => "Current",
+            "Прочитано" => "Finished",
+            _ => "All"
+        };
+
+        await LoadBooks();
+    }
+
+    private async void OnBookSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is BookViewModel selectedBook)
+        {
+            var book = await _libraryService.GetBookByIdAsync(selectedBook.Id);
+            if (book != null)
+            {
+                await Navigation.PushAsync(new BookDetailPage(book, _libraryService));
+            }
+        }
+        
+        BooksCollectionView.SelectedItem = null;
+    }
+
+    private async void OnAddBookClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new AddEditBookPage(_libraryService));
+    }
+}
+
+public class BookViewModel
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public string Genre { get; set; }
+    public double Rating { get; set; }
+    public DateTime DateAdded { get; set; }
+    public bool IsCurrentlyReading { get; set; }
+    public double ProgressPercentage { get; set; }
+    public string ProgressText { get; set; }
+    public string StatusIcon { get; set; }
+
+    public BookViewModel(Book book)
+    {
+        Id = book.Id;
+        Title = book.Title;
+        Author = book.Author;
+        Genre = book.Genre;
+        Rating = book.Rating;
+        DateAdded = book.DateAdded;
+        IsCurrentlyReading = book.IsCurrentlyReading;
+        ProgressPercentage = book.ProgressPercentage;
+        ProgressText = book.ProgressText;
+        
+        StatusIcon = book.IsCurrentlyReading ? "📖" : 
+                    book.DateFinished.HasValue ? "✅" : "📚";
+    }
+}

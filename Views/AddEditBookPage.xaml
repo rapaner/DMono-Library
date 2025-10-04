@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.AddEditBookPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Добавить книгу"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Форма книги -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="15">
+                    
+                    <Label Text="📚 Информация о книге" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <!-- Название -->
+                    <StackLayout>
+                        <Label Text="Название *" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="TitleEntry" 
+                               Placeholder="Введите название книги" />
+                    </StackLayout>
+                    
+                    <!-- Автор -->
+                    <StackLayout>
+                        <Label Text="Автор *" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="AuthorEntry" 
+                               Placeholder="Введите автора" />
+                    </StackLayout>
+                    
+                    <!-- Жанр -->
+                    <StackLayout>
+                        <Label Text="Жанр" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="GenreEntry" 
+                               Placeholder="Введите жанр" />
+                    </StackLayout>
+                    
+                    <!-- Общее количество страниц -->
+                    <StackLayout>
+                        <Label Text="Общее количество страниц *" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="TotalPagesEntry" 
+                               Placeholder="Введите количество страниц" 
+                               Keyboard="Numeric" />
+                    </StackLayout>
+                    
+                    <!-- Текущая страница -->
+                    <StackLayout>
+                        <Label Text="Текущая страница" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="CurrentPageEntry" 
+                               Placeholder="На какой странице вы сейчас?" 
+                               Keyboard="Numeric" />
+                    </StackLayout>
+                    
+                    <!-- Рейтинг -->
+                    <StackLayout>
+                        <Label Text="Рейтинг (0-5)" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Slider x:Name="RatingSlider" 
+                                Minimum="0" 
+                                Maximum="5" 
+                                Value="0" 
+                                ValueChanged="OnRatingChanged" />
+                        <Label x:Name="RatingLabel" 
+                               Text="0 ⭐" 
+                               FontSize="14" 
+                               TextColor="{DynamicResource PrimaryTextColor}" 
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                    
+                    <!-- Статус -->
+                    <StackLayout>
+                        <Label Text="Статус" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Picker x:Name="StatusPicker">
+                            <Picker.Items>
+                                <x:String>В планах</x:String>
+                                <x:String>Читаю сейчас</x:String>
+                                <x:String>Прочитано</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </StackLayout>
+                    
+                    <!-- Заметки -->
+                    <StackLayout>
+                        <Label Text="Заметки" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Editor x:Name="NotesEditor" 
+                                Placeholder="Добавьте заметки о книге..." 
+                                HeightRequest="100" />
+                    </StackLayout>
+                    
+                </StackLayout>
+            </Frame>
+            
+            <!-- Кнопки действий -->
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Button Text="💾 Сохранить" 
+                        BackgroundColor="{DynamicResource PrimaryColor}" 
+                        TextColor="White" 
+                        CornerRadius="10" 
+                        HorizontalOptions="FillAndExpand" 
+                        Clicked="OnSaveClicked" />
+                <Button Text="❌ Отмена" 
+                        BackgroundColor="{DynamicResource SecondaryColor}" 
+                        TextColor="White" 
+                        CornerRadius="10" 
+                        HorizontalOptions="FillAndExpand" 
+                        Clicked="OnCancelClicked" />
+            </StackLayout>
+            
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

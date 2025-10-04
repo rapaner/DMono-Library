@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Настройки"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Информация о приложении -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="ℹ️ О приложении" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label Text="📚 Моя Библиотека" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,15,0,5" />
+                    
+                    <Label Text="Версия 1.0" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" />
+                    
+                    <Label Text="Приложение для ведения личной библиотеки книг. Отслеживайте свой прогресс чтения, ведите заметки и анализируйте статистику." 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,10,0,0" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Действия -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="🔧 Действия" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Button Text="🗑️ Очистить все данные" 
+                            BackgroundColor="Red" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,15,0,0" 
+                            Clicked="OnClearDataClicked" />
+                    
+                    <Button Text="📤 Экспорт данных" 
+                            BackgroundColor="{DynamicResource SecondaryColor}" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,10,0,0" 
+                            Clicked="OnExportDataClicked" />
+                    
+                    <Button Text="📥 Импорт данных" 
+                            BackgroundColor="{DynamicResource PrimaryColor}" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,10,0,0" 
+                            Clicked="OnImportDataClicked" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Поддержка -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="💬 Поддержка" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label Text="Если у вас возникли вопросы или проблемы с приложением, пожалуйста, свяжитесь с разработчиком." 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,10,0,0" />
+                    
+                    <Button Text="📧 Связаться с поддержкой" 
+                            BackgroundColor="{DynamicResource PrimaryColor}" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,15,0,0" 
+                            Clicked="OnContactSupportClicked" />
+                </StackLayout>
+            </Frame>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>
