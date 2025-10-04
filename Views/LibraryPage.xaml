@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.LibraryPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Вся библиотека"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        
+        <!-- Фильтры -->
+        <StackLayout Grid.Row="0" Orientation="Horizontal" Padding="15" Spacing="10">
+            <Button x:Name="AllBooksButton" 
+                    Text="Все" 
+                    BackgroundColor="{DynamicResource PrimaryColor}" 
+                    TextColor="White" 
+                    CornerRadius="20" 
+                    Padding="15,8" 
+                    Clicked="OnFilterChanged" />
+            <Button x:Name="CurrentBooksButton" 
+                    Text="Читаю сейчас" 
+                    BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                    TextColor="{DynamicResource PrimaryTextColor}" 
+                    CornerRadius="20" 
+                    Padding="15,8" 
+                    Clicked="OnFilterChanged" />
+            <Button x:Name="FinishedBooksButton" 
+                    Text="Прочитано" 
+                    BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                    TextColor="{DynamicResource PrimaryTextColor}" 
+                    CornerRadius="20" 
+                    Padding="15,8" 
+                    Clicked="OnFilterChanged" />
+        </StackLayout>
+
+        <!-- Список книг -->
+        <CollectionView x:Name="BooksCollectionView" 
+                         Grid.Row="1" 
+                         ItemsSource="{Binding Books}"
+                         SelectionMode="Single"
+                         SelectionChanged="OnBookSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="15" ColumnDefinitions="Auto,*,Auto">
+                        
+                        <!-- Иконка статуса -->
+                        <Label Grid.Column="0" 
+                               Text="{Binding StatusIcon}" 
+                               FontSize="24" 
+                               VerticalOptions="Center" 
+                               Margin="0,0,15,0" />
+                        
+                        <!-- Информация о книге -->
+                        <StackLayout Grid.Column="1">
+                            <Label Text="{Binding Title}" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{DynamicResource PrimaryTextColor}" />
+                            <Label Text="{Binding Author}" 
+                                   FontSize="14" 
+                                   TextColor="{DynamicResource SecondaryTextColor}" />
+                            <Label Text="{Binding Genre}" 
+                                   FontSize="12" 
+                                   TextColor="{DynamicResource SecondaryTextColor}" />
+                            
+                            <!-- Прогресс для текущих книг -->
+                            <StackLayout IsVisible="{Binding IsCurrentlyReading}">
+                                <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
+                                             Margin="0,5,0,0" />
+                                <Label Text="{Binding ProgressText}" 
+                                       FontSize="12" 
+                                       TextColor="{DynamicResource SecondaryTextColor}" />
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <!-- Рейтинг -->
+                        <StackLayout Grid.Column="2" HorizontalOptions="End">
+                            <Label Text="{Binding Rating, StringFormat='{0:F1}⭐'}" 
+                                   FontSize="14" 
+                                   TextColor="{DynamicResource PrimaryTextColor}" 
+                                   HorizontalOptions="End" />
+                            <Label Text="{Binding DateAdded, StringFormat='{0:dd.MM.yyyy}'}" 
+                                   FontSize="10" 
+                                   TextColor="{DynamicResource SecondaryTextColor}" 
+                                   HorizontalOptions="End" />
+                        </StackLayout>
+                        
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Кнопка добавления -->
+        <Button Grid.Row="2" 
+                Text="➕ Добавить книгу" 
+                BackgroundColor="{DynamicResource PrimaryColor}" 
+                TextColor="White" 
+                CornerRadius="25" 
+                Margin="20" 
+                Padding="20" 
+                Clicked="OnAddBookClicked" />
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+
+namespace Library.Data
+{
+    /// <summary>
+    /// Фабрика для создания контекста базы данных во время разработки
+    /// </summary>
+    public class LibraryDbContextFactory : IDesignTimeDbContextFactory<LibraryDbContext>
+    {
+        /// <summary>
+        /// Создать контекст базы данных для миграций
+        /// </summary>
+        /// <param name="args">Аргументы командной строки</param>
+        /// <returns>Контекст базы данных</returns>
+        public LibraryDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<LibraryDbContext>();
+            
+            // Используем временную базу данных для миграций
+            optionsBuilder.UseSqlite("Data Source=library_migrations.db");
+            
+            return new LibraryDbContext(optionsBuilder.Options);
+        }
+    }
+}
