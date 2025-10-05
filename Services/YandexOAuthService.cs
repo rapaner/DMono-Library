@@ -12,7 +12,7 @@ namespace Library.Services
         private const string ClientId = "a25f1436a80a4d148cfc17bf422b0dc7";
         
         // Callback URL для получения токена
-        private const string CallbackScheme = "ru.shuffler149.library";
+        private const string CallbackScheme = "ru.rapaner.library";
         
         /// <summary>
         /// Запустить процесс OAuth авторизации
