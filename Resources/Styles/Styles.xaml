@@ -47,7 +47,6 @@
         <Setter Property="BackgroundColor" Value="{DynamicResource CardBackgroundColor}" />
         <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource SecondaryTextColor}" />
-        <Setter Property="Padding" Value="15" />
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 
@@ -55,7 +54,6 @@
         <Setter Property="BackgroundColor" Value="{DynamicResource CardBackgroundColor}" />
         <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource SecondaryTextColor}" />
-        <Setter Property="Padding" Value="15" />
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 

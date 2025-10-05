@@ -29,9 +29,9 @@ public static class MauiProgram
         // Регистрация конвертеров
         builder.Services.AddSingleton<PercentageConverter>();
 
-        // Регистрация страниц
+        // Регистрация страниц и Shell
         builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<AppShell>();
+        builder.Services.AddSingleton<AppShell>();
 
         return builder.Build();
     }
