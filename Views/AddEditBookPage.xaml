@@ -30,24 +30,76 @@
                                Placeholder="Введите название книги" />
                     </StackLayout>
                     
-                    <!-- Автор -->
+                    <!-- Авторы -->
                     <StackLayout>
-                        <Label Text="Автор *" 
+                        <Label Text="Авторы *" 
                                FontSize="14" 
                                FontAttributes="Bold" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Entry x:Name="AuthorEntry" 
-                               Placeholder="Введите автора" />
+                        
+                        <!-- Выбор автора -->
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="5">
+                            <Picker x:Name="AuthorPicker" 
+                                    Grid.Column="0"
+                                    Title="Выберите автора" />
+                            <Button Text="+" 
+                                    Grid.Column="1"
+                                    BackgroundColor="{DynamicResource PrimaryColor}" 
+                                    TextColor="White" 
+                                    WidthRequest="50"
+                                    Clicked="OnAddAuthorClicked" />
+                            <Button Text="Новый" 
+                                    Grid.Column="2"
+                                    BackgroundColor="{DynamicResource AccentColor}" 
+                                    TextColor="Grey" 
+                                    WidthRequest="80"
+                                    Clicked="OnNewAuthorClicked" />
+                        </Grid>
+                        
+                        <!-- Список выбранных авторов -->
+                        <CollectionView x:Name="SelectedAuthorsCollectionView" 
+                                        Margin="0,10,0,0">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="5" ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding Name}" 
+                                               Grid.Column="0"
+                                               VerticalOptions="Center"
+                                               TextColor="{DynamicResource PrimaryTextColor}" />
+                                        <Button Text="✕" 
+                                                Grid.Column="1"
+                                                BackgroundColor="{DynamicResource ErrorColor}" 
+                                                TextColor="White" 
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                CornerRadius="20"
+                                                CommandParameter="{Binding .}"
+                                                Clicked="OnRemoveAuthorClicked" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </StackLayout>
                     
-                    <!-- Жанр -->
+                    <!-- Цикл -->
                     <StackLayout>
-                        <Label Text="Жанр" 
+                        <Label Text="Название цикла" 
                                FontSize="14" 
                                FontAttributes="Bold" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Entry x:Name="GenreEntry" 
-                               Placeholder="Введите жанр" />
+                        <Entry x:Name="SeriesTitleEntry" 
+                               Placeholder="Введите название цикла (необязательно)" />
+                    </StackLayout>
+                    
+                    <!-- Номер в цикле -->
+                    <StackLayout>
+                        <Label Text="Номер в цикле" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry x:Name="SeriesNumberEntry" 
+                               Placeholder="Номер книги в цикле (необязательно)" 
+                               Keyboard="Numeric" />
                     </StackLayout>
                     
                     <!-- Общее количество страниц -->
@@ -72,24 +124,6 @@
                                Keyboard="Numeric" />
                     </StackLayout>
                     
-                    <!-- Рейтинг -->
-                    <StackLayout>
-                        <Label Text="Рейтинг (0-5)" 
-                               FontSize="14" 
-                               FontAttributes="Bold" 
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Slider x:Name="RatingSlider" 
-                                Minimum="0" 
-                                Maximum="5" 
-                                Value="0" 
-                                ValueChanged="OnRatingChanged" />
-                        <Label x:Name="RatingLabel" 
-                               Text="0 ⭐" 
-                               FontSize="14" 
-                               TextColor="{DynamicResource PrimaryTextColor}" 
-                               HorizontalOptions="Center" />
-                    </StackLayout>
-                    
                     <!-- Статус -->
                     <StackLayout>
                         <Label Text="Статус" 
@@ -103,17 +137,6 @@
                                 <x:String>Прочитано</x:String>
                             </Picker.Items>
                         </Picker>
-                    </StackLayout>
-                    
-                    <!-- Заметки -->
-                    <StackLayout>
-                        <Label Text="Заметки" 
-                               FontSize="14" 
-                               FontAttributes="Bold" 
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Editor x:Name="NotesEditor" 
-                                Placeholder="Добавьте заметки о книге..." 
-                                HeightRequest="100" />
                     </StackLayout>
                     
                 </StackLayout>

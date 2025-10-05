@@ -98,8 +98,8 @@ public class BookViewModel
     public int Id { get; set; }
     public string Title { get; set; }
     public string Author { get; set; }
-    public string Genre { get; set; }
-    public double Rating { get; set; }
+    public string? SeriesTitle { get; set; }
+    public int? SeriesNumber { get; set; }
     public DateTime DateAdded { get; set; }
     public bool IsCurrentlyReading { get; set; }
     public double ProgressPercentage { get; set; }
@@ -110,9 +110,9 @@ public class BookViewModel
     {
         Id = book.Id;
         Title = book.Title;
-        Author = book.Author;
-        Genre = book.Genre;
-        Rating = book.Rating;
+        Author = book.AuthorsText;
+        SeriesTitle = book.SeriesTitle;
+        SeriesNumber = book.SeriesNumber;
         DateAdded = book.DateAdded;
         IsCurrentlyReading = book.IsCurrentlyReading;
         ProgressPercentage = book.ProgressPercentage;

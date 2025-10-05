@@ -24,17 +24,20 @@ namespace Library.Models
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
-        /// Автор книги (максимум 100 символов)
+        /// Коллекция авторов книги
         /// </summary>
-        [Required]
-        [MaxLength(100)]
-        public string Author { get; set; } = string.Empty;
+        public ICollection<Author> Authors { get; set; } = new List<Author>();
 
         /// <summary>
-        /// Жанр книги (максимум 50 символов)
+        /// Название цикла/серии книг (необязательное поле, максимум 200 символов)
         /// </summary>
-        [MaxLength(50)]
-        public string Genre { get; set; } = string.Empty;
+        [MaxLength(200)]
+        public string? SeriesTitle { get; set; }
+
+        /// <summary>
+        /// Номер книги в цикле/серии (необязательное поле)
+        /// </summary>
+        public int? SeriesNumber { get; set; }
 
         /// <summary>
         /// Общее количество страниц в книге
@@ -66,17 +69,6 @@ namespace Library.Models
         public DateTime? DateFinished { get; set; }
 
         /// <summary>
-        /// Рейтинг книги от 0 до 5 звезд
-        /// </summary>
-        [Range(0, 5, ErrorMessage = "Рейтинг должен быть от 0 до 5")]
-        public double Rating { get; set; }
-
-        /// <summary>
-        /// Личные заметки читателя о книге
-        /// </summary>
-        public string Notes { get; set; } = string.Empty;
-
-        /// <summary>
         /// Процент прочитанных страниц (вычисляемое свойство)
         /// </summary>
         [NotMapped]
@@ -92,7 +84,15 @@ namespace Library.Models
         /// Текстовое представление статуса книги (вычисляемое свойство)
         /// </summary>
         [NotMapped]
-        public string StatusText => IsCurrentlyReading ? "Читаю сейчас" : 
+        public string StatusText => IsCurrentlyReading ? "Читаю сейчас" :
                                    DateFinished.HasValue ? "Прочитано" : "В планах";
+
+        /// <summary>
+        /// Текстовое представление авторов книги (вычисляемое свойство)
+        /// </summary>
+        [NotMapped]
+        public string AuthorsText => Authors != null && Authors.Any() 
+            ? string.Join(", ", Authors.Select(a => a.Name)) 
+            : "Автор не указан";
     }
 }

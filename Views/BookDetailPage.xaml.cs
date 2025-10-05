@@ -20,18 +20,34 @@ public partial class BookDetailPage : ContentPage
     private void LoadBookData()
     {
         BookTitle.Text = _book.Title;
-        BookAuthor.Text = $"Автор: {_book.Author}";
-        BookGenre.Text = $"Жанр: {_book.Genre}";
+        BookAuthor.Text = $"Автор: {_book.AuthorsText}";
         
         TotalPagesLabel.Text = _book.TotalPages.ToString();
         StatusLabel.Text = _book.StatusText;
         DateAddedLabel.Text = _book.DateAdded.ToString("dd.MM.yyyy");
-        RatingLabel.Text = _book.Rating > 0 ? $"{_book.Rating:F1} ⭐" : "Не оценено";
+        
+        // Отображение цикла
+        if (!string.IsNullOrEmpty(_book.SeriesTitle))
+        {
+            SeriesTitleLabel.Text = _book.SeriesTitle;
+        }
+        else
+        {
+            SeriesTitleLabel.Text = "—";
+        }
+        
+        // Отображение номера в цикле
+        if (_book.SeriesNumber.HasValue)
+        {
+            SeriesNumberLabel.Text = _book.SeriesNumber.Value.ToString();
+        }
+        else
+        {
+            SeriesNumberLabel.Text = "—";
+        }
         
         ProgressBar.Progress = _book.ProgressPercentage / 100;
         ProgressText.Text = _book.ProgressText;
-        
-        NotesEditor.Text = _book.Notes;
     }
 
     private async void OnUpdateProgressClicked(object sender, EventArgs e)
@@ -60,14 +76,6 @@ public partial class BookDetailPage : ContentPage
         {
             await DisplayAlert("Ошибка", "Введите корректный номер страницы", "OK");
         }
-    }
-
-    private async void OnSaveNotesClicked(object sender, EventArgs e)
-    {
-        _book.Notes = NotesEditor.Text;
-        await _libraryService.UpdateBookAsync(_book);
-        
-        await DisplayAlert("Успех", "Заметки сохранены!", "OK");
     }
 
     private async void OnEditBookClicked(object sender, EventArgs e)
