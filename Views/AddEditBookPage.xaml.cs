@@ -47,7 +47,6 @@ public partial class AddEditBookPage : ContentPage
         
         TitleEntry.Text = _book.Title;
         TotalPagesEntry.Text = _book.TotalPages.ToString();
-        CurrentPageEntry.Text = _book.CurrentPage.ToString();
         
         // Загрузить выбранных авторов
         _selectedAuthors.Clear();
@@ -139,7 +138,6 @@ public partial class AddEditBookPage : ContentPage
             
             book.Title = TitleEntry.Text.Trim();
             book.TotalPages = int.Parse(TotalPagesEntry.Text);
-            book.CurrentPage = string.IsNullOrEmpty(CurrentPageEntry.Text) ? 0 : int.Parse(CurrentPageEntry.Text);
             
             // Цикл
             book.SeriesTitle = string.IsNullOrWhiteSpace(SeriesTitleEntry.Text) ? null : SeriesTitleEntry.Text.Trim();
@@ -222,16 +220,6 @@ public partial class AddEditBookPage : ContentPage
         {
             DisplayAlert("Ошибка", "Пожалуйста, введите корректное количество страниц", "OK");
             return false;
-        }
-        
-        if (!string.IsNullOrEmpty(CurrentPageEntry.Text))
-        {
-            if (!int.TryParse(CurrentPageEntry.Text, out int currentPage) || 
-                currentPage < 0 || currentPage > totalPages)
-            {
-                DisplayAlert("Ошибка", "Текущая страница должна быть от 0 до " + totalPages, "OK");
-                return false;
-            }
         }
         
         return true;

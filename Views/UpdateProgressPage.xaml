@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.UpdateProgressPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Обновление прогресса"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Информация о книге -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label x:Name="BookTitleLabel" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label x:Name="BookAuthorLabel" 
+                           FontSize="16" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                    <Label x:Name="TotalPagesLabel" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Форма ввода прогресса -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="15">
+                    
+                    <Label Text="📅 Дата чтения" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <!-- Выбор даты -->
+                    <DatePicker x:Name="ReadingDatePicker" 
+                                Format="dd.MM.yyyy"
+                                Date="{x:Static x:DateTime.Now}"
+                                TextColor="{DynamicResource PrimaryTextColor}"
+                                BackgroundColor="{DynamicResource CardBackgroundColor}" />
+                    
+                    <Label Text="📖 Номер страницы" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,15,0,0" />
+                    
+                    <!-- Ввод номера страницы -->
+                    <Entry x:Name="CurrentPageEntry" 
+                           Placeholder="Введите номер текущей страницы" 
+                           Keyboard="Numeric"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           PlaceholderColor="{DynamicResource SecondaryTextColor}" />
+                    
+                    <!-- Текущий прогресс -->
+                    <Label x:Name="CurrentProgressLabel" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                    
+                </StackLayout>
+            </Frame>
+
+            <!-- Кнопки действий -->
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Button Text="✅ Обновить" 
+                        BackgroundColor="{DynamicResource PrimaryColor}" 
+                        TextColor="White" 
+                        CornerRadius="10" 
+                        HorizontalOptions="FillAndExpand" 
+                        Clicked="OnSaveClicked" />
+                <Button Text="❌ Отмена" 
+                        BackgroundColor="{DynamicResource SecondaryColor}" 
+                        TextColor="White" 
+                        CornerRadius="10" 
+                        HorizontalOptions="FillAndExpand" 
+                        Clicked="OnCancelClicked" />
+            </StackLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

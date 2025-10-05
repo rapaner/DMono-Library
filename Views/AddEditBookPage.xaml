@@ -114,17 +114,6 @@
                                Keyboard="Numeric" />
                     </StackLayout>
                     
-                    <!-- Текущая страница -->
-                    <StackLayout>
-                        <Label Text="Текущая страница" 
-                               FontSize="14" 
-                               FontAttributes="Bold" 
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Entry x:Name="CurrentPageEntry" 
-                               Placeholder="На какой странице вы сейчас?" 
-                               Keyboard="Numeric" />
-                    </StackLayout>
-                    
                     <!-- Статус -->
                     <StackLayout>
                         <Label Text="Статус" 

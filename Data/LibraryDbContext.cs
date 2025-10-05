@@ -19,6 +19,11 @@ namespace Library.Data
         public DbSet<Author> Authors { get; set; }
 
         /// <summary>
+        /// Коллекция записей о прочитанных страницах
+        /// </summary>
+        public DbSet<PagesReadInDate> PagesReadHistory { get; set; }
+
+        /// <summary>
         /// Конструктор контекста базы данных
         /// </summary>
         /// <param name="options">Опции для настройки контекста</param>
@@ -74,6 +79,12 @@ namespace Library.Data
                     .WithMany(e => e.Books)
                     .UsingEntity(j => j.ToTable("BookAuthors"));
 
+                // Настройка связи один-ко-многим с записями о прочитанных страницах
+                entity.HasMany(e => e.PagesReadHistory)
+                    .WithOne(e => e.Book)
+                    .HasForeignKey(e => e.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 // Индексы для оптимизации запросов
                 entity.HasIndex(e => e.Title)
                     .HasDatabaseName("IX_Books_Title");
@@ -91,11 +102,28 @@ namespace Library.Data
                     .HasDatabaseName("IX_Books_SeriesTitle");
 
                 // Значения по умолчанию
-                entity.Property(e => e.CurrentPage)
-                    .HasDefaultValue(0);
-
                 entity.Property(e => e.IsCurrentlyReading)
                     .HasDefaultValue(false);
+            });
+
+            // Настройка таблицы PagesReadInDate
+            modelBuilder.Entity<PagesReadInDate>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Date)
+                    .IsRequired();
+
+                entity.Property(e => e.PagesRead)
+                    .IsRequired();
+
+                // Индекс для быстрого поиска по книге и дате
+                entity.HasIndex(e => new { e.BookId, e.Date })
+                    .HasDatabaseName("IX_PagesReadInDate_BookId_Date")
+                    .IsUnique(); // Только одна запись на книгу на дату
             });
         }
     }

@@ -47,10 +47,16 @@ namespace Library.Models
         public int TotalPages { get; set; }
 
         /// <summary>
-        /// Текущая страница, на которой остановился читатель
+        /// Коллекция записей о прочитанных страницах по датам
         /// </summary>
-        [Range(0, int.MaxValue, ErrorMessage = "Текущая страница не может быть отрицательной")]
-        public int CurrentPage { get; set; }
+        public ICollection<PagesReadInDate> PagesReadHistory { get; set; } = new List<PagesReadInDate>();
+
+        /// <summary>
+        /// Текущая страница, на которой остановился читатель (вычисляемое свойство)
+        /// Рассчитывается как сумма всех прочитанных страниц из истории
+        /// </summary>
+        [NotMapped]
+        public int CurrentPage => PagesReadHistory?.Sum(p => p.PagesRead) ?? 0;
 
         /// <summary>
         /// Флаг, указывающий читается ли книга в данный момент

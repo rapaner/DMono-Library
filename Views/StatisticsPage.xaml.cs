@@ -33,9 +33,6 @@ public partial class StatisticsPage : ContentPage
         PlannedBooksLabel.Text = statistics.PlannedBooks.ToString();
         TotalPagesLabel.Text = statistics.TotalPagesRead.ToString();
         
-        // Топ жанров
-        GenresCollectionView.ItemsSource = statistics.PopularGenres;
-        
         // Топ авторов
         AuthorsCollectionView.ItemsSource = statistics.PopularAuthors;
     }
