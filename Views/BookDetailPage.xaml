@@ -22,9 +22,6 @@
                            FontSize="18" 
                            TextColor="{DynamicResource SecondaryTextColor}" 
                            Margin="0,5,0,0" />
-                    <Label x:Name="BookGenre" 
-                           FontSize="14" 
-                           TextColor="{DynamicResource SecondaryTextColor}" />
                 </StackLayout>
             </Frame>
 
@@ -75,7 +72,7 @@
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*,*" 
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*,*,*" 
                           ColumnSpacing="10" RowSpacing="10" Margin="0,15,0,0">
                         
                         <Label Grid.Row="0" Grid.Column="0" 
@@ -106,39 +103,23 @@
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
                         <Label Grid.Row="3" Grid.Column="0" 
-                               Text="Рейтинг:" 
+                               Text="Цикл:" 
                                FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="RatingLabel" 
+                        <Label x:Name="SeriesTitleLabel" 
                                Grid.Row="3" Grid.Column="1" 
                                FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
+                        
+                        <Label Grid.Row="4" Grid.Column="0" 
+                               Text="Номер в цикле:" 
+                               FontSize="14" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                        <Label x:Name="SeriesNumberLabel" 
+                               Grid.Row="4" Grid.Column="1" 
+                               FontSize="14" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>
-                </StackLayout>
-            </Frame>
-
-            <!-- Заметки -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
-                <StackLayout>
-                    <Label Text="📝 Заметки" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <Editor x:Name="NotesEditor" 
-                            Placeholder="Добавьте заметки о книге..." 
-                            HeightRequest="100" 
-                            Margin="0,15,0,0" />
-                    
-                    <Button Text="Сохранить заметки" 
-                            BackgroundColor="{DynamicResource PrimaryColor}" 
-                            TextColor="White" 
-                            CornerRadius="10" 
-                            Margin="0,15,0,0" 
-                            Clicked="OnSaveNotesClicked" />
                 </StackLayout>
             </Frame>
 

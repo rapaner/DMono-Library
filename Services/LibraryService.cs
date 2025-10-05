@@ -28,6 +28,7 @@ namespace Library.Services
         public async Task<List<Book>> GetAllBooksAsync()
         {
             return await _context.Books
+                .Include(b => b.Authors)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -39,6 +40,7 @@ namespace Library.Services
         public async Task<Book?> GetCurrentBookAsync()
         {
             return await _context.Books
+                .Include(b => b.Authors)
                 .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
         }
 
@@ -50,6 +52,7 @@ namespace Library.Services
         public async Task<List<Book>> GetBooksByStatusAsync(bool isCurrentlyReading)
         {
             return await _context.Books
+                .Include(b => b.Authors)
                 .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
@@ -63,7 +66,65 @@ namespace Library.Services
         public async Task<Book?> GetBookByIdAsync(int id)
         {
             return await _context.Books
+                .Include(b => b.Authors)
                 .FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+        // ===== Методы для работы с авторами =====
+
+        /// <summary>
+        /// Получить всех авторов из базы данных
+        /// </summary>
+        /// <returns>Список всех авторов</returns>
+        public async Task<List<Author>> GetAllAuthorsAsync()
+        {
+            return await _context.Authors
+                .OrderBy(a => a.Name)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Получить автора по идентификатору
+        /// </summary>
+        /// <param name="id">Идентификатор автора</param>
+        /// <returns>Автор или null, если не найден</returns>
+        public async Task<Author?> GetAuthorByIdAsync(int id)
+        {
+            return await _context.Authors
+                .Include(a => a.Books)
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        /// <summary>
+        /// Добавить нового автора
+        /// </summary>
+        /// <param name="author">Автор для добавления</param>
+        /// <returns>Добавленный автор с присвоенным ID</returns>
+        public async Task<Author> AddAuthorAsync(Author author)
+        {
+            _context.Authors.Add(author);
+            await _context.SaveChangesAsync();
+            return author;
+        }
+
+        /// <summary>
+        /// Найти автора по имени или создать нового
+        /// </summary>
+        /// <param name="name">Имя автора</param>
+        /// <returns>Существующий или новый автор</returns>
+        public async Task<Author> GetOrCreateAuthorAsync(string name)
+        {
+            var author = await _context.Authors
+                .FirstOrDefaultAsync(a => a.Name == name);
+            
+            if (author == null)
+            {
+                author = new Author { Name = name };
+                _context.Authors.Add(author);
+                await _context.SaveChangesAsync();
+            }
+            
+            return author;
         }
 
         /// <summary>
@@ -149,7 +210,16 @@ namespace Library.Services
         /// <returns>Статистика библиотеки</returns>
         public async Task<LibraryStatistics> GetStatisticsAsync()
         {
-            var books = await _context.Books.ToListAsync();
+            var books = await _context.Books.Include(b => b.Authors).ToListAsync();
+            
+            // Подсчет популярных авторов
+            var authorStats = books
+                .SelectMany(b => b.Authors)
+                .GroupBy(a => a.Name)
+                .Select(g => new { Author = g.Key, Count = g.Count() })
+                .OrderByDescending(a => a.Count)
+                .Take(10)
+                .ToList();
             
             return new LibraryStatistics
             {
@@ -158,20 +228,8 @@ namespace Library.Services
                 CurrentBooks = books.Count(b => b.IsCurrentlyReading),
                 PlannedBooks = books.Count(b => !b.IsCurrentlyReading && !b.DateFinished.HasValue),
                 TotalPagesRead = books.Where(b => b.DateFinished.HasValue).Sum(b => b.TotalPages),
-                PopularGenres = books
-                    .Where(b => !string.IsNullOrEmpty(b.Genre))
-                    .GroupBy(b => b.Genre)
-                    .Select(g => new { Genre = g.Key, Count = g.Count() })
-                    .OrderByDescending(g => g.Count)
-                    .Take(10)
-                    .ToList(),
-                PopularAuthors = books
-                    .Where(b => !string.IsNullOrEmpty(b.Author))
-                    .GroupBy(b => b.Author)
-                    .Select(g => new { Author = g.Key, Count = g.Count() })
-                    .OrderByDescending(a => a.Count)
-                    .Take(10)
-                    .ToList()
+                PopularGenres = new List<dynamic>(), // Жанры удалены из модели
+                PopularAuthors = authorStats
             };
         }
 

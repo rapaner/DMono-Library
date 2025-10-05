@@ -57,7 +57,7 @@ public partial class MainPage : ContentPage
         if (currentBook != null)
         {
             CurrentBookTitle.Text = currentBook.Title;
-            CurrentBookAuthor.Text = $"Автор: {currentBook.Author}";
+            CurrentBookAuthor.Text = $"Автор: {currentBook.AuthorsText}";
             CurrentBookProgress.Progress = currentBook.ProgressPercentage / 100;
             CurrentBookProgressText.Text = currentBook.ProgressText;
             ViewCurrentBookButton.IsVisible = true;
