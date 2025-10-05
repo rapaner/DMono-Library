@@ -16,10 +16,13 @@
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
             <!-- Карточка текущей книги -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                    StrokeThickness="0"
+                    Padding="20"
+                    Margin="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15" />
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📖 Текущая книга" 
                            FontSize="18" 
@@ -55,17 +58,19 @@
                             Margin="0,15,0,0" 
                             Clicked="OnViewCurrentBookClicked" />
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- Меню действий -->
             <Grid x:Name="menuGrid" ColumnDefinitions="*,*" RowDefinitions="*,*" ColumnSpacing="15" RowSpacing="15">
                 
                 <!-- Просмотр библиотеки -->
-                <Frame x:Name="libraryFrame" Grid.Row="0" Grid.Column="0" 
-                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
+                <Border x:Name="libraryFrame" Grid.Row="0" Grid.Column="0" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="📚" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Вся библиотека" 
@@ -78,14 +83,16 @@
                                HorizontalOptions="Center" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Добавить книгу -->
-                <Frame x:Name="addBookFrame" Grid.Row="0" Grid.Column="1" 
-                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
+                <Border x:Name="addBookFrame" Grid.Row="0" Grid.Column="1" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="➕" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Добавить книгу" 
@@ -98,14 +105,16 @@
                                HorizontalOptions="Center" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Статистика -->
-                <Frame x:Name="statsFrame" Grid.Row="1" Grid.Column="0" 
-                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
+                <Border x:Name="statsFrame" Grid.Row="1" Grid.Column="0" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="📊" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Статистика" 
@@ -118,14 +127,16 @@
                                HorizontalOptions="Center" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Настройки -->
-                <Frame x:Name="settingsFrame" Grid.Row="1" Grid.Column="1" 
-                       BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
+                <Border x:Name="settingsFrame" Grid.Row="1" Grid.Column="1" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="⚙️" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Настройки" 
@@ -138,7 +149,7 @@
                                HorizontalOptions="Center" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
-                </Frame>
+                </Border>
             </Grid>
 
         </StackLayout>

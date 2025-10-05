@@ -130,7 +130,7 @@
                     <CollectionView x:Name="GenresCollectionView" 
                                      Margin="0,15,0,0">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="{x:Null}">
                                 <Grid ColumnDefinitions="*,Auto" Padding="10">
                                     <Label Grid.Column="0" 
                                            Text="{Binding Genre}" 
@@ -161,7 +161,7 @@
                     <CollectionView x:Name="AuthorsCollectionView" 
                                      Margin="0,15,0,0">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="{x:Null}">
                                 <Grid ColumnDefinitions="*,Auto" Padding="10">
                                     <Label Grid.Column="0" 
                                            Text="{Binding Author}" 
