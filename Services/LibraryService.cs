@@ -29,6 +29,7 @@ namespace Library.Services
         {
             return await _context.Books
                 .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -41,6 +42,7 @@ namespace Library.Services
         {
             return await _context.Books
                 .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
                 .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
         }
 
@@ -53,6 +55,7 @@ namespace Library.Services
         {
             return await _context.Books
                 .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
                 .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
@@ -67,6 +70,7 @@ namespace Library.Services
         {
             return await _context.Books
                 .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -185,23 +189,133 @@ namespace Library.Services
         }
 
         /// <summary>
-        /// Обновить прогресс чтения книги
+        /// Добавить или обновить запись о прочитанных страницах за определенную дату
         /// </summary>
-        /// <param name="book">Книга для обновления прогресса</param>
-        /// <param name="currentPage">Текущая страница</param>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <param name="date">Дата чтения</param>
+        /// <param name="currentPageNumber">Номер страницы, на которой сейчас находится читатель</param>
         /// <returns>Обновленная книга</returns>
-        public async Task<Book> UpdateProgressAsync(Book book, int currentPage)
+        /// <exception cref="InvalidOperationException">Если текущая страница меньше или равна сумме предыдущих страниц</exception>
+        public async Task<Book> AddOrUpdateReadingProgressAsync(int bookId, DateTime date, int currentPageNumber)
         {
-            book.CurrentPage = currentPage;
-            
-            if (currentPage >= book.TotalPages && book.TotalPages > 0)
+            var book = await _context.Books
+                .Include(b => b.PagesReadHistory)
+                .Include(b => b.Authors)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book == null)
+                throw new InvalidOperationException("Книга не найдена");
+
+            // Убираем время из даты, оставляем только дату
+            date = date.Date;
+
+            // Вычисляем сумму страниц, прочитанных до указанной даты
+            var pagesReadBeforeDate = book.PagesReadHistory
+                .Where(p => p.Date < date)
+                .Sum(p => p.PagesRead);
+
+            // Проверяем, что текущая страница больше суммы предыдущих
+            if (currentPageNumber <= pagesReadBeforeDate)
+            {
+                throw new InvalidOperationException(
+                    $"Текущая страница ({currentPageNumber}) должна быть больше суммы страниц, прочитанных за предыдущие дни ({pagesReadBeforeDate})");
+            }
+
+            // Проверяем, что не превышаем общее количество страниц
+            if (currentPageNumber > book.TotalPages)
+            {
+                throw new InvalidOperationException(
+                    $"Текущая страница ({currentPageNumber}) не может превышать общее количество страниц ({book.TotalPages})");
+            }
+
+            // Вычисляем количество страниц, прочитанных за этот день
+            var pagesReadToday = currentPageNumber - pagesReadBeforeDate;
+
+            // Ищем существующую запись за эту дату
+            var existingEntry = book.PagesReadHistory.FirstOrDefault(p => p.Date == date);
+
+            if (existingEntry != null)
+            {
+                // Обновляем существующую запись
+                existingEntry.PagesRead = pagesReadToday;
+            }
+            else
+            {
+                // Создаем новую запись
+                var newEntry = new PagesReadInDate
+                {
+                    BookId = bookId,
+                    Date = date,
+                    PagesRead = pagesReadToday
+                };
+                book.PagesReadHistory.Add(newEntry);
+            }
+
+            // Обновляем статус книги
+            if (currentPageNumber >= book.TotalPages)
             {
                 book.IsCurrentlyReading = false;
                 book.DateFinished = DateTime.Now;
             }
-            
+            else if (!book.IsCurrentlyReading && currentPageNumber < book.TotalPages)
+            {
+                // Если книга была завершена, но прогресс обновлен на меньшее значение
+                book.DateFinished = null;
+            }
+
             await _context.SaveChangesAsync();
-            return book;
+            
+            // Перезагружаем книгу с обновленными данными
+            return await GetBookByIdAsync(bookId) ?? book;
+        }
+
+        /// <summary>
+        /// Удалить запись о прочитанных страницах за определенную дату
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <param name="date">Дата записи для удаления</param>
+        /// <returns>Обновленная книга</returns>
+        public async Task<Book> RemoveReadingProgressAsync(int bookId, DateTime date)
+        {
+            var book = await _context.Books
+                .Include(b => b.PagesReadHistory)
+                .Include(b => b.Authors)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book == null)
+                throw new InvalidOperationException("Книга не найдена");
+
+            date = date.Date;
+
+            var entry = book.PagesReadHistory.FirstOrDefault(p => p.Date == date);
+            if (entry != null)
+            {
+                _context.PagesReadHistory.Remove(entry);
+                
+                // Обновляем статус книги
+                var currentPage = book.PagesReadHistory.Where(p => p.Date != date).Sum(p => p.PagesRead);
+                if (currentPage < book.TotalPages)
+                {
+                    book.DateFinished = null;
+                }
+                
+                await _context.SaveChangesAsync();
+            }
+
+            return await GetBookByIdAsync(bookId) ?? book;
+        }
+
+        /// <summary>
+        /// Получить историю чтения книги, отсортированную по дате
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <returns>Список записей о прочитанных страницах</returns>
+        public async Task<List<PagesReadInDate>> GetReadingHistoryAsync(int bookId)
+        {
+            return await _context.PagesReadHistory
+                .Where(p => p.BookId == bookId)
+                .OrderBy(p => p.Date)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -210,13 +324,16 @@ namespace Library.Services
         /// <returns>Статистика библиотеки</returns>
         public async Task<LibraryStatistics> GetStatisticsAsync()
         {
-            var books = await _context.Books.Include(b => b.Authors).ToListAsync();
+            var books = await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
+                .ToListAsync();
             
             // Подсчет популярных авторов
             var authorStats = books
                 .SelectMany(b => b.Authors)
                 .GroupBy(a => a.Name)
-                .Select(g => new { Author = g.Key, Count = g.Count() })
+                .Select(g => new AuthorStatistic { Author = g.Key, Count = g.Count() })
                 .OrderByDescending(a => a.Count)
                 .Take(10)
                 .ToList();
@@ -228,7 +345,6 @@ namespace Library.Services
                 CurrentBooks = books.Count(b => b.IsCurrentlyReading),
                 PlannedBooks = books.Count(b => !b.IsCurrentlyReading && !b.DateFinished.HasValue),
                 TotalPagesRead = books.Where(b => b.DateFinished.HasValue).Sum(b => b.TotalPages),
-                PopularGenres = new List<dynamic>(), // Жанры удалены из модели
                 PopularAuthors = authorStats
             };
         }
@@ -274,13 +390,24 @@ namespace Library.Services
         public int TotalPagesRead { get; set; }
 
         /// <summary>
-        /// Популярные жанры
-        /// </summary>
-        public IEnumerable<dynamic> PopularGenres { get; set; } = new List<dynamic>();
-
-        /// <summary>
         /// Популярные авторы
         /// </summary>
-        public IEnumerable<dynamic> PopularAuthors { get; set; } = new List<dynamic>();
+        public List<AuthorStatistic> PopularAuthors { get; set; } = new List<AuthorStatistic>();
+    }
+
+    /// <summary>
+    /// Статистика по автору
+    /// </summary>
+    public class AuthorStatistic
+    {
+        /// <summary>
+        /// Имя автора
+        /// </summary>
+        public string Author { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Количество книг автора
+        /// </summary>
+        public int Count { get; set; }
     }
 }

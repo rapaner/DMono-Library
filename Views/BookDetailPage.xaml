@@ -45,19 +45,13 @@
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            HorizontalOptions="Center" />
                     
-                    <!-- Обновление прогресса -->
-                    <StackLayout Orientation="Horizontal" Margin="0,15,0,0">
-                        <Entry x:Name="CurrentPageEntry" 
-                               Placeholder="Текущая страница" 
-                               Keyboard="Numeric" 
-                               WidthRequest="150" />
-                        <Button Text="Обновить" 
-                                BackgroundColor="{DynamicResource PrimaryColor}" 
-                                TextColor="White" 
-                                CornerRadius="10" 
-                                Margin="10,0,0,0" 
-                                Clicked="OnUpdateProgressClicked" />
-                    </StackLayout>
+                    <!-- Кнопка обновления прогресса -->
+                    <Button Text="📝 Обновить прогресс" 
+                            BackgroundColor="{DynamicResource PrimaryColor}" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Margin="0,15,0,0" 
+                            Clicked="OnUpdateProgressClicked" />
                 </StackLayout>
             </Frame>
 

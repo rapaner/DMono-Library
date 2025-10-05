@@ -52,30 +52,13 @@ public partial class BookDetailPage : ContentPage
 
     private async void OnUpdateProgressClicked(object sender, EventArgs e)
     {
-        if (int.TryParse(CurrentPageEntry.Text, out int currentPage))
+        // Открываем отдельную страницу для обновления прогресса
+        await Navigation.PushAsync(new UpdateProgressPage(_book, _libraryService, async () =>
         {
-            if (currentPage >= 0 && currentPage <= _book.TotalPages)
-            {
-                _book = await _libraryService.UpdateProgressAsync(_book, currentPage);
-                
-                // Обновить отображение
-                ProgressBar.Progress = _book.ProgressPercentage / 100;
-                ProgressText.Text = _book.ProgressText;
-                StatusLabel.Text = _book.StatusText;
-                
-                CurrentPageEntry.Text = "";
-                
-                await DisplayAlert("Успех", "Прогресс обновлен!", "OK");
-            }
-            else
-            {
-                await DisplayAlert("Ошибка", "Номер страницы должен быть от 0 до " + _book.TotalPages, "OK");
-            }
-        }
-        else
-        {
-            await DisplayAlert("Ошибка", "Введите корректный номер страницы", "OK");
-        }
+            // Callback для обновления данных после сохранения
+            _book = await _libraryService.GetBookByIdAsync(_book.Id) ?? _book;
+            LoadBookData();
+        }));
     }
 
     private async void OnEditBookClicked(object sender, EventArgs e)

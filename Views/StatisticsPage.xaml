@@ -2,6 +2,7 @@
 <ContentPage x:Class="Library.Views.StatisticsPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:Library.Services"
              Title="Статистика"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -18,10 +19,10 @@
                            FontSize="20" 
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    
+
                     <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" 
                           ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
-                        
+
                         <Frame Grid.Row="0" Grid.Column="0" 
                                BackgroundColor="{DynamicResource PrimaryColor}" 
                                CornerRadius="10" 
@@ -39,7 +40,7 @@
                                        HorizontalOptions="Center" />
                             </StackLayout>
                         </Frame>
-                        
+
                         <Frame Grid.Row="0" Grid.Column="1" 
                                BackgroundColor="{DynamicResource SecondaryColor}" 
                                CornerRadius="10" 
@@ -57,7 +58,7 @@
                                        HorizontalOptions="Center" />
                             </StackLayout>
                         </Frame>
-                        
+
                         <Frame Grid.Row="1" Grid.Column="0" 
                                BackgroundColor="Green" 
                                CornerRadius="10" 
@@ -75,7 +76,7 @@
                                        HorizontalOptions="Center" />
                             </StackLayout>
                         </Frame>
-                        
+
                         <Frame Grid.Row="1" Grid.Column="1" 
                                BackgroundColor="Orange" 
                                CornerRadius="10" 
@@ -93,7 +94,7 @@
                                        HorizontalOptions="Center" />
                             </StackLayout>
                         </Frame>
-                        
+
                         <Frame Grid.Row="2" Grid.ColumnSpan="2" 
                                BackgroundColor="Purple" 
                                CornerRadius="10" 
@@ -111,39 +112,8 @@
                                        HorizontalOptions="Center" />
                             </StackLayout>
                         </Frame>
-                        
-                    </Grid>
-                </StackLayout>
-            </Frame>
 
-            <!-- Топ жанров -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
-                <StackLayout>
-                    <Label Text="🏆 Популярные жанры" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <CollectionView x:Name="GenresCollectionView" 
-                                     Margin="0,15,0,0">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="{x:Null}">
-                                <Grid ColumnDefinitions="*,Auto" Padding="10">
-                                    <Label Grid.Column="0" 
-                                           Text="{Binding Genre}" 
-                                           FontSize="14" 
-                                           TextColor="{DynamicResource PrimaryTextColor}" />
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding Count, StringFormat='{0} книг'}" 
-                                           FontSize="14" 
-                                           TextColor="{DynamicResource SecondaryTextColor}" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    </Grid>
                 </StackLayout>
             </Frame>
 
@@ -161,7 +131,7 @@
                     <CollectionView x:Name="AuthorsCollectionView" 
                                      Margin="0,15,0,0">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="{x:Null}">
+                            <DataTemplate x:DataType="services:AuthorStatistic">
                                 <Grid ColumnDefinitions="*,Auto" Padding="10">
                                     <Label Grid.Column="0" 
                                            Text="{Binding Author}" 
