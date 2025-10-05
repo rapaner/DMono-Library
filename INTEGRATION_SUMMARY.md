@@ -61,7 +61,7 @@
 
 - ✅ Android: настроен WebAuthenticatorCallbackActivity в AndroidManifest.xml
 - ✅ Windows: настроен protocol handler в Package.appxmanifest
-- ✅ Callback URL: `ru.shuffler149.library://oauth`
+- ✅ Callback URL: `ru.rapaner.library://oauth`
 
 ### 7. Документация
 

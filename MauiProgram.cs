@@ -9,34 +9,56 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("=== CreateMauiApp started ===");
+            
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
+                {
+                    // Шрифты временно закомментированы, так как файлы отсутствуют
+                    // fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    // fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
 
-        // Регистрация базы данных
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, "library.db");
-        builder.Services.AddDbContext<LibraryDbContext>(options =>
-            options.UseSqlite($"Data Source={dbPath}"));
+            System.Diagnostics.Debug.WriteLine("=== MAUI builder configured ===");
 
-        // Регистрация сервисов
-        builder.Services.AddScoped<LibraryService>();
-        builder.Services.AddSingleton<YandexDiskService>();
-        builder.Services.AddSingleton<YandexOAuthService>();
-        builder.Services.AddSingleton<SettingsService>();
+            // Регистрация базы данных
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "library.db");
+            System.Diagnostics.Debug.WriteLine($"=== Database path: {dbPath} ===");
+            
+            builder.Services.AddDbContext<LibraryDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
 
-        // Регистрация конвертеров
-        builder.Services.AddSingleton<PercentageConverter>();
+            // Регистрация сервисов
+            builder.Services.AddScoped<LibraryService>();
+            builder.Services.AddSingleton<YandexDiskService>();
+            builder.Services.AddSingleton<YandexOAuthService>();
+            builder.Services.AddSingleton<SettingsService>();
 
-        // Регистрация страниц и Shell
-        builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<Views.YandexDiskPage>();
-        builder.Services.AddSingleton<AppShell>();
+            // Регистрация конвертеров
+            builder.Services.AddSingleton<PercentageConverter>();
 
-        return builder.Build();
+            // Регистрация страниц и Shell
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<Views.YandexDiskPage>();
+            builder.Services.AddSingleton<AppShell>();
+
+            System.Diagnostics.Debug.WriteLine("=== Services registered ===");
+
+            var app = builder.Build();
+            
+            System.Diagnostics.Debug.WriteLine("=== CreateMauiApp completed successfully ===");
+            
+            return app;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"=== ERROR in CreateMauiApp: {ex.Message} ===");
+            System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
+            throw;
+        }
     }
 }

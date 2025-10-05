@@ -19,7 +19,7 @@
 ### Технические детали:
 
 - Используется **WebAuthenticator** из .NET MAUI Essentials
-- Callback URL: `ru.shuffler149.library://oauth`
+- Callback URL: `ru.rapaner.library://oauth`
 - Client ID: `23cabbbdc6cd418abb4b39c32c41195d` (публичный тестовый)
 - Токен автоматически извлекается из URL и сохраняется
 
@@ -50,7 +50,7 @@ public class YandexOAuthService
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="ru.shuffler149.library" android:host="oauth" />
+        <data android:scheme="ru.rapaner.library" android:host="oauth" />
     </intent-filter>
 </activity>
 ```
@@ -62,7 +62,7 @@ public class YandexOAuthService
 ```xml
 <Extensions>
     <uap:Extension Category="windows.protocol">
-        <uap:Protocol Name="ru.shuffler149.library">
+        <uap:Protocol Name="ru.rapaner.library">
             <uap:DisplayName>Library OAuth</uap:DisplayName>
         </uap:Protocol>
     </uap:Extension>
@@ -120,7 +120,7 @@ if (!string.IsNullOrEmpty(token))
 3. Заполните форму:
    - **Название**: "Моя Библиотека" (или любое другое)
    - **Платформы**: выберите нужные (Android, Windows)
-   - **Callback URL**: `ru.shuffler149.library://oauth`
+   - **Callback URL**: `ru.rapaner.library://oauth`
    - **Права доступа**: отметьте "Яндекс.Диск" → "Доступ к приложению" и "Запись"
 
 ### 2. Получите Client ID
@@ -178,7 +178,7 @@ private const string ClientId = "ВАШ_CLIENT_ID";
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>ru.shuffler149.library</string>
+            <string>ru.rapaner.library</string>
         </array>
         <key>CFBundleURLName</key>
         <string>Library OAuth</string>

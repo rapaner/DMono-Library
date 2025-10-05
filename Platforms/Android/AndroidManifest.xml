@@ -7,7 +7,7 @@
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="ru.shuffler149.library" android:host="oauth" />
+				<data android:scheme="ru.rapaner.library" android:host="oauth" />
 			</intent-filter>
 		</activity>
 	</application>
