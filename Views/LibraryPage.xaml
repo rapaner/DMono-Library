@@ -2,6 +2,7 @@
 <ContentPage x:Class="Library.Views.LibraryPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Library.Views"
              Title="Вся библиотека"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -34,12 +35,11 @@
 
         <!-- Список книг -->
         <CollectionView x:Name="BooksCollectionView" 
-                         Grid.Row="1" 
-                         ItemsSource="{Binding Books}"
+                         Grid.Row="1"
                          SelectionMode="Single"
                          SelectionChanged="OnBookSelected">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="views:BookViewModel">
                     <Grid Padding="15" ColumnDefinitions="Auto,*,Auto">
                         
                         <!-- Иконка статуса -->
@@ -58,9 +58,6 @@
                             <Label Text="{Binding Author}" 
                                    FontSize="14" 
                                    TextColor="{DynamicResource SecondaryTextColor}" />
-                            <Label Text="{Binding Genre}" 
-                                   FontSize="12" 
-                                   TextColor="{DynamicResource SecondaryTextColor}" />
                             
                             <!-- Прогресс для текущих книг -->
                             <StackLayout IsVisible="{Binding IsCurrentlyReading}">
@@ -72,12 +69,8 @@
                             </StackLayout>
                         </StackLayout>
                         
-                        <!-- Рейтинг -->
+                        <!-- Дата добавления -->
                         <StackLayout Grid.Column="2" HorizontalOptions="End">
-                            <Label Text="{Binding Rating, StringFormat='{0:F1}⭐'}" 
-                                   FontSize="14" 
-                                   TextColor="{DynamicResource PrimaryTextColor}" 
-                                   HorizontalOptions="End" />
                             <Label Text="{Binding DateAdded, StringFormat='{0:dd.MM.yyyy}'}" 
                                    FontSize="10" 
                                    TextColor="{DynamicResource SecondaryTextColor}" 

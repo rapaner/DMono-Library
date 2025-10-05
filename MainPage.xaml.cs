@@ -26,25 +26,25 @@ public partial class MainPage : ContentPage
     private void AddTapGestures()
     {
         // Просмотр библиотеки
-        var libraryFrame = (Frame)this.FindByName("libraryFrame");
+        var libraryFrame = (Border)this.FindByName("libraryFrame");
         var libraryTap = new TapGestureRecognizer();
         libraryTap.Tapped += OnLibraryTapped;
         libraryFrame.GestureRecognizers.Add(libraryTap);
 
         // Добавить книгу
-        var addBookFrame = (Frame)this.FindByName("addBookFrame");
+        var addBookFrame = (Border)this.FindByName("addBookFrame");
         var addBookTap = new TapGestureRecognizer();
         addBookTap.Tapped += OnAddBookTapped;
         addBookFrame.GestureRecognizers.Add(addBookTap);
 
         // Статистика
-        var statsFrame = (Frame)this.FindByName("statsFrame");
+        var statsFrame = (Border)this.FindByName("statsFrame");
         var statsTap = new TapGestureRecognizer();
         statsTap.Tapped += OnStatsTapped;
         statsFrame.GestureRecognizers.Add(statsTap);
 
         // Настройки
-        var settingsFrame = (Frame)this.FindByName("settingsFrame");
+        var settingsFrame = (Border)this.FindByName("settingsFrame");
         var settingsTap = new TapGestureRecognizer();
         settingsTap.Tapped += OnSettingsTapped;
         settingsFrame.GestureRecognizers.Add(settingsTap);
