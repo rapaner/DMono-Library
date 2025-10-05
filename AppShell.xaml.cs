@@ -1,17 +1,14 @@
-using Library.Services;
+using Library.Views;
 
 namespace Library;
 
 public partial class AppShell : Shell
 {
-    public AppShell(LibraryService libraryService)
+    public AppShell()
     {
         InitializeComponent();
         
-        // Инициализация базы данных при запуске приложения
-        _ = Task.Run(async () =>
-        {
-            await libraryService.EnsureDatabaseCreatedAsync();
-        });
+        // Регистрация маршрутов для навигации
+        Routing.RegisterRoute(nameof(YandexDiskPage), typeof(YandexDiskPage));
     }
 }

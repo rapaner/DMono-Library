@@ -25,12 +25,16 @@ public static class MauiProgram
 
         // Регистрация сервисов
         builder.Services.AddScoped<LibraryService>();
+        builder.Services.AddSingleton<YandexDiskService>();
+        builder.Services.AddSingleton<YandexOAuthService>();
+        builder.Services.AddSingleton<SettingsService>();
 
         // Регистрация конвертеров
         builder.Services.AddSingleton<PercentageConverter>();
 
         // Регистрация страниц и Shell
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<Views.YandexDiskPage>();
         builder.Services.AddSingleton<AppShell>();
 
         return builder.Build();

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Library.Views.YandexDiskPage"
+             Title="Яндекс Диск">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            
+            <!-- Статус авторизации -->
+            <Frame BackgroundColor="{StaticResource Primary}" Padding="15" CornerRadius="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Статус подключения" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="White"/>
+                    <Label x:Name="StatusLabel" 
+                           Text="Не подключено" 
+                           FontSize="14"
+                           TextColor="White"/>
+                    <Label x:Name="DiskInfoLabel" 
+                           Text="" 
+                           FontSize="12"
+                           TextColor="White"
+                           IsVisible="False"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Авторизация -->
+            <Frame Padding="15" CornerRadius="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Авторизация" 
+                           FontSize="18" 
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="Выберите способ авторизации:" 
+                           FontSize="14"
+                           TextColor="{StaticResource Gray600}"/>
+                    
+                    <!-- Автоматическая авторизация через браузер -->
+                    <Button Text="🔐 Войти через Яндекс" 
+                            Clicked="OnGetTokenClicked"
+                            BackgroundColor="{StaticResource Primary}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            HeightRequest="50"/>
+                    
+                    <Label Text="или введите токен вручную:" 
+                           FontSize="12"
+                           TextColor="{StaticResource Gray600}"
+                           HorizontalOptions="Center"
+                           Margin="0,10,0,0"/>
+                    
+                    <Entry x:Name="TokenEntry" 
+                           Placeholder="Вставьте OAuth токен здесь"
+                           IsPassword="True"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Сохранить токен" 
+                                Clicked="OnSaveTokenClicked"
+                                HorizontalOptions="FillAndExpand"/>
+                        <Button Text="Отключить" 
+                                Clicked="OnDisconnectClicked"
+                                BackgroundColor="{StaticResource Gray400}"
+                                HorizontalOptions="FillAndExpand"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Резервное копирование -->
+            <Frame Padding="15" CornerRadius="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Резервное копирование" 
+                           FontSize="18" 
+                           FontAttributes="Bold"/>
+                    
+                    <Label x:Name="LastBackupLabel" 
+                           Text="Последняя резервная копия: никогда" 
+                           FontSize="14"
+                           TextColor="{StaticResource Gray600}"/>
+                    
+                    <Button Text="Создать резервную копию" 
+                            Clicked="OnBackupClicked"
+                            BackgroundColor="{StaticResource Primary}"/>
+                    
+                    <Button Text="Восстановить из резервной копии" 
+                            Clicked="OnRestoreClicked"
+                            BackgroundColor="{StaticResource Secondary}"/>
+                    
+                    <!-- Автоматическое резервное копирование -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Автоматическое резервное копирование" 
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand"/>
+                        <Switch x:Name="AutoBackupSwitch" 
+                                Toggled="OnAutoBackupToggled"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10" x:Name="FrequencyLayout" IsVisible="False">
+                        <Label Text="Частота (дней):" 
+                               VerticalOptions="Center"/>
+                        <Entry x:Name="FrequencyEntry" 
+                               Text="7" 
+                               Keyboard="Numeric"
+                               WidthRequest="60"
+                               HorizontalTextAlignment="Center"/>
+                        <Button Text="Сохранить" 
+                                Clicked="OnSaveFrequencyClicked"
+                                Padding="10,5"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Список резервных копий -->
+            <Frame Padding="15" CornerRadius="10">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Резервные копии" 
+                               FontSize="18" 
+                               FontAttributes="Bold"
+                               HorizontalOptions="StartAndExpand"
+                               VerticalOptions="Center"/>
+                        <Button Text="Обновить" 
+                                Clicked="OnRefreshBackupsClicked"
+                                Padding="10,5"/>
+                    </HorizontalStackLayout>
+                    
+                    <ActivityIndicator x:Name="LoadingIndicator" 
+                                     IsRunning="False" 
+                                     IsVisible="False"
+                                     Color="{StaticResource Primary}"/>
+                    
+                    <CollectionView x:Name="BackupsCollectionView" 
+                                  SelectionMode="Single"
+                                  SelectionChanged="OnBackupSelected">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BackgroundColor="{StaticResource Gray100}">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="{Binding Name}" 
+                                               FontSize="14" 
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" 
+                                               FontSize="12"
+                                               TextColor="{StaticResource Gray600}"/>
+                                        <Label Text="{Binding Size, StringFormat='Размер: {0:N0} байт'}" 
+                                               FontSize="12"
+                                               TextColor="{StaticResource Gray600}"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    
+                    <Label x:Name="NoBackupsLabel" 
+                           Text="Резервные копии не найдены" 
+                           FontSize="14"
+                           TextColor="{StaticResource Gray600}"
+                           HorizontalOptions="Center"
+                           IsVisible="False"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Инструкция -->
+            <Frame Padding="15" CornerRadius="10" BackgroundColor="{StaticResource Gray100}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="💡 Как подключить Яндекс Диск?" 
+                           FontSize="16" 
+                           FontAttributes="Bold"/>
+                    <Label FontSize="14" TextColor="{StaticResource Gray600}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Рекомендуемый способ:&#x0a;" FontAttributes="Bold"/>
+                                <Span Text="1. Нажмите кнопку '🔐 Войти через Яндекс'&#x0a;"/>
+                                <Span Text="2. Войдите в свой аккаунт Яндекс в открывшемся браузере&#x0a;"/>
+                                <Span Text="3. Разрешите доступ к Яндекс Диску&#x0a;"/>
+                                <Span Text="4. Готово! Приложение автоматически получит токен&#x0a;&#x0a;"/>
+                                <Span Text="Альтернативный способ:&#x0a;" FontAttributes="Bold"/>
+                                <Span Text="Получите токен на https://yandex.ru/dev/disk/poligon/ и вставьте его вручную"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>
