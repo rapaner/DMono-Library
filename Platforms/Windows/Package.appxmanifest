@@ -36,6 +36,13 @@
           <uap:Rotation Preference="portrait"/>
           <uap:Rotation Preference="landscape"/></uap:InitialRotationPreference>
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="ru.shuffler149.library">
+            <uap:DisplayName>Library OAuth</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
