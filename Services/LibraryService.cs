@@ -321,16 +321,45 @@ namespace Library.Services
         /// <summary>
         /// Получить статистику библиотеки
         /// </summary>
+        /// <param name="startDate">Начальная дата периода (null для всего времени)</param>
+        /// <param name="endDate">Конечная дата периода (null для всего времени)</param>
         /// <returns>Статистика библиотеки</returns>
-        public async Task<LibraryStatistics> GetStatisticsAsync()
+        public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             var books = await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .ToListAsync();
             
-            // Подсчет популярных авторов
-            var authorStats = books
+            // Фильтрация книг по датам (для статуса "Прочитано")
+            var filteredBooks = books;
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                filteredBooks = books.Where(b =>
+                {
+                    // Для прочитанных книг проверяем DateFinished
+                    if (b.DateFinished.HasValue)
+                    {
+                        var dateToCheck = b.DateFinished.Value.Date;
+                        return (!startDate.HasValue || dateToCheck >= startDate.Value.Date) &&
+                               (!endDate.HasValue || dateToCheck <= endDate.Value.Date);
+                    }
+                    
+                    // Для других книг проверяем, есть ли записи о чтении в указанный период
+                    if (b.PagesReadHistory.Any())
+                    {
+                        return b.PagesReadHistory.Any(p =>
+                            (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
+                            (!endDate.HasValue || p.Date <= endDate.Value.Date));
+                    }
+                    
+                    // Книги без истории чтения и без даты завершения
+                    return false;
+                }).ToList();
+            }
+            
+            // Подсчет популярных авторов на основе отфильтрованных книг
+            var authorStats = filteredBooks
                 .SelectMany(b => b.Authors)
                 .GroupBy(a => a.Name)
                 .Select(g => new AuthorStatistic { Author = g.Key, Count = g.Count() })
@@ -338,13 +367,32 @@ namespace Library.Services
                 .Take(10)
                 .ToList();
             
+            // Подсчет страниц с учетом фильтра по датам
+            int totalPagesRead = 0;
+            foreach (var book in books)
+            {
+                if (startDate.HasValue || endDate.HasValue)
+                {
+                    // Суммируем только страницы, прочитанные в указанный период
+                    totalPagesRead += book.PagesReadHistory
+                        .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
+                                   (!endDate.HasValue || p.Date <= endDate.Value.Date))
+                        .Sum(p => p.PagesRead);
+                }
+                else
+                {
+                    // Суммируем все страницы
+                    totalPagesRead += book.CurrentPage;
+                }
+            }
+            
             return new LibraryStatistics
             {
-                TotalBooks = books.Count,
-                ReadBooks = books.Count(b => b.DateFinished.HasValue),
-                CurrentBooks = books.Count(b => b.IsCurrentlyReading),
-                PlannedBooks = books.Count(b => !b.IsCurrentlyReading && !b.DateFinished.HasValue),
-                TotalPagesRead = books.Where(b => b.DateFinished.HasValue).Sum(b => b.TotalPages),
+                TotalBooks = filteredBooks.Count,
+                ReadBooks = filteredBooks.Count(b => b.DateFinished.HasValue),
+                CurrentBooks = filteredBooks.Count(b => b.IsCurrentlyReading),
+                PlannedBooks = filteredBooks.Count(b => !b.IsCurrentlyReading && !b.DateFinished.HasValue),
+                TotalPagesRead = totalPagesRead,
                 PopularAuthors = authorStats
             };
         }
