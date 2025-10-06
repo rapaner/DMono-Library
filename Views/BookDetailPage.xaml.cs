@@ -48,6 +48,7 @@ public partial class BookDetailPage : ContentPage
         
         ProgressBar.Progress = _book.ProgressPercentage / 100;
         ProgressText.Text = _book.ProgressText;
+        ProgressPercentage.Text = $"{_book.ProgressPercentage:F2}%";
     }
 
     private async void OnUpdateProgressClicked(object sender, EventArgs e)
