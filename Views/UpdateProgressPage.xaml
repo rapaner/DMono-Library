@@ -80,7 +80,7 @@
                         Clicked="OnSaveClicked" />
                 <Button Text="❌ Отмена" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnCancelClicked" />

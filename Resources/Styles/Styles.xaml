@@ -57,4 +57,38 @@
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 
+    <!-- Глобальные стили по умолчанию для Android -->
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource SecondaryTextColor}" />
+    </Style>
+
+    <Style TargetType="Editor">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource SecondaryTextColor}" />
+    </Style>
+
+    <Style TargetType="Picker">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+        <Setter Property="TitleColor" Value="{DynamicResource SecondaryTextColor}" />
+    </Style>
+
+    <Style TargetType="DatePicker">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+    </Style>
+
+    <Style TargetType="TimePicker">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+    </Style>
+
+    <!-- Глобальный стиль для всех Label -->
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+    </Style>
+
+    <!-- Глобальный стиль для всех Button -->
+    <Style TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+    </Style>
+
 </ResourceDictionary>

@@ -28,7 +28,9 @@
                                FontAttributes="Bold" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry x:Name="TitleEntry" 
-                               Placeholder="Введите название книги" />
+                               Placeholder="Введите название книги"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
                     
                     <!-- Авторы -->
@@ -42,7 +44,9 @@
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="5">
                             <Picker x:Name="AuthorPicker" 
                                     Grid.Column="0"
-                                    Title="Выберите автора" />
+                                    Title="Выберите автора"
+                                    TextColor="{DynamicResource PrimaryTextColor}"
+                                    TitleColor="{DynamicResource SecondaryTextColor}" />
                             <Button Text="+" 
                                     Grid.Column="1"
                                     BackgroundColor="{DynamicResource PrimaryColor}" 
@@ -51,8 +55,8 @@
                                     Clicked="OnAddAuthorClicked" />
                             <Button Text="Новый" 
                                     Grid.Column="2"
-                                    BackgroundColor="{DynamicResource AccentColor}" 
-                                    TextColor="Grey" 
+                                    BackgroundColor="{DynamicResource SecondaryColor}" 
+                                    TextColor="{DynamicResource PrimaryTextColor}" 
                                     WidthRequest="80"
                                     Clicked="OnNewAuthorClicked" />
                         </Grid>
@@ -89,7 +93,9 @@
                                FontAttributes="Bold" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry x:Name="SeriesTitleEntry" 
-                               Placeholder="Введите название цикла (необязательно)" />
+                               Placeholder="Введите название цикла (необязательно)"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
                     
                     <!-- Номер в цикле -->
@@ -100,7 +106,9 @@
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry x:Name="SeriesNumberEntry" 
                                Placeholder="Номер книги в цикле (необязательно)" 
-                               Keyboard="Numeric" />
+                               Keyboard="Numeric"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
                     
                     <!-- Общее количество страниц -->
@@ -111,7 +119,9 @@
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         <Entry x:Name="TotalPagesEntry" 
                                Placeholder="Введите количество страниц" 
-                               Keyboard="Numeric" />
+                               Keyboard="Numeric"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     </StackLayout>
                     
                     <!-- Статус -->
@@ -120,7 +130,9 @@
                                FontSize="14" 
                                FontAttributes="Bold" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Picker x:Name="StatusPicker">
+                        <Picker x:Name="StatusPicker"
+                                TextColor="{DynamicResource PrimaryTextColor}"
+                                TitleColor="{DynamicResource SecondaryTextColor}">
                             <Picker.Items>
                                 <x:String>В планах</x:String>
                                 <x:String>Читаю сейчас</x:String>
@@ -142,7 +154,7 @@
                         Clicked="OnSaveClicked" />
                 <Button Text="❌ Отмена" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnCancelClicked" />

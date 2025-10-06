@@ -36,6 +36,41 @@
                 </StackLayout>
             </Frame>
 
+            <!-- Внешний вид -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="15">
+                    <Label Text="🎨 Внешний вид" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label Text="Выберите тему приложения" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" />
+
+                    <Picker x:Name="ThemePicker"
+                            Title="Выберите тему"
+                            SelectedIndexChanged="OnThemeChanged"
+                            TextColor="{DynamicResource PrimaryTextColor}"
+                            TitleColor="{DynamicResource SecondaryTextColor}">
+                        <Picker.Items>
+                            <x:String>🌓 Автоматически (следовать системе)</x:String>
+                            <x:String>☀️ Светлая тема</x:String>
+                            <x:String>🌙 Темная тема</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <Label x:Name="ThemeDescriptionLabel"
+                           Text="Тема будет автоматически переключаться в зависимости от настроек системы"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryTextColor}"
+                           Margin="0,5,0,0" />
+                </StackLayout>
+            </Frame>
+
             <!-- Резервное копирование -->
             <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    CornerRadius="15" 

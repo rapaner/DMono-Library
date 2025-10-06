@@ -9,6 +9,7 @@ namespace Library.Services
     public class SettingsService
     {
         private const string YandexDiskSettingsKey = "YandexDiskSettings";
+        private const string ThemePreferenceKey = "AppThemePreference";
 
         /// <summary>
         /// Получить настройки Яндекс Диска
@@ -49,6 +50,32 @@ namespace Library.Services
         public void ClearYandexDiskSettings()
         {
             Preferences.Remove(YandexDiskSettingsKey);
+        }
+
+        /// <summary>
+        /// Получить сохраненные настройки темы
+        /// </summary>
+        /// <returns>Настройка темы: "Auto", "Light" или "Dark"</returns>
+        public string GetThemePreference()
+        {
+            return Preferences.Get(ThemePreferenceKey, "Auto");
+        }
+
+        /// <summary>
+        /// Сохранить настройки темы
+        /// </summary>
+        /// <param name="theme">Тема: "Auto", "Light" или "Dark"</param>
+        public void SaveThemePreference(string theme)
+        {
+            Preferences.Set(ThemePreferenceKey, theme);
+        }
+
+        /// <summary>
+        /// Очистить настройки темы (вернуться к автоматическому режиму)
+        /// </summary>
+        public void ClearThemePreference()
+        {
+            Preferences.Remove(ThemePreferenceKey);
         }
     }
 }

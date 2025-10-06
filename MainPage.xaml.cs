@@ -7,11 +7,13 @@ namespace Library;
 public partial class MainPage : ContentPage
 {
     private readonly LibraryService _libraryService;
+    private readonly SettingsService _settingsService;
 
-    public MainPage(LibraryService libraryService)
+    public MainPage(LibraryService libraryService, SettingsService settingsService)
     {
         InitializeComponent();
         _libraryService = libraryService;
+        _settingsService = settingsService;
         
         // Добавляем обработчики нажатий для карточек меню
         AddTapGestures();
@@ -98,6 +100,6 @@ public partial class MainPage : ContentPage
 
     private async void OnSettingsTapped(object? sender, EventArgs e)
     {
-        await Navigation.PushAsync(new SettingsPage(_libraryService));
+        await Navigation.PushAsync(new SettingsPage(_libraryService, _settingsService));
     }
 }
