@@ -398,6 +398,42 @@ namespace Library.Services
         }
 
         /// <summary>
+        /// Получить данные о чтении по дням для графика
+        /// </summary>
+        /// <param name="startDate">Начальная дата периода (null для всего времени)</param>
+        /// <param name="endDate">Конечная дата периода (null для всего времени)</param>
+        /// <returns>Список данных о прочитанных страницах по дням</returns>
+        public async Task<List<DailyReadingData>> GetDailyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            // Получаем все записи о чтении
+            var allReadingHistory = await _context.PagesReadHistory
+                .OrderBy(p => p.Date)
+                .ToListAsync();
+
+            // Фильтруем по датам если указаны
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                allReadingHistory = allReadingHistory
+                    .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
+                               (!endDate.HasValue || p.Date <= endDate.Value.Date))
+                    .ToList();
+            }
+
+            // Группируем по дням и суммируем страницы
+            var dailyData = allReadingHistory
+                .GroupBy(p => p.Date.Date)
+                .Select(g => new DailyReadingData
+                {
+                    Date = g.Key,
+                    PagesRead = g.Sum(p => p.PagesRead)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            return dailyData;
+        }
+
+        /// <summary>
         /// Проверить и применить миграции базы данных
         /// </summary>
         /// <returns>Задача асинхронной операции</returns>
@@ -405,6 +441,15 @@ namespace Library.Services
         {
             await _context.Database.EnsureCreatedAsync();
         }
+    }
+
+    /// <summary>
+    /// Данные о чтении за один день
+    /// </summary>
+    public class DailyReadingData
+    {
+        public DateTime Date { get; set; }
+        public int PagesRead { get; set; }
     }
 
     /// <summary>

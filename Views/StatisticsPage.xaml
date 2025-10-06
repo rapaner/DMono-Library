@@ -168,6 +168,34 @@
                 </StackLayout>
             </Frame>
 
+            <!-- График чтения по дням -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="📈 График чтения" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label x:Name="ChartDescriptionLabel"
+                           Text="Страниц прочитано по дням"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryTextColor}"
+                           Margin="0,5,0,10" />
+                    
+                    <ScrollView Orientation="Horizontal" 
+                                HorizontalScrollBarVisibility="Always"
+                                Margin="0,10,0,0">
+                        <GraphicsView x:Name="ReadingChartView"
+                                      HeightRequest="250"
+                                      WidthRequest="400"
+                                      BackgroundColor="Transparent" />
+                    </ScrollView>
+                </StackLayout>
+            </Frame>
+
             <!-- Топ авторов -->
             <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    CornerRadius="15" 
