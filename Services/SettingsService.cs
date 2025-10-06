@@ -77,5 +77,14 @@ namespace Library.Services
         {
             Preferences.Remove(ThemePreferenceKey);
         }
+
+        /// <summary>
+        /// Получить версию приложения
+        /// </summary>
+        /// <returns>Строка с версией приложения</returns>
+        public string GetAppVersion()
+        {
+            return AppInfo.Current.VersionString;
+        }
     }
 }

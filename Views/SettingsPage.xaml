@@ -25,7 +25,8 @@
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            Margin="0,15,0,5" />
                     
-                    <Label Text="Версия 1.0" 
+                    <Label x:Name="VersionLabel"
+                           Text="Версия 1.0" 
                            FontSize="14" 
                            TextColor="{DynamicResource SecondaryTextColor}" />
                     
