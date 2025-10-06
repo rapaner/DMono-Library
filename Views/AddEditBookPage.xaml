@@ -10,10 +10,12 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Форма книги -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout Spacing="15">
                     
                     <Label Text="📚 Информация о книге" 
@@ -142,7 +144,7 @@
                     </StackLayout>
                     
                 </StackLayout>
-            </Frame>
+            </Border>
             
             <!-- Кнопки действий -->
             <StackLayout Orientation="Horizontal" Spacing="10">

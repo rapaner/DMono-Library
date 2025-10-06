@@ -254,7 +254,7 @@ namespace Library.Views
                 {
                     await DisplayAlert(
                         "Успех",
-                        "База данных восстановлена из резервной копии.\n\nПриложение будет перезапущено.",
+                        "База данных восстановлена из резервной копии.\n\nПриложение нужно перезапустить.",
                         "OK");
 
                     // Перезапуск приложения
@@ -340,11 +340,12 @@ namespace Library.Views
             }
         }
 
-        private void OnBackupSelected(object sender, SelectionChangedEventArgs e)
+        private void OnBackupTapped(object sender, TappedEventArgs e)
         {
-            if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
+            if (sender is Border border && border.BindingContext is YandexDisk.Client.Protocol.Resource backup)
             {
                 _selectedBackup = backup;
+                DisplayAlert("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления.", "OK");
             }
         }
     }

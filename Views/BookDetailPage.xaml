@@ -9,10 +9,12 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Заголовок книги -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label x:Name="BookTitle" 
                            FontSize="24" 
@@ -23,13 +25,15 @@
                            TextColor="{DynamicResource SecondaryTextColor}" 
                            Margin="0,5,0,0" />
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- Прогресс чтения -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📊 Прогресс чтения" 
                            FontSize="18" 
@@ -61,13 +65,15 @@
                             Margin="0,15,0,0" 
                             Clicked="OnUpdateProgressClicked" />
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- Информация о книге -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📖 Информация о книге" 
                            FontSize="18" 
@@ -123,7 +129,7 @@
                                TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- Действия -->
             <StackLayout Orientation="Horizontal" Spacing="10">
