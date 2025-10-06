@@ -3,11 +3,62 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services="clr-namespace:Library.Services"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
              Title="Статистика"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
     <ScrollView>
         <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Фильтр по датам -->
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="15">
+                    <Label Text="📅 Период" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Picker x:Name="DateFilterPicker"
+                            Title="Выберите период"
+                            SelectedIndexChanged="OnDateFilterChanged"
+                            TextColor="{DynamicResource PrimaryTextColor}"
+                            TitleColor="{DynamicResource SecondaryTextColor}">
+                        <Picker.Items>
+                            <x:String>За все время</x:String>
+                            <x:String>Последние 30 дней</x:String>
+                            <x:String>Последние 60 дней</x:String>
+                            <x:String>Последние 90 дней</x:String>
+                            <x:String>Последние 180 дней</x:String>
+                            <x:String>Последние 365 дней</x:String>
+                            <x:String>Произвольно</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    
+                    <!-- Произвольный период -->
+                    <StackLayout x:Name="CustomDateRangeLayout" 
+                                 IsVisible="False"
+                                 Spacing="10">
+                        <Label Text="От:" 
+                               FontSize="14" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <DatePicker x:Name="StartDatePicker"
+                                    Date="{x:Static system:DateTime.Now}"
+                                    DateSelected="OnCustomDateChanged"
+                                    TextColor="{DynamicResource PrimaryTextColor}" />
+                        
+                        <Label Text="До:" 
+                               FontSize="14" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <DatePicker x:Name="EndDatePicker"
+                                    Date="{x:Static system:DateTime.Now}"
+                                    DateSelected="OnCustomDateChanged"
+                                    TextColor="{DynamicResource PrimaryTextColor}" />
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
             
             <!-- Общая статистика -->
             <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
