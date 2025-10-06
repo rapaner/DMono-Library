@@ -9,7 +9,10 @@
         <VerticalStackLayout Padding="20" Spacing="15">
             
             <!-- Статус авторизации -->
-            <Frame BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" CornerRadius="10" HasShadow="True">
+            <Border BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Статус подключения" 
                            FontSize="18" 
@@ -25,10 +28,13 @@
                            TextColor="White"
                            IsVisible="False"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Авторизация -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Авторизация" 
                            FontSize="18" 
@@ -73,10 +79,13 @@
                                 HorizontalOptions="FillAndExpand"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Резервное копирование -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Резервное копирование" 
                            FontSize="18" 
@@ -95,7 +104,7 @@
                     
                     <Button Text="Восстановить из резервной копии" 
                             Clicked="OnRestoreClicked"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
+            BackgroundColor="{DynamicResource SecondaryColor}"
                             TextColor="White"/>
                     
                     <!-- Автоматическое резервное копирование -->
@@ -124,10 +133,13 @@
                                 Padding="10,5"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Список резервных копий -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Резервные копии" 
@@ -149,11 +161,16 @@
                                      Color="{DynamicResource PrimaryColor}"/>
                     
                     <CollectionView x:Name="BackupsCollectionView" 
-                                  SelectionMode="Single"
-                                  SelectionChanged="OnBackupSelected">
+                                  SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BackgroundColor="{DynamicResource Gray100}" HasShadow="False">
+                                <Border Padding="10" Margin="0,5" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnBackupTapped" />
+                                    </Border.GestureRecognizers>
                                     <VerticalStackLayout Spacing="5">
                                         <Label Text="{Binding Name}" 
                                                FontSize="14" 
@@ -166,7 +183,7 @@
                                                FontSize="12"
                                                TextColor="{DynamicResource SecondaryTextColor}"/>
                                     </VerticalStackLayout>
-                                </Frame>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -178,10 +195,13 @@
                            HorizontalOptions="Center"
                            IsVisible="False"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Инструкция -->
-            <Frame Padding="15" CornerRadius="10" BackgroundColor="{DynamicResource Gray100}" HasShadow="True">
+            <Border Padding="15" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="💡 Как подключить Яндекс Диск?" 
                            FontSize="16" 
@@ -201,7 +221,7 @@
                         </Label.FormattedText>
                     </Label>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
             
         </VerticalStackLayout>
     </ScrollView>

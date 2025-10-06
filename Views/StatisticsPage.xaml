@@ -11,10 +11,12 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Фильтр по датам -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout Spacing="15">
                     <Label Text="📅 Период" 
                            FontSize="18" 
@@ -58,13 +60,15 @@
                                     TextColor="{DynamicResource PrimaryTextColor}" />
                     </StackLayout>
                 </StackLayout>
-            </Frame>
+            </Border>
             
             <!-- Общая статистика -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📊 Общая статистика" 
                            FontSize="20" 
@@ -74,10 +78,13 @@
                     <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" 
                           ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
 
-                        <Frame Grid.Row="0" Grid.Column="0" 
+                        <Border Grid.Row="0" Grid.Column="0" 
                                BackgroundColor="{DynamicResource PrimaryColor}" 
-                               CornerRadius="10" 
-                               Padding="15">
+                               Padding="15"
+                               StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label x:Name="TotalBooksLabel" 
                                        Text="0" 
@@ -90,12 +97,15 @@
                                        TextColor="White" 
                                        HorizontalOptions="Center" />
                             </StackLayout>
-                        </Frame>
+                        </Border>
 
-                        <Frame Grid.Row="0" Grid.Column="1" 
+                        <Border Grid.Row="0" Grid.Column="1" 
                                BackgroundColor="{DynamicResource SecondaryColor}" 
-                               CornerRadius="10" 
-                               Padding="15">
+                               Padding="15"
+                               StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label x:Name="ReadBooksLabel" 
                                        Text="0" 
@@ -108,12 +118,15 @@
                                        TextColor="White" 
                                        HorizontalOptions="Center" />
                             </StackLayout>
-                        </Frame>
+                        </Border>
 
-                        <Frame Grid.Row="1" Grid.Column="0" 
+                        <Border Grid.Row="1" Grid.Column="0" 
                                BackgroundColor="Green" 
-                               CornerRadius="10" 
-                               Padding="15">
+                               Padding="15"
+                               StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label x:Name="CurrentBooksLabel" 
                                        Text="0" 
@@ -126,12 +139,15 @@
                                        TextColor="White" 
                                        HorizontalOptions="Center" />
                             </StackLayout>
-                        </Frame>
+                        </Border>
 
-                        <Frame Grid.Row="1" Grid.Column="1" 
+                        <Border Grid.Row="1" Grid.Column="1" 
                                BackgroundColor="Orange" 
-                               CornerRadius="10" 
-                               Padding="15">
+                               Padding="15"
+                               StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label x:Name="PlannedBooksLabel" 
                                        Text="0" 
@@ -144,12 +160,15 @@
                                        TextColor="White" 
                                        HorizontalOptions="Center" />
                             </StackLayout>
-                        </Frame>
+                        </Border>
 
-                        <Frame Grid.Row="2" Grid.ColumnSpan="2" 
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" 
                                BackgroundColor="Purple" 
-                               CornerRadius="10" 
-                               Padding="15">
+                               Padding="15"
+                               StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label x:Name="TotalPagesLabel" 
                                        Text="0" 
@@ -162,17 +181,19 @@
                                        TextColor="White" 
                                        HorizontalOptions="Center" />
                             </StackLayout>
-                        </Frame>
+                        </Border>
 
                     </Grid>
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- График чтения по дням -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📈 График чтения" 
                            FontSize="18" 
@@ -194,13 +215,15 @@
                                       BackgroundColor="Transparent" />
                     </ScrollView>
                 </StackLayout>
-            </Frame>
+            </Border>
 
             <!-- Топ авторов -->
-            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   CornerRadius="15" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
-                   HasShadow="True">
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
                 <StackLayout>
                     <Label Text="👨‍💼 Любимые авторы" 
                            FontSize="18" 
@@ -225,7 +248,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </StackLayout>
-            </Frame>
+            </Border>
 
         </StackLayout>
     </ScrollView>
