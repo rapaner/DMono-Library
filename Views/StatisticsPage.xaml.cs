@@ -1,5 +1,6 @@
 using Library.Models;
 using Library.Services;
+using Library.Controls;
 using System.Collections.ObjectModel;
 
 namespace Library.Views;
@@ -7,11 +8,16 @@ namespace Library.Views;
 public partial class StatisticsPage : ContentPage
 {
     private readonly LibraryService _libraryService;
+    private readonly ReadingChartDrawable _chartDrawable;
 
     public StatisticsPage(LibraryService libraryService)
     {
         InitializeComponent();
         _libraryService = libraryService;
+        
+        // Инициализация графика
+        _chartDrawable = new ReadingChartDrawable();
+        ReadingChartView.Drawable = _chartDrawable;
         
         // Устанавливаем начальный фильтр "За все время"
         DateFilterPicker.SelectedIndex = 0;
@@ -104,5 +110,76 @@ public partial class StatisticsPage : ContentPage
         
         // Топ авторов
         AuthorsCollectionView.ItemsSource = statistics.PopularAuthors;
+        
+        // Загрузка данных для графика
+        await LoadChartData(startDate, endDate);
+    }
+    
+    private async Task LoadChartData(DateTime? startDate, DateTime? endDate)
+    {
+        var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate);
+        
+        // Обновляем данные графика
+        _chartDrawable.Data = dailyData.Select(d => new Library.Controls.DailyReadingData
+        {
+            Date = d.Date,
+            PagesRead = d.PagesRead
+        }).ToList();
+        
+        // Устанавливаем цвета темы
+        _chartDrawable.PrimaryColor = GetThemeColor("PrimaryColor", Colors.Purple);
+        _chartDrawable.TextColor = GetThemeColor("PrimaryTextColor", Colors.Black);
+        _chartDrawable.GridColor = GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
+        
+        // Вычисляем ширину графика в зависимости от количества дней
+        int daysCount = dailyData.Count;
+        if (daysCount > 0)
+        {
+            // 30 пикселей на день, минимум 400
+            ReadingChartView.WidthRequest = Math.Max(daysCount * 30, 400);
+        }
+        else
+        {
+            ReadingChartView.WidthRequest = 400;
+        }
+        
+        // Обновляем описание графика
+        if (daysCount > 0)
+        {
+            var totalPages = dailyData.Sum(d => d.PagesRead);
+            ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {daysCount} {GetDaysText(daysCount)}";
+        }
+        else
+        {
+            ChartDescriptionLabel.Text = "Нет данных о чтении за выбранный период";
+        }
+        
+        // Перерисовываем график
+        ReadingChartView.Invalidate();
+    }
+    
+    private Color GetThemeColor(string resourceKey, Color defaultColor)
+    {
+        if (Application.Current?.Resources.TryGetValue(resourceKey, out var color) == true && color is Color themeColor)
+        {
+            return themeColor;
+        }
+        return defaultColor;
+    }
+    
+    private string GetDaysText(int count)
+    {
+        var lastDigit = count % 10;
+        var lastTwoDigits = count % 100;
+        
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14)
+            return "дней";
+        
+        return lastDigit switch
+        {
+            1 => "день",
+            2 or 3 or 4 => "дня",
+            _ => "дней"
+        };
     }
 }
