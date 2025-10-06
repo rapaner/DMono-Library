@@ -14,12 +14,20 @@ public partial class SettingsPage : ContentPage
         _settingsService = settingsService;
         
         LoadThemePreference();
+        LoadAppVersion();
     }
     
     protected override void OnAppearing()
     {
         base.OnAppearing();
         LoadThemePreference();
+    }
+    
+    private void LoadAppVersion()
+    {
+        // Получаем и устанавливаем версию приложения
+        var version = _settingsService.GetAppVersion();
+        VersionLabel.Text = $"Версия {version}";
     }
     
     private void LoadThemePreference()
