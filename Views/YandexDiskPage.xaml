@@ -2,13 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Library.Views.YandexDiskPage"
-             Title="Яндекс Диск">
+             Title="Яндекс Диск"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
     
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             
             <!-- Статус авторизации -->
-            <Frame BackgroundColor="{StaticResource Primary}" Padding="15" CornerRadius="10">
+            <Frame BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" CornerRadius="10" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Статус подключения" 
                            FontSize="18" 
@@ -27,7 +28,7 @@
             </Frame>
 
             <!-- Авторизация -->
-            <Frame Padding="15" CornerRadius="10">
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Авторизация" 
                            FontSize="18" 
@@ -41,7 +42,8 @@
                     <!-- Автоматическая авторизация через браузер -->
                     <Button Text="🔐 Войти через Яндекс" 
                             Clicked="OnGetTokenClicked"
-                            BackgroundColor="{StaticResource Primary}"
+                            BackgroundColor="{DynamicResource PrimaryColor}"
+                            TextColor="White"
                             FontSize="16"
                             FontAttributes="Bold"
                             HeightRequest="50"/>
@@ -61,17 +63,20 @@
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="Сохранить токен" 
                                 Clicked="OnSaveTokenClicked"
+                                BackgroundColor="{DynamicResource PrimaryColor}"
+                                TextColor="White"
                                 HorizontalOptions="FillAndExpand"/>
                         <Button Text="Отключить" 
                                 Clicked="OnDisconnectClicked"
-                                BackgroundColor="{StaticResource Gray400}"
+                                BackgroundColor="{DynamicResource Gray400}"
+                                TextColor="White"
                                 HorizontalOptions="FillAndExpand"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Frame>
 
             <!-- Резервное копирование -->
-            <Frame Padding="15" CornerRadius="10">
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Резервное копирование" 
                            FontSize="18" 
@@ -85,11 +90,13 @@
                     
                     <Button Text="Создать резервную копию" 
                             Clicked="OnBackupClicked"
-                            BackgroundColor="{StaticResource Primary}"/>
+                            BackgroundColor="{DynamicResource PrimaryColor}"
+                            TextColor="White"/>
                     
                     <Button Text="Восстановить из резервной копии" 
                             Clicked="OnRestoreClicked"
-                            BackgroundColor="{StaticResource Secondary}"/>
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            TextColor="White"/>
                     
                     <!-- Автоматическое резервное копирование -->
                     <HorizontalStackLayout Spacing="10">
@@ -120,7 +127,7 @@
             </Frame>
 
             <!-- Список резервных копий -->
-            <Frame Padding="15" CornerRadius="10">
+            <Frame BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" CornerRadius="10" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Резервные копии" 
@@ -131,20 +138,22 @@
                                TextColor="{DynamicResource PrimaryTextColor}"/>
                         <Button Text="Обновить" 
                                 Clicked="OnRefreshBackupsClicked"
+                                BackgroundColor="{DynamicResource PrimaryColor}"
+                                TextColor="White"
                                 Padding="10,5"/>
                     </HorizontalStackLayout>
                     
                     <ActivityIndicator x:Name="LoadingIndicator" 
                                      IsRunning="False" 
                                      IsVisible="False"
-                                     Color="{StaticResource Primary}"/>
+                                     Color="{DynamicResource PrimaryColor}"/>
                     
                     <CollectionView x:Name="BackupsCollectionView" 
                                   SelectionMode="Single"
                                   SelectionChanged="OnBackupSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BackgroundColor="{StaticResource Gray100}">
+                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BackgroundColor="{DynamicResource Gray100}" HasShadow="False">
                                     <VerticalStackLayout Spacing="5">
                                         <Label Text="{Binding Name}" 
                                                FontSize="14" 
@@ -172,7 +181,7 @@
             </Frame>
 
             <!-- Инструкция -->
-            <Frame Padding="15" CornerRadius="10" BackgroundColor="{StaticResource Gray100}">
+            <Frame Padding="15" CornerRadius="10" BackgroundColor="{DynamicResource Gray100}" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="💡 Как подключить Яндекс Диск?" 
                            FontSize="16" 
