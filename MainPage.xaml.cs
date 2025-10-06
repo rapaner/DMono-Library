@@ -62,6 +62,7 @@ public partial class MainPage : ContentPage
             CurrentBookAuthor.Text = $"Автор: {currentBook.AuthorsText}";
             CurrentBookProgress.Progress = currentBook.ProgressPercentage / 100;
             CurrentBookProgressText.Text = currentBook.ProgressText;
+            CurrentBookPercentage.Text = $"{currentBook.ProgressPercentage:F2}%";
             ViewCurrentBookButton.IsVisible = true;
         }
         else
@@ -70,6 +71,7 @@ public partial class MainPage : ContentPage
             CurrentBookAuthor.Text = "";
             CurrentBookProgress.Progress = 0;
             CurrentBookProgressText.Text = "";
+            CurrentBookPercentage.Text = "";
             ViewCurrentBookButton.IsVisible = false;
         }
     }
