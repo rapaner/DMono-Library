@@ -121,7 +121,7 @@
             <StackLayout Orientation="Horizontal" Spacing="10">
                 <Button Text="✏️ Редактировать" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnEditBookClicked" />
