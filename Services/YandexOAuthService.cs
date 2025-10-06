@@ -9,7 +9,7 @@ namespace Library.Services
     {
         // Client ID для приложения (нужно зарегистрировать на https://oauth.yandex.ru/)
         // Для тестирования можно использовать этот публичный Client ID
-        private const string ClientId = "a25f1436a80a4d148cfc17bf422b0dc7";
+        private const string ClientId = "92dbf014613440249d8c6fe833f1e368";
         
         // Callback URL для получения токена
         private const string CallbackScheme = "ru.rapaner.library";
