@@ -78,7 +78,7 @@
             <StackLayout Orientation="Horizontal" Spacing="10">
                 <Button Text="✅ Обновить" 
                         BackgroundColor="{DynamicResource PrimaryColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnSaveClicked" />

@@ -48,18 +48,18 @@ public partial class LibraryPage : ContentPage
         var button = sender as Button;
         
         // Сбросить стили всех кнопок
-        AllBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
-        AllBooksButton.TextColor = Color.FromArgb("#333333");
-        CurrentBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
-        CurrentBooksButton.TextColor = Color.FromArgb("#333333");
-        FinishedBooksButton.BackgroundColor = Color.FromArgb("#F0F0F0");
-        FinishedBooksButton.TextColor = Color.FromArgb("#333333");
+        AllBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
+        AllBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
+        CurrentBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
+        CurrentBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
+        FinishedBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
+        FinishedBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
 
         // Установить стиль активной кнопки
         if (button != null)
         {
-            button.BackgroundColor = Color.FromArgb("#512BD4");
-            button.TextColor = Colors.White;
+            button.BackgroundColor = GetThemeColor("PrimaryColor", Color.FromArgb("#512BD4"));
+            button.TextColor = GetThemeColor("SecondaryTextColor", Colors.White);
         }
 
         // Обновить фильтр
@@ -90,6 +90,15 @@ public partial class LibraryPage : ContentPage
     private async void OnAddBookClicked(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new AddEditBookPage(_libraryService));
+    }
+
+    private Color GetThemeColor(string resourceKey, Color defaultColor)
+    {
+        if (Application.Current?.Resources.TryGetValue(resourceKey, out var color) == true && color is Color themeColor)
+        {
+            return themeColor;
+        }
+        return defaultColor;
     }
 }
 

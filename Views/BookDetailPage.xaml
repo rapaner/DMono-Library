@@ -61,7 +61,7 @@
                     <!-- Кнопка обновления прогресса -->
                     <Button Text="📝 Обновить прогресс" 
                             BackgroundColor="{DynamicResource PrimaryColor}" 
-                            TextColor="White" 
+                            TextColor="{DynamicResource SecondaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,15,0,0" 
                             Clicked="OnUpdateProgressClicked" />
@@ -142,7 +142,7 @@
                         Clicked="OnEditBookClicked" />
                 <Button Text="🗑️ Удалить" 
                         BackgroundColor="{DynamicResource ErrorColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnDeleteBookClicked" />
