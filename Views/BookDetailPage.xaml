@@ -42,7 +42,8 @@
                     
                     <ProgressBar x:Name="ProgressBar" 
                                  Progress="0" 
-                                 Margin="0,15,0,10" />
+                                 Margin="0,15,0,10"
+                                 ProgressColor="{DynamicResource TertiaryColor}" />
                     
                     <Label x:Name="ProgressText" 
                            FontSize="16" 
@@ -140,7 +141,7 @@
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnEditBookClicked" />
                 <Button Text="🗑️ Удалить" 
-                        BackgroundColor="Red" 
+                        BackgroundColor="{DynamicResource ErrorColor}" 
                         TextColor="White" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
