@@ -42,7 +42,8 @@
                     
                     <ProgressBar x:Name="CurrentBookProgress" 
                                  Progress="0" 
-                                 Margin="0,10,0,0" />
+                                 Margin="0,10,0,0"
+                                 ProgressColor="{DynamicResource TertiaryColor}"  />
                     
                     <Label x:Name="CurrentBookProgressText" 
                            Text="" 

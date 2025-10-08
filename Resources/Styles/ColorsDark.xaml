@@ -2,39 +2,38 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     x:Class="Library.Resources.Styles.ColorsDark">
-    
-    <!-- Основные цвета -->
-    <Color x:Key="PrimaryColor">#8B6FE8</Color>
-    <Color x:Key="SecondaryColor">#4A3A6E</Color>
-    <Color x:Key="TertiaryColor">#6B50D4</Color>
-    
-    <!-- Фоновые цвета -->
-    <Color x:Key="PageBackgroundColor">#121212</Color>
-    <Color x:Key="CardBackgroundColor">#1E1E1E</Color>
-    
-    <!-- Текстовые цвета -->
-    <Color x:Key="PrimaryTextColor">#FFFFFF</Color>
-    <Color x:Key="SecondaryTextColor">#B0B0B0</Color>
-    
-    <!-- Статусные цвета -->
-    <Color x:Key="SuccessColor">#4CAF50</Color>
-    <Color x:Key="WarningColor">#FFC107</Color>
-    <Color x:Key="ErrorColor">#F44336</Color>
-    
-    <!-- Дополнительные цвета для совместимости -->
-    <Color x:Key="Primary">#8B6FE8</Color>
-    <Color x:Key="Secondary">#4A3A6E</Color>
-    <Color x:Key="Tertiary">#6B50D4</Color>
-    <Color x:Key="AccentColor">#424242</Color>
-    
-    <!-- Оттенки серого для темной темы -->
-    <Color x:Key="Gray100">#2C2C2C</Color>
-    <Color x:Key="Gray200">#383838</Color>
-    <Color x:Key="Gray300">#424242</Color>
-    <Color x:Key="Gray400">#5E5E5E</Color>
-    <Color x:Key="Gray500">#757575</Color>
-    <Color x:Key="Gray600">#BDBDBD</Color>
-    <Color x:Key="Gray900">#E0E0E0</Color>
-    
-</ResourceDictionary>
 
+    <!-- Основные цвета -->
+    <Color x:Key="PrimaryColor">#EDE3CB</Color>
+    <Color x:Key="SecondaryColor">#B9B19D</Color>
+    <Color x:Key="TertiaryColor">#3C7A58</Color>
+
+    <!-- Фоновые цвета -->
+    <Color x:Key="PageBackgroundColor">#0E1913</Color>
+    <Color x:Key="CardBackgroundColor">#1C2B21</Color>
+
+    <!-- Текстовые цвета -->
+    <Color x:Key="PrimaryTextColor">#EDE3CB</Color>
+    <Color x:Key="SecondaryTextColor">#B9B19D</Color>
+
+    <!-- Статусные цвета -->
+    <Color x:Key="SuccessColor">#3C7A58</Color>
+    <Color x:Key="WarningColor">#D7A94B</Color>
+    <Color x:Key="ErrorColor">#C65A4A</Color>
+
+    <!-- Дополнительные цвета для совместимости -->
+    <Color x:Key="Primary">#EDE3CB</Color>
+    <Color x:Key="Secondary">#B9B19D</Color>
+    <Color x:Key="Tertiary">#3C7A58</Color>
+    <Color x:Key="AccentColor">#284432</Color>
+
+    <!-- Оттенки серого (зеленовато-серые для винтажного ощущения) -->
+    <Color x:Key="Gray100">#1C2B21</Color>
+    <Color x:Key="Gray200">#2A3D30</Color>
+    <Color x:Key="Gray300">#3E5444</Color>
+    <Color x:Key="Gray400">#5B6C5E</Color>
+    <Color x:Key="Gray500">#7E8C7E</Color>
+    <Color x:Key="Gray600">#A9B0A3</Color>
+    <Color x:Key="Gray900">#EDE3CB</Color>
+
+</ResourceDictionary>

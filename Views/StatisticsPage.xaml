@@ -121,7 +121,7 @@
                         </Border>
 
                         <Border Grid.Row="1" Grid.Column="0" 
-                               BackgroundColor="Green" 
+                               BackgroundColor="{DynamicResource TertiaryColor}" 
                                Padding="15"
                                StrokeThickness="0">
                             <Border.StrokeShape>
@@ -142,7 +142,7 @@
                         </Border>
 
                         <Border Grid.Row="1" Grid.Column="1" 
-                               BackgroundColor="Orange" 
+                               BackgroundColor="{DynamicResource AccentColor}" 
                                Padding="15"
                                StrokeThickness="0">
                             <Border.StrokeShape>
@@ -163,7 +163,7 @@
                         </Border>
 
                         <Border Grid.Row="2" Grid.ColumnSpan="2" 
-                               BackgroundColor="Purple" 
+                               BackgroundColor="{DynamicResource SuccessColor}" 
                                Padding="15"
                                StrokeThickness="0">
                             <Border.StrokeShape>

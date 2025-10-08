@@ -62,7 +62,8 @@
                             <!-- Прогресс для текущих книг -->
                             <StackLayout IsVisible="{Binding IsCurrentlyReading}">
                                 <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
-                                             Margin="0,5,0,0" />
+                                             Margin="0,5,0,0"
+                                             ProgressColor="{DynamicResource TertiaryColor}" />
                                 <Label Text="{Binding ProgressText}" 
                                        FontSize="12" 
                                        TextColor="{DynamicResource SecondaryTextColor}" />
