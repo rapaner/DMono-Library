@@ -16,6 +16,7 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<DefaultLanguage>ru</DefaultLanguage>
+		<UserSecretsId>422cc14c-905c-44a6-8595-8587dfb6c594</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -37,6 +38,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
@@ -51,5 +53,14 @@
 		</PackageReference>
 		<PackageReference Include="YandexDisk.Client" Version="1.3.27" />
 	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningKeyStore>myapp.keystore</AndroidSigningKeyStore>
+	  <AndroidSigningKeyAlias>myappalias</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass>$(AndroidKeyPass)</AndroidSigningKeyPass>
+	  <AndroidSigningStorePass>$(AndroidStorePass)</AndroidSigningStorePass>
+	</PropertyGroup>
+
 
 </Project>
