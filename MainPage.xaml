@@ -62,7 +62,7 @@
                     <Button x:Name="ViewCurrentBookButton" 
                             Text="Просмотр" 
                             BackgroundColor="{DynamicResource PrimaryColor}" 
-                            TextColor="White" 
+                            TextColor="{DynamicResource SecondaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,15,0,0" 
                             Clicked="OnViewCurrentBookClicked" />

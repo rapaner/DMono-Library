@@ -52,13 +52,13 @@
                             <Button Text="+" 
                                     Grid.Column="1"
                                     BackgroundColor="{DynamicResource PrimaryColor}" 
-                                    TextColor="White" 
+                                    TextColor="{DynamicResource SecondaryTextColor}" 
                                     WidthRequest="50"
                                     Clicked="OnAddAuthorClicked" />
                             <Button Text="Новый" 
                                     Grid.Column="2"
                                     BackgroundColor="{DynamicResource SecondaryColor}" 
-                                    TextColor="{DynamicResource PrimaryTextColor}" 
+                                    TextColor="{DynamicResource SecondaryTextColor}" 
                                     WidthRequest="80"
                                     Clicked="OnNewAuthorClicked" />
                         </Grid>
@@ -76,7 +76,7 @@
                                         <Button Text="✕" 
                                                 Grid.Column="1"
                                                 BackgroundColor="{DynamicResource ErrorColor}" 
-                                                TextColor="White" 
+                                                TextColor="{DynamicResource PrimaryTextColor}" 
                                                 WidthRequest="40"
                                                 HeightRequest="40"
                                                 CornerRadius="20"
@@ -150,7 +150,7 @@
             <StackLayout Orientation="Horizontal" Spacing="10">
                 <Button Text="💾 Сохранить" 
                         BackgroundColor="{DynamicResource PrimaryColor}" 
-                        TextColor="White" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="FillAndExpand" 
                         Clicked="OnSaveClicked" />

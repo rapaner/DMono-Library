@@ -14,7 +14,7 @@
 
     <!-- Текстовые цвета -->
     <Color x:Key="PrimaryTextColor">#EDE3CB</Color>
-    <Color x:Key="SecondaryTextColor">#B9B19D</Color>
+    <Color x:Key="SecondaryTextColor">#5B6C5E</Color>
 
     <!-- Статусные цвета -->
     <Color x:Key="SuccessColor">#3C7A58</Color>
