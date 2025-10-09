@@ -108,10 +108,6 @@ namespace Library.Views
 
                     await DisplayAlert("Успех", "Авторизация прошла успешно! Вы подключены к Яндекс Диску.", "OK");
                 }
-                else
-                {
-                    await DisplayAlert("Отменено", "Авторизация была отменена или произошла ошибка.", "OK");
-                }
             }
             catch (Exception ex)
             {
