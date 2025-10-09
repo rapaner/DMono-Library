@@ -389,9 +389,9 @@ namespace Library.Services
             return new LibraryStatistics
             {
                 TotalBooks = filteredBooks.Count,
-                ReadBooks = filteredBooks.Count(b => b.DateFinished.HasValue),
-                CurrentBooks = filteredBooks.Count(b => b.IsCurrentlyReading),
-                PlannedBooks = filteredBooks.Count(b => !b.IsCurrentlyReading && !b.DateFinished.HasValue),
+                ReadBooks = filteredBooks.Count(b => b.Status == BookStatus.Finished),
+                CurrentBooks = filteredBooks.Count(b => b.Status == BookStatus.Reading),
+                PlannedBooks = filteredBooks.Count(b => b.Status == BookStatus.Planned),
                 TotalPagesRead = totalPagesRead,
                 PopularAuthors = authorStats
             };
@@ -421,6 +421,44 @@ namespace Library.Services
 
             // Группируем по дням и суммируем страницы
             var dailyData = allReadingHistory
+                .GroupBy(p => p.Date.Date)
+                .Select(g => new DailyReadingData
+                {
+                    Date = g.Key,
+                    PagesRead = g.Sum(p => p.PagesRead)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            return dailyData;
+        }
+
+        /// <summary>
+        /// Получить данные о чтении по дням для конкретной книги
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <param name="startDate">Начальная дата периода (null для всего времени)</param>
+        /// <param name="endDate">Конечная дата периода (null для всего времени)</param>
+        /// <returns>Список данных о прочитанных страницах по дням для указанной книги</returns>
+        public async Task<List<DailyReadingData>> GetDailyReadingDataForBookAsync(int bookId, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            // Получаем записи о чтении для конкретной книги
+            var bookReadingHistory = await _context.PagesReadHistory
+                .Where(p => p.BookId == bookId)
+                .OrderBy(p => p.Date)
+                .ToListAsync();
+
+            // Фильтруем по датам если указаны
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                bookReadingHistory = bookReadingHistory
+                    .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
+                               (!endDate.HasValue || p.Date <= endDate.Value.Date))
+                    .ToList();
+            }
+
+            // Группируем по дням и суммируем страницы
+            var dailyData = bookReadingHistory
                 .GroupBy(p => p.Date.Date)
                 .Select(g => new DailyReadingData
                 {

@@ -66,8 +66,13 @@ public partial class AddEditBookPage : ContentPage
             }
         }
         
-        StatusPicker.SelectedIndex = _book.IsCurrentlyReading ? 1 : 
-                                    _book.DateFinished.HasValue ? 2 : 0;
+        StatusPicker.SelectedIndex = _book.Status switch
+        {
+            BookStatus.Reading => 1,
+            BookStatus.Finished => 2,
+            BookStatus.Planned => 0,
+            _ => 0
+        };
     }
 
     private async void OnAddAuthorClicked(object sender, EventArgs e)

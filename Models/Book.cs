@@ -7,7 +7,7 @@ namespace Library.Models
     /// Модель книги для хранения в базе данных
     /// </summary>
     [Table("Books")]
-    public record Book
+    public partial record Book
     {
         /// <summary>
         /// Уникальный идентификатор книги в базе данных
@@ -52,13 +52,6 @@ namespace Library.Models
         public ICollection<PagesReadInDate> PagesReadHistory { get; set; } = new List<PagesReadInDate>();
 
         /// <summary>
-        /// Текущая страница, на которой остановился читатель (вычисляемое свойство)
-        /// Рассчитывается как сумма всех прочитанных страниц из истории
-        /// </summary>
-        [NotMapped]
-        public int CurrentPage => PagesReadHistory?.Sum(p => p.PagesRead) ?? 0;
-
-        /// <summary>
         /// Флаг, указывающий читается ли книга в данный момент
         /// </summary>
         public bool IsCurrentlyReading { get; set; }
@@ -73,32 +66,5 @@ namespace Library.Models
         /// Дата завершения чтения книги (null если книга не прочитана)
         /// </summary>
         public DateTime? DateFinished { get; set; }
-
-        /// <summary>
-        /// Процент прочитанных страниц (вычисляемое свойство)
-        /// </summary>
-        [NotMapped]
-        public double ProgressPercentage => TotalPages > 0 ? (double)CurrentPage / TotalPages * 100 : 0;
-
-        /// <summary>
-        /// Текстовое представление прогресса чтения (вычисляемое свойство)
-        /// </summary>
-        [NotMapped]
-        public string ProgressText => $"{CurrentPage} / {TotalPages} страниц";
-
-        /// <summary>
-        /// Текстовое представление статуса книги (вычисляемое свойство)
-        /// </summary>
-        [NotMapped]
-        public string StatusText => IsCurrentlyReading ? "Читаю сейчас" :
-                                   DateFinished.HasValue ? "Прочитано" : "В планах";
-
-        /// <summary>
-        /// Текстовое представление авторов книги (вычисляемое свойство)
-        /// </summary>
-        [NotMapped]
-        public string AuthorsText => Authors != null && Authors.Any() 
-            ? string.Join(", ", Authors.Select(a => a.Name)) 
-            : "Автор не указан";
     }
 }
