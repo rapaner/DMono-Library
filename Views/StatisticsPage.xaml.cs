@@ -147,11 +147,14 @@ public partial class StatisticsPage : ContentPage
         if (daysCount > 0)
         {
             var totalPages = dailyData.Sum(d => d.PagesRead);
+            var averagePages = (double)totalPages / daysCount;
             ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {daysCount} {GetDaysText(daysCount)}";
+            AverageDailyLabel.Text = $"Среднее количество в день - {averagePages:F2}";
         }
         else
         {
             ChartDescriptionLabel.Text = "Нет данных о чтении за выбранный период";
+            AverageDailyLabel.Text = "Среднее количество в день - 0.00";
         }
         
         // Перерисовываем график

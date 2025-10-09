@@ -30,11 +30,14 @@ public partial class LibraryPage : ContentPage
     {
         _books.Clear();
         
+        var allBooks = await _libraryService.GetAllBooksAsync();
+        
         List<Book> books = _currentFilter switch
         {
-            "Current" => await _libraryService.GetBooksByStatusAsync(true),
-            "Finished" => (await _libraryService.GetBooksByStatusAsync(false)).Where(b => b.DateFinished.HasValue).ToList(),
-            _ => await _libraryService.GetAllBooksAsync()
+            "Current" => allBooks.Where(b => b.Status == BookStatus.Reading).ToList(),
+            "Planned" => allBooks.Where(b => b.Status == BookStatus.Planned).ToList(),
+            "Finished" => allBooks.Where(b => b.Status == BookStatus.Finished).ToList(),
+            _ => allBooks
         };
 
         foreach (var book in books)
@@ -52,6 +55,8 @@ public partial class LibraryPage : ContentPage
         AllBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
         CurrentBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
         CurrentBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
+        PlannedBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
+        PlannedBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
         FinishedBooksButton.BackgroundColor = GetThemeColor("CardBackgroundColor", Color.FromArgb("#F0F0F0"));
         FinishedBooksButton.TextColor = GetThemeColor("SecondaryTextColor", Color.FromArgb("#333333"));
 
@@ -66,6 +71,7 @@ public partial class LibraryPage : ContentPage
         _currentFilter = button?.Text switch
         {
             "Читаю сейчас" => "Current",
+            "В планах" => "Planned",
             "Прочитано" => "Finished",
             _ => "All"
         };
@@ -127,7 +133,12 @@ public class BookViewModel
         ProgressPercentage = book.ProgressPercentage;
         ProgressText = book.ProgressText;
         
-        StatusIcon = book.IsCurrentlyReading ? "📖" : 
-                    book.DateFinished.HasValue ? "✅" : "📚";
+        StatusIcon = book.Status switch
+        {
+            BookStatus.Reading => "📖",
+            BookStatus.Finished => "✅",
+            BookStatus.Planned => "📚",
+            _ => "📚"
+        };
     }
 }

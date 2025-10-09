@@ -9,29 +9,38 @@
     <Grid RowDefinitions="Auto,*,Auto">
         
         <!-- Фильтры -->
-        <StackLayout Grid.Row="0" Orientation="Horizontal" Padding="15" Spacing="10">
-            <Button x:Name="AllBooksButton" 
-                    Text="Все" 
-                    BackgroundColor="{DynamicResource PrimaryColor}" 
-                    TextColor="{DynamicResource SecondaryTextColor}" 
-                    CornerRadius="20" 
-                    Padding="15,8" 
-                    Clicked="OnFilterChanged" />
-            <Button x:Name="CurrentBooksButton" 
-                    Text="Читаю сейчас" 
-                    BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                    TextColor="{DynamicResource SecondaryTextColor}" 
-                    CornerRadius="20" 
-                    Padding="15,8" 
-                    Clicked="OnFilterChanged" />
-            <Button x:Name="FinishedBooksButton" 
-                    Text="Прочитано" 
-                    BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                    TextColor="{DynamicResource SecondaryTextColor}" 
-                    CornerRadius="20" 
-                    Padding="15,8" 
-                    Clicked="OnFilterChanged" />
-        </StackLayout>
+        <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+            <StackLayout Orientation="Horizontal" Padding="15" Spacing="10">
+                <Button x:Name="AllBooksButton" 
+                        Text="Все" 
+                        BackgroundColor="{DynamicResource PrimaryColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Clicked="OnFilterChanged" />
+                <Button x:Name="CurrentBooksButton" 
+                        Text="Читаю сейчас" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Clicked="OnFilterChanged" />
+                <Button x:Name="PlannedBooksButton" 
+                        Text="В планах" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Clicked="OnFilterChanged" />
+                <Button x:Name="FinishedBooksButton" 
+                        Text="Прочитано" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Clicked="OnFilterChanged" />
+            </StackLayout>
+        </ScrollView>
 
         <!-- Список книг -->
         <CollectionView x:Name="BooksCollectionView" 
