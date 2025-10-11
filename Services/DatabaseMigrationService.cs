@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Library.Data;
+using Library.Models;
 using System.Data;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Data.Sqlite;
 
 namespace Library.Services
@@ -13,6 +16,7 @@ namespace Library.Services
         private readonly LibraryDbContext _context;
         private readonly string _dbPath;
         private readonly string _backupPath;
+        private readonly string _jsonBackupPath;
 
         /// <summary>
         /// Конструктор сервиса миграции
@@ -24,7 +28,51 @@ namespace Library.Services
             _context = context;
             _dbPath = dbPath;
             _backupPath = $"{dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}";
+            _jsonBackupPath = $"{dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}.json";
         }
+    
+    /// <summary>
+    /// Модель для сериализации данных БД в JSON
+    /// </summary>
+    private class DatabaseBackup
+    {
+        public List<AuthorDto> Authors { get; set; } = new();
+        public List<BookDto> Books { get; set; } = new();
+        public List<BookAuthorDto> BookAuthors { get; set; } = new();
+        public List<PagesReadDto> PagesReadHistory { get; set; } = new();
+    }
+
+    private class AuthorDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private class BookDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string? SeriesTitle { get; set; }
+        public int? SeriesNumber { get; set; }
+        public int TotalPages { get; set; }
+        public bool IsCurrentlyReading { get; set; }
+        public DateTime DateAdded { get; set; }
+        public DateTime? DateFinished { get; set; }
+    }
+
+    private class BookAuthorDto
+    {
+        public int BookId { get; set; }
+        public int AuthorId { get; set; }
+    }
+
+    private class PagesReadDto
+    {
+        public int Id { get; set; }
+        public int BookId { get; set; }
+        public DateTime Date { get; set; }
+        public int PagesRead { get; set; }
+    }
 
         /// <summary>
         /// Проверить существование таблицы истории миграций
@@ -67,18 +115,143 @@ namespace Library.Services
         }
 
         /// <summary>
-        /// Создать резервную копию базы данных
+        /// Экспортировать данные из БД в JSON
+        /// </summary>
+        public async Task ExportDataToJsonAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("=== Exporting data to JSON ===");
+
+                var backup = new DatabaseBackup();
+
+                // Создаём новый контекст для чтения старой БД
+                var optionsBuilder = new DbContextOptionsBuilder<LibraryDbContext>();
+                optionsBuilder.UseSqlite($"Data Source={_dbPath}");
+                
+                using var oldContext = new LibraryDbContext(optionsBuilder.Options);
+
+                // Проверяем, что БД существует и содержит таблицы
+                if (!await oldContext.Database.CanConnectAsync())
+                {
+                    System.Diagnostics.Debug.WriteLine("=== Cannot connect to database, skipping export ===");
+                    return;
+                }
+
+                // Экспортируем авторов
+                try
+                {
+                    var authors = await oldContext.Authors.AsNoTracking().ToListAsync();
+                    backup.Authors = authors.Select(a => new AuthorDto
+                    {
+                        Id = a.Id,
+                        Name = a.Name
+                    }).ToList();
+                    System.Diagnostics.Debug.WriteLine($"=== Exported {backup.Authors.Count} authors ===");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Error exporting authors: {ex.Message} ===");
+                }
+
+                // Экспортируем книги
+                try
+                {
+                    var books = await oldContext.Books.AsNoTracking().ToListAsync();
+                    backup.Books = books.Select(b => new BookDto
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        SeriesTitle = b.SeriesTitle,
+                        SeriesNumber = b.SeriesNumber,
+                        TotalPages = b.TotalPages,
+                        IsCurrentlyReading = b.IsCurrentlyReading,
+                        DateAdded = b.DateAdded,
+                        DateFinished = b.DateFinished
+                    }).ToList();
+                    System.Diagnostics.Debug.WriteLine($"=== Exported {backup.Books.Count} books ===");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Error exporting books: {ex.Message} ===");
+                }
+
+                // Экспортируем связи книг и авторов через прямой SQL запрос
+                try
+                {
+                    var connection = oldContext.Database.GetDbConnection();
+                    await connection.OpenAsync();
+                    
+                    using var command = connection.CreateCommand();
+                    command.CommandText = "SELECT AuthorsId, BooksId FROM BookAuthors";
+                    
+                    using var reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        backup.BookAuthors.Add(new BookAuthorDto
+                        {
+                            AuthorId = reader.GetInt32(0),
+                            BookId = reader.GetInt32(1)
+                        });
+                    }
+                    System.Diagnostics.Debug.WriteLine($"=== Exported {backup.BookAuthors.Count} book-author relations ===");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Error exporting book-author relations: {ex.Message} ===");
+                }
+
+                // Экспортируем историю чтения
+                try
+                {
+                    var pagesRead = await oldContext.PagesReadHistory.AsNoTracking().ToListAsync();
+                    backup.PagesReadHistory = pagesRead.Select(p => new PagesReadDto
+                    {
+                        Id = p.Id,
+                        BookId = p.BookId,
+                        Date = p.Date,
+                        PagesRead = p.PagesRead
+                    }).ToList();
+                    System.Diagnostics.Debug.WriteLine($"=== Exported {backup.PagesReadHistory.Count} reading history records ===");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Error exporting reading history: {ex.Message} ===");
+                }
+
+                // Сохраняем в JSON файл
+                var options = new JsonSerializerOptions 
+                { 
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                var json = JsonSerializer.Serialize(backup, options);
+                await File.WriteAllTextAsync(_jsonBackupPath, json);
+
+                System.Diagnostics.Debug.WriteLine($"=== Data exported to: {_jsonBackupPath} ===");
+                System.Diagnostics.Debug.WriteLine($"=== JSON file size: {new FileInfo(_jsonBackupPath).Length} bytes ===");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== Error exporting data to JSON: {ex.Message} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
+                throw new InvalidOperationException($"Не удалось экспортировать данные в JSON: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Создать резервную копию базы данных (файл БД)
         /// </summary>
         public async Task CreateBackupAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"=== Creating backup: {_backupPath} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Creating database file backup: {_backupPath} ===");
                 
                 // Копируем файл базы данных
                 await Task.Run(() => File.Copy(_dbPath, _backupPath, overwrite: true));
                 
-                System.Diagnostics.Debug.WriteLine("=== Backup created successfully ===");
+                System.Diagnostics.Debug.WriteLine("=== Database file backup created successfully ===");
             }
             catch (Exception ex)
             {
@@ -109,130 +282,155 @@ namespace Library.Services
         }
 
         /// <summary>
-        /// Восстановить данные из резервной копии после применения миграций
+        /// Импортировать данные из JSON после применения миграций
         /// </summary>
-        public async Task RestoreDataFromBackupAsync()
+        public async Task ImportDataFromJsonAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("=== Restoring data from backup ===");
+                System.Diagnostics.Debug.WriteLine("=== Importing data from JSON ===");
 
-                if (!File.Exists(_backupPath))
+                if (!File.Exists(_jsonBackupPath))
                 {
-                    System.Diagnostics.Debug.WriteLine("=== Backup file not found, skipping restore ===");
+                    System.Diagnostics.Debug.WriteLine("=== JSON backup file not found, skipping import ===");
                     return;
                 }
 
-                var connectionString = $"Data Source={_dbPath}";
-                using var connection = new SqliteConnection(connectionString);
-                await connection.OpenAsync();
+                System.Diagnostics.Debug.WriteLine($"=== JSON backup file exists: {_jsonBackupPath} ===");
+                System.Diagnostics.Debug.WriteLine($"=== JSON file size: {new FileInfo(_jsonBackupPath).Length} bytes ===");
 
-                // Подключаем бэкап базы данных
-                using (var attachCommand = connection.CreateCommand())
+                // Читаем JSON файл
+                var json = await File.ReadAllTextAsync(_jsonBackupPath);
+                var backup = JsonSerializer.Deserialize<DatabaseBackup>(json);
+
+                if (backup == null)
                 {
-                    attachCommand.CommandText = $"ATTACH DATABASE '{_backupPath}' AS backup";
-                    await attachCommand.ExecuteNonQueryAsync();
-                    System.Diagnostics.Debug.WriteLine("=== Backup database attached ===");
+                    System.Diagnostics.Debug.WriteLine("=== Failed to deserialize JSON backup ===");
+                    return;
                 }
 
-                // Копируем данные из таблиц в правильном порядке (соблюдая внешние ключи)
-                
-                // 1. Копируем Authors
-                await CopyTableData(connection, "Authors");
+                // Отключаем проверку внешних ключей для ускорения импорта
+                await _context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = OFF");
 
-                // 2. Копируем Books
-                await CopyTableData(connection, "Books");
-
-                // 3. Копируем BookAuthors (связь многие-ко-многим)
-                await CopyTableData(connection, "BookAuthors");
-
-                // 4. Копируем PagesReadInDate
-                await CopyTableData(connection, "PagesReadInDate");
-
-                // Отключаем бэкап базы данных
-                using (var detachCommand = connection.CreateCommand())
+                // Импортируем авторов
+                if (backup.Authors.Any())
                 {
-                    detachCommand.CommandText = "DETACH DATABASE backup";
-                    await detachCommand.ExecuteNonQueryAsync();
-                    System.Diagnostics.Debug.WriteLine("=== Backup database detached ===");
+                    System.Diagnostics.Debug.WriteLine($"=== Importing {backup.Authors.Count} authors ===");
+                    foreach (var authorDto in backup.Authors)
+                    {
+                        var author = new Author
+                        {
+                            Id = authorDto.Id,
+                            Name = authorDto.Name
+                        };
+                        _context.Authors.Add(author);
+                    }
+                    await _context.SaveChangesAsync();
+                    System.Diagnostics.Debug.WriteLine("=== Authors imported ===");
                 }
 
-                System.Diagnostics.Debug.WriteLine("=== Data restored successfully ===");
+                // Импортируем книги
+                if (backup.Books.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Importing {backup.Books.Count} books ===");
+                    foreach (var bookDto in backup.Books)
+                    {
+                        var book = new Book
+                        {
+                            Id = bookDto.Id,
+                            Title = bookDto.Title,
+                            SeriesTitle = bookDto.SeriesTitle,
+                            SeriesNumber = bookDto.SeriesNumber,
+                            TotalPages = bookDto.TotalPages,
+                            IsCurrentlyReading = bookDto.IsCurrentlyReading,
+                            DateAdded = bookDto.DateAdded,
+                            DateFinished = bookDto.DateFinished
+                        };
+                        _context.Books.Add(book);
+                    }
+                    await _context.SaveChangesAsync();
+                    System.Diagnostics.Debug.WriteLine("=== Books imported ===");
+                }
+
+                // Импортируем связи книг и авторов
+                if (backup.BookAuthors.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Importing {backup.BookAuthors.Count} book-author relations ===");
+                    
+                    // Используем прямой SQL для вставки в таблицу связей
+                    foreach (var relation in backup.BookAuthors)
+                    {
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "INSERT INTO BookAuthors (AuthorsId, BooksId) VALUES ({0}, {1})",
+                            relation.AuthorId, relation.BookId);
+                    }
+                    System.Diagnostics.Debug.WriteLine("=== Book-author relations imported ===");
+                }
+
+                // Импортируем историю чтения
+                if (backup.PagesReadHistory.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Importing {backup.PagesReadHistory.Count} reading history records ===");
+                    foreach (var pagesDto in backup.PagesReadHistory)
+                    {
+                        var pagesRead = new PagesReadInDate
+                        {
+                            Id = pagesDto.Id,
+                            BookId = pagesDto.BookId,
+                            Date = pagesDto.Date,
+                            PagesRead = pagesDto.PagesRead
+                        };
+                        _context.PagesReadHistory.Add(pagesRead);
+                    }
+                    await _context.SaveChangesAsync();
+                    System.Diagnostics.Debug.WriteLine("=== Reading history imported ===");
+                }
+
+                // Включаем обратно проверку внешних ключей
+                await _context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON");
+
+                System.Diagnostics.Debug.WriteLine("=== Data imported successfully from JSON ===");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"=== Error restoring data: {ex.Message} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Error importing data from JSON: {ex.Message} ===");
                 System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
-                throw new InvalidOperationException($"Не удалось восстановить данные из резервной копии: {ex.Message}", ex);
+                
+                // Включаем обратно проверку внешних ключей в случае ошибки
+                try
+                {
+                    await _context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON");
+                }
+                catch { }
+                
+                throw new InvalidOperationException($"Не удалось импортировать данные из JSON: {ex.Message}", ex);
             }
         }
 
         /// <summary>
-        /// Копировать данные из таблицы бэкапа в основную базу
+        /// Удалить файлы резервных копий (БД и JSON)
         /// </summary>
-        private async Task CopyTableData(SqliteConnection connection, string tableName)
+        public void DeleteBackups()
         {
             try
             {
-                // Проверяем, есть ли таблица в бэкапе
-                using var checkCommand = connection.CreateCommand();
-                checkCommand.CommandText = $@"
-                    SELECT COUNT(*) 
-                    FROM backup.sqlite_master 
-                    WHERE type='table' 
-                    AND name='{tableName}'";
-                
-                var tableExists = Convert.ToInt32(await checkCommand.ExecuteScalarAsync()) > 0;
-                
-                if (!tableExists)
+                // Удаляем JSON бэкап
+                if (File.Exists(_jsonBackupPath))
                 {
-                    System.Diagnostics.Debug.WriteLine($"=== Table {tableName} not found in backup, skipping ===");
-                    return;
+                    File.Delete(_jsonBackupPath);
+                    System.Diagnostics.Debug.WriteLine($"=== JSON backup deleted: {_jsonBackupPath} ===");
                 }
 
-                // Проверяем, есть ли данные в таблице
-                using var countCommand = connection.CreateCommand();
-                countCommand.CommandText = $"SELECT COUNT(*) FROM backup.{tableName}";
-                var rowCount = Convert.ToInt32(await countCommand.ExecuteScalarAsync());
-
-                if (rowCount == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine($"=== Table {tableName} is empty in backup, skipping ===");
-                    return;
-                }
-
-                System.Diagnostics.Debug.WriteLine($"=== Copying {rowCount} rows from {tableName} ===");
-
-                // Копируем данные
-                using var copyCommand = connection.CreateCommand();
-                copyCommand.CommandText = $"INSERT INTO main.{tableName} SELECT * FROM backup.{tableName}";
-                var copiedRows = await copyCommand.ExecuteNonQueryAsync();
-
-                System.Diagnostics.Debug.WriteLine($"=== Copied {copiedRows} rows to {tableName} ===");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"=== Error copying table {tableName}: {ex.Message} ===");
-                throw new InvalidOperationException($"Не удалось скопировать данные таблицы {tableName}: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Удалить файл резервной копии
-        /// </summary>
-        public void DeleteBackup()
-        {
-            try
-            {
+                // Удаляем файловый бэкап БД
                 if (File.Exists(_backupPath))
                 {
                     File.Delete(_backupPath);
-                    System.Diagnostics.Debug.WriteLine($"=== Backup deleted: {_backupPath} ===");
+                    System.Diagnostics.Debug.WriteLine($"=== Database backup deleted: {_backupPath} ===");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"=== Error deleting backup: {ex.Message} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Error deleting backups: {ex.Message} ===");
                 // Не выбрасываем исключение, так как это не критично
             }
         }

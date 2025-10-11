@@ -492,7 +492,10 @@ namespace Library.Services
                 {
                     System.Diagnostics.Debug.WriteLine("=== Old database found, starting migration process ===");
                     
-                    // Создаём бэкап старой базы данных
+                    // Экспортируем данные из старой БД в JSON
+                    await migrationService.ExportDataToJsonAsync();
+                    
+                    // Создаём файловый бэкап старой базы данных (на случай проблем)
                     await migrationService.CreateBackupAsync();
                     
                     // Удаляем старую базу данных
@@ -502,8 +505,11 @@ namespace Library.Services
                     // Применяем миграции (создаём новую БД)
                     await migrationService.MigrateAsync();
                     
-                    // Восстанавливаем данные из бэкапа
-                    await migrationService.RestoreDataFromBackupAsync();
+                    // Импортируем данные из JSON
+                    await migrationService.ImportDataFromJsonAsync();
+                    
+                    // Удаляем JSON бэкап после успешного импорта
+                    migrationService.DeleteBackups();
                     
                     System.Diagnostics.Debug.WriteLine("=== Migration from old database completed ===");
                 }
