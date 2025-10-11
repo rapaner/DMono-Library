@@ -1,4 +1,5 @@
 using Library.Services;
+using Library.Models;
 using YandexDisk.Client.Protocol;
 
 namespace Library.Views
@@ -8,16 +9,16 @@ namespace Library.Views
         private readonly YandexDiskService _yandexDiskService;
         private readonly YandexOAuthService _oauthService;
         private readonly SettingsService _settingsService;
-        private readonly string _dbPath;
+        private readonly AppConfiguration _appConfig;
         private YandexDisk.Client.Protocol.Resource? _selectedBackup;
 
-        public YandexDiskPage(YandexDiskService yandexDiskService, YandexOAuthService oauthService, SettingsService settingsService)
+        public YandexDiskPage(YandexDiskService yandexDiskService, YandexOAuthService oauthService, SettingsService settingsService, AppConfiguration appConfig)
         {
             InitializeComponent();
             _yandexDiskService = yandexDiskService;
             _oauthService = oauthService;
             _settingsService = settingsService;
-            _dbPath = Path.Combine(FileSystem.AppDataDirectory, "library.db");
+            _appConfig = appConfig;
         }
 
         protected override async void OnAppearing()
@@ -187,7 +188,18 @@ namespace Library.Views
                 LoadingIndicator.IsRunning = true;
                 LoadingIndicator.IsVisible = true;
 
-                var success = await _yandexDiskService.BackupDatabaseAsync(_dbPath);
+                // Проверяем существование файла БД
+                if (!File.Exists(_appConfig.DatabasePath))
+                {
+                    await DisplayAlert("Ошибка", $"Файл базы данных не найден:\n{_appConfig.DatabasePath}", "OK");
+                    System.Diagnostics.Debug.WriteLine($"=== Database file not found: {_appConfig.DatabasePath} ===");
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"=== Starting backup of: {_appConfig.DatabasePath} ===");
+                System.Diagnostics.Debug.WriteLine($"=== File size: {new FileInfo(_appConfig.DatabasePath).Length} bytes ===");
+
+                var success = await _yandexDiskService.BackupDatabaseAsync(_appConfig.DatabasePath);
 
                 if (success)
                 {
@@ -244,7 +256,7 @@ namespace Library.Views
                 LoadingIndicator.IsRunning = true;
                 LoadingIndicator.IsVisible = true;
 
-                var success = await _yandexDiskService.RestoreDatabaseAsync(_selectedBackup.Path, _dbPath);
+                var success = await _yandexDiskService.RestoreDatabaseAsync(_selectedBackup.Path, _appConfig.DatabasePath);
 
                 if (success)
                 {

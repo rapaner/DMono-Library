@@ -1,6 +1,7 @@
 using Library.Services;
 using Library.Converters;
 using Library.Data;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library;
@@ -25,22 +26,32 @@ public static class MauiProgram
 
             System.Diagnostics.Debug.WriteLine("=== MAUI builder configured ===");
 
-            // Регистрация базы данных
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "library.db");
-            System.Diagnostics.Debug.WriteLine($"=== Database path: {dbPath} ===");
+            // Создание и регистрация конфигурации приложения
+            var appConfig = new AppConfiguration
+            {
+                AppDataDirectory = FileSystem.AppDataDirectory,
+                DatabaseFileName = "library.db",
+                DatabasePath = Path.Combine(FileSystem.AppDataDirectory, "library.db"),
+                AppVersion = AppInfo.VersionString,
+                AppName = AppInfo.Name
+            };
             
-            builder.Services.AddDbContext<LibraryDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+            builder.Services.AddSingleton(appConfig);
+            
+            System.Diagnostics.Debug.WriteLine($"=== App configuration created ===");
+            System.Diagnostics.Debug.WriteLine($"=== Database path: {appConfig.DatabasePath} ===");
+            System.Diagnostics.Debug.WriteLine($"=== App version: {appConfig.AppVersion} ===");
 
-            // Регистрация пути к базе данных как singleton
-            builder.Services.AddSingleton(dbPath);
+            // Регистрация базы данных
+            builder.Services.AddDbContext<LibraryDbContext>(options =>
+                options.UseSqlite($"Data Source={appConfig.DatabasePath}"));
 
             // Регистрация сервисов
             builder.Services.AddScoped<LibraryService>(sp =>
             {
                 var context = sp.GetRequiredService<LibraryDbContext>();
-                var path = sp.GetRequiredService<string>();
-                return new LibraryService(context, path);
+                var config = sp.GetRequiredService<AppConfiguration>();
+                return new LibraryService(context, config.DatabasePath);
             });
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();
