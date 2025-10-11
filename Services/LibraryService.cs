@@ -11,14 +11,17 @@ namespace Library.Services
     public class LibraryService
     {
         private readonly LibraryDbContext _context;
+        private readonly string _dbPath;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
-        public LibraryService(LibraryDbContext context)
+        /// <param name="dbPath">Путь к файлу базы данных</param>
+        public LibraryService(LibraryDbContext context, string dbPath)
         {
             _context = context;
+            _dbPath = dbPath;
         }
 
         /// <summary>
@@ -472,12 +475,53 @@ namespace Library.Services
         }
 
         /// <summary>
-        /// Проверить и применить миграции базы данных
+        /// Инициализировать базу данных с использованием миграций
         /// </summary>
         /// <returns>Задача асинхронной операции</returns>
-        public async Task EnsureDatabaseCreatedAsync()
+        public async Task InitializeDatabaseAsync()
         {
-            await _context.Database.EnsureCreatedAsync();
+            var migrationService = new DatabaseMigrationService(_context, _dbPath);
+
+            // Проверяем, существует ли таблица истории миграций
+            if (!await migrationService.IsMigrationHistoryTableExistsAsync())
+            {
+                System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
+                
+                // Проверяем, существует ли файл базы данных (старая БД без миграций)
+                if (File.Exists(_dbPath))
+                {
+                    System.Diagnostics.Debug.WriteLine("=== Old database found, starting migration process ===");
+                    
+                    // Создаём бэкап старой базы данных
+                    await migrationService.CreateBackupAsync();
+                    
+                    // Удаляем старую базу данных
+                    File.Delete(_dbPath);
+                    System.Diagnostics.Debug.WriteLine("=== Old database deleted ===");
+                    
+                    // Применяем миграции (создаём новую БД)
+                    await migrationService.MigrateAsync();
+                    
+                    // Восстанавливаем данные из бэкапа
+                    await migrationService.RestoreDataFromBackupAsync();
+                    
+                    System.Diagnostics.Debug.WriteLine("=== Migration from old database completed ===");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("=== New installation, creating database ===");
+                    
+                    // Новая установка - просто применяем миграции
+                    await migrationService.MigrateAsync();
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
+                
+                // База данных уже использует миграции - просто применяем новые миграции
+                await migrationService.MigrateAsync();
+            }
         }
     }
 

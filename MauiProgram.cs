@@ -32,8 +32,16 @@ public static class MauiProgram
             builder.Services.AddDbContext<LibraryDbContext>(options =>
                 options.UseSqlite($"Data Source={dbPath}"));
 
+            // Регистрация пути к базе данных как singleton
+            builder.Services.AddSingleton(dbPath);
+
             // Регистрация сервисов
-            builder.Services.AddScoped<LibraryService>();
+            builder.Services.AddScoped<LibraryService>(sp =>
+            {
+                var context = sp.GetRequiredService<LibraryDbContext>();
+                var path = sp.GetRequiredService<string>();
+                return new LibraryService(context, path);
+            });
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();
             builder.Services.AddSingleton<SettingsService>();
