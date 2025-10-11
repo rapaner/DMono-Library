@@ -43,16 +43,16 @@ public static class MauiProgram
             System.Diagnostics.Debug.WriteLine($"=== App version: {appConfig.AppVersion} ===");
 
             // Регистрация базы данных
+            var migrationsAssembly = typeof(MauiProgram).Assembly.GetName().Name;
+            System.Diagnostics.Debug.WriteLine($"=== Migrations assembly: {migrationsAssembly} ===");
+            
             builder.Services.AddDbContext<LibraryDbContext>(options =>
-                options.UseSqlite($"Data Source={appConfig.DatabasePath}"));
+                options.UseSqlite(
+                    $"Data Source={appConfig.DatabasePath}",
+                    sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly)));
 
             // Регистрация сервисов
-            builder.Services.AddScoped<LibraryService>(sp =>
-            {
-                var context = sp.GetRequiredService<LibraryDbContext>();
-                var config = sp.GetRequiredService<AppConfiguration>();
-                return new LibraryService(context, config.DatabasePath);
-            });
+            builder.Services.AddScoped<LibraryService>();
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();
             builder.Services.AddSingleton<SettingsService>();

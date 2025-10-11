@@ -27,8 +27,8 @@ namespace Library.Services
         {
             _context = context;
             _dbPath = dbPath;
-            _backupPath = $"{dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}";
-            _jsonBackupPath = $"{dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}.json";
+            _backupPath = $"{_dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}";
+            _jsonBackupPath = $"{_dbPath}.backup-{DateTime.Now:yyyyMMddHHmmss}.json";
         }
     
     /// <summary>
@@ -75,6 +75,67 @@ namespace Library.Services
     }
 
         /// <summary>
+        /// Проверить доступные миграции в сборке
+        /// </summary>
+        public void CheckAvailableMigrations()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("=== Checking available migrations in assembly ===");
+                
+                var assembly = typeof(DatabaseMigrationService).Assembly;
+                System.Diagnostics.Debug.WriteLine($"=== Assembly: {assembly.GetName().Name} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Assembly location: {System.AppContext.BaseDirectory} ===");
+                
+                // Показываем все типы в сборке, связанные с миграциями
+                var allTypes = assembly.GetTypes()
+                    .Where(t => t.Namespace != null && t.Namespace.Contains("Migration"))
+                    .ToList();
+                
+                System.Diagnostics.Debug.WriteLine($"=== Found {allTypes.Count} types in migration namespaces ===");
+                foreach (var type in allTypes)
+                {
+                    System.Diagnostics.Debug.WriteLine($"    Type: {type.FullName}, BaseType: {type.BaseType?.FullName}");
+                }
+                
+                // Ищем все классы, наследующие Migration
+                var migrationTypes = assembly.GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && t.BaseType != null)
+                    .Where(t => t.BaseType!.Name == "Migration" || 
+                               t.BaseType.FullName?.Contains("Microsoft.EntityFrameworkCore.Migrations.Migration") == true)
+                    .ToList();
+                
+                System.Diagnostics.Debug.WriteLine($"=== Found {migrationTypes.Count} migration classes ===");
+                
+                foreach (var migrationType in migrationTypes)
+                {
+                    System.Diagnostics.Debug.WriteLine($"    - {migrationType.FullName} (BaseType: {migrationType.BaseType?.FullName})");
+                }
+                
+                // Проверяем через EF Core API
+                System.Diagnostics.Debug.WriteLine("=== Checking via EF Core Migrations API ===");
+                try
+                {
+                    var migrations = _context.Database.GetMigrations();
+                    System.Diagnostics.Debug.WriteLine($"=== EF Core found {migrations.Count()} migrations ===");
+                    foreach (var migration in migrations)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"    - {migration}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Error getting migrations via EF Core: {ex.Message} ===");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== Error checking migrations: {ex.Message} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
+            }
+        }
+
+        /// <summary>
         /// Проверить существование таблицы истории миграций
         /// </summary>
         /// <returns>True, если таблица существует</returns>
@@ -82,6 +143,9 @@ namespace Library.Services
         {
             try
             {
+                // Проверяем доступные миграции в сборке
+                CheckAvailableMigrations();
+                
                 // Проверяем существование файла БД
                 if (!File.Exists(_dbPath))
                 {
@@ -268,10 +332,33 @@ namespace Library.Services
             try
             {
                 System.Diagnostics.Debug.WriteLine("=== Applying migrations ===");
+
+                // Получаем список ожидающих миграций
+                var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+                System.Diagnostics.Debug.WriteLine($"=== Pending migrations count: {pendingMigrations.Count()} ===");
                 
+                foreach (var migration in pendingMigrations)
+                {
+                    System.Diagnostics.Debug.WriteLine($"    - {migration}");
+                }
+
+                // Получаем список уже применённых миграций
+                var appliedMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                System.Diagnostics.Debug.WriteLine($"=== Applied migrations count: {appliedMigrations.Count()} ===");
+                
+                foreach (var migration in appliedMigrations)
+                {
+                    System.Diagnostics.Debug.WriteLine($"    - {migration}");
+                }
+
+                // Применяем миграции
                 await _context.Database.MigrateAsync();
                 
                 System.Diagnostics.Debug.WriteLine("=== Migrations applied successfully ===");
+                
+                // Проверяем финальное состояние
+                var finalMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                System.Diagnostics.Debug.WriteLine($"=== Final applied migrations count: {finalMigrations.Count()} ===");
             }
             catch (Exception ex)
             {

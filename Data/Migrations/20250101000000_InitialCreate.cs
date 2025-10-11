@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore.Migrations;
+using Library.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
@@ -7,6 +9,8 @@ namespace Library.Data.Migrations
     /// <summary>
     /// Начальная миграция для создания базы данных библиотеки
     /// </summary>
+    [DbContext(typeof(LibraryDbContext))]
+    [Migration("20250101000000_InitialCreate")]
     public partial class InitialCreate : Migration
     {
         /// <inheritdoc />

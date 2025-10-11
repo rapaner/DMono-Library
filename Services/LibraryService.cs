@@ -11,17 +11,17 @@ namespace Library.Services
     public class LibraryService
     {
         private readonly LibraryDbContext _context;
-        private readonly string _dbPath;
+        private readonly AppConfiguration _appConfig;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
-        /// <param name="dbPath">Путь к файлу базы данных</param>
-        public LibraryService(LibraryDbContext context, string dbPath)
+        /// <param name="appConfig">Конфигурация приложения</param>
+        public LibraryService(LibraryDbContext context, AppConfiguration appConfig)
         {
             _context = context;
-            _dbPath = dbPath;
+            _appConfig = appConfig;
         }
 
         /// <summary>
@@ -480,7 +480,7 @@ namespace Library.Services
         /// <returns>Задача асинхронной операции</returns>
         public async Task InitializeDatabaseAsync()
         {
-            var migrationService = new DatabaseMigrationService(_context, _dbPath);
+            var migrationService = new DatabaseMigrationService(_context, _appConfig.DatabasePath);
 
             // Проверяем, существует ли таблица истории миграций
             if (!await migrationService.IsMigrationHistoryTableExistsAsync())
@@ -488,7 +488,7 @@ namespace Library.Services
                 System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
                 
                 // Проверяем, существует ли файл базы данных (старая БД без миграций)
-                if (File.Exists(_dbPath))
+                if (File.Exists(_appConfig.DatabasePath))
                 {
                     System.Diagnostics.Debug.WriteLine("=== Old database found, starting migration process ===");
                     
@@ -499,7 +499,7 @@ namespace Library.Services
                     await migrationService.CreateBackupAsync();
                     
                     // Удаляем старую базу данных
-                    File.Delete(_dbPath);
+                    File.Delete(_appConfig.DatabasePath);
                     System.Diagnostics.Debug.WriteLine("=== Old database deleted ===");
                     
                     // Применяем миграции (создаём новую БД)

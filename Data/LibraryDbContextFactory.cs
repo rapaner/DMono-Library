@@ -18,7 +18,10 @@ namespace Library.Data
             var optionsBuilder = new DbContextOptionsBuilder<LibraryDbContext>();
             
             // Используем временную базу данных для миграций
-            optionsBuilder.UseSqlite("Data Source=library_migrations.db");
+            // Явно указываем сборку с миграциями
+            optionsBuilder.UseSqlite(
+                "Data Source=library.db",
+                sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(LibraryDbContext).Assembly.GetName().Name));
             
             return new LibraryDbContext(optionsBuilder.Options);
         }
