@@ -128,11 +128,35 @@ public partial class BookDetailPage : ContentPage
             var averagePages = (double)totalPages / daysCount;
             ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {daysCount} {GetDaysText(daysCount)}";
             AverageDailyLabel.Text = $"Среднее количество в день - {averagePages:F2}";
+            
+            // Расчет планируемой даты окончания
+            if (_book.Status == BookStatus.Reading && averagePages > 0)
+            {
+                var remainingPages = _book.TotalPages - _book.CurrentPage;
+                if (remainingPages > 0)
+                {
+                    var daysRemaining = (int)Math.Ceiling(remainingPages / averagePages);
+                    var lastReadDate = dailyData.Max(d => d.Date);
+                    var estimatedFinishDate = lastReadDate.AddDays(daysRemaining);
+                    
+                    EstimatedFinishDateLabel.Text = $"📅 Планируемая дата окончания: {estimatedFinishDate:dd.MM.yyyy}";
+                    EstimatedFinishDateLabel.IsVisible = true;
+                }
+                else
+                {
+                    EstimatedFinishDateLabel.IsVisible = false;
+                }
+            }
+            else
+            {
+                EstimatedFinishDateLabel.IsVisible = false;
+            }
         }
         else
         {
             ChartDescriptionLabel.Text = "Нет данных о чтении";
             AverageDailyLabel.Text = "Среднее количество в день - 0.00";
+            EstimatedFinishDateLabel.IsVisible = false;
         }
         
         // Перерисовываем график
