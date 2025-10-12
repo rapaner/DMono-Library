@@ -1,6 +1,7 @@
 using Library.Services;
 using Library.Converters;
 using Library.Data;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library;
@@ -25,14 +26,33 @@ public static class MauiProgram
 
             System.Diagnostics.Debug.WriteLine("=== MAUI builder configured ===");
 
+            // Создание и регистрация конфигурации приложения
+            var appConfig = new AppConfiguration
+            {
+                AppDataDirectory = FileSystem.AppDataDirectory,
+                DatabaseFileName = "library.db",
+                DatabasePath = Path.Combine(FileSystem.AppDataDirectory, "library.db"),
+                AppVersion = AppInfo.VersionString,
+                AppName = AppInfo.Name
+            };
+            
+            builder.Services.AddSingleton(appConfig);
+            
+            System.Diagnostics.Debug.WriteLine($"=== App configuration created ===");
+            System.Diagnostics.Debug.WriteLine($"=== Database path: {appConfig.DatabasePath} ===");
+            System.Diagnostics.Debug.WriteLine($"=== App version: {appConfig.AppVersion} ===");
+
             // Регистрация базы данных
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "library.db");
-            System.Diagnostics.Debug.WriteLine($"=== Database path: {dbPath} ===");
+            var migrationsAssembly = typeof(MauiProgram).Assembly.GetName().Name;
+            System.Diagnostics.Debug.WriteLine($"=== Migrations assembly: {migrationsAssembly} ===");
             
             builder.Services.AddDbContext<LibraryDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+                options.UseSqlite(
+                    $"Data Source={appConfig.DatabasePath}",
+                    sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly)));
 
             // Регистрация сервисов
+            builder.Services.AddScoped<DatabaseMigrationService>();
             builder.Services.AddScoped<LibraryService>();
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();

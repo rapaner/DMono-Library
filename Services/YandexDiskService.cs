@@ -223,12 +223,38 @@ namespace Library.Services
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"=== BackupDatabaseAsync called with path: {dbPath} ===");
+                
+                // Проверяем существование файла
+                if (!File.Exists(dbPath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== ERROR: Database file not found at: {dbPath} ===");
+                    System.Diagnostics.Debug.WriteLine($"=== Current directory: {Directory.GetCurrentDirectory()} ===");
+                    System.Diagnostics.Debug.WriteLine($"=== App data directory: {FileSystem.AppDataDirectory} ===");
+                    
+                    // Проверяем, есть ли файлы в директории
+                    var appDataDir = Path.GetDirectoryName(dbPath);
+                    if (Directory.Exists(appDataDir))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"=== Files in {appDataDir}: ===");
+                        foreach (var file in Directory.GetFiles(appDataDir))
+                        {
+                            System.Diagnostics.Debug.WriteLine($"    - {Path.GetFileName(file)}");
+                        }
+                    }
+                    
+                    throw new FileNotFoundException($"Файл базы данных не найден: {dbPath}");
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"=== Database file found, size: {new FileInfo(dbPath).Length} bytes ===");
+                
                 var remotePath = $"/Library_Backups/library_{DateTime.Now:yyyyMMdd_HHmmss}.db";
                 return await UploadFileAsync(dbPath, remotePath, overwrite: false);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при резервном копировании базы данных: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"=== Ошибка при резервном копировании базы данных: {ex.Message} ===");
+                System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
                 return false;
             }
         }
