@@ -36,7 +36,7 @@ public partial class App : Application
                     System.Diagnostics.Debug.WriteLine("=== Starting database initialization ===");
                     using var scope = serviceProvider.CreateScope();
                     var libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
-                    await libraryService.EnsureDatabaseCreatedAsync();
+                    await libraryService.InitializeDatabaseAsync();
                     System.Diagnostics.Debug.WriteLine("=== Database initialization completed ===");
                 }
                 catch (Exception ex)

@@ -11,14 +11,17 @@ namespace Library.Services
     public class LibraryService
     {
         private readonly LibraryDbContext _context;
+        private readonly DatabaseMigrationService _migrationService;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
-        public LibraryService(LibraryDbContext context)
+        /// <param name="migrationService">Сервис миграций</param>
+        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService)
         {
             _context = context;
+            _migrationService = migrationService;
         }
 
         /// <summary>
@@ -472,73 +475,38 @@ namespace Library.Services
         }
 
         /// <summary>
-        /// Проверить и применить миграции базы данных
+        /// Инициализировать базу данных с использованием миграций
         /// </summary>
         /// <returns>Задача асинхронной операции</returns>
-        public async Task EnsureDatabaseCreatedAsync()
+        public async Task InitializeDatabaseAsync()
         {
-            await _context.Database.EnsureCreatedAsync();
+            // Проверяем, существует ли таблица истории миграций
+            if (!await _migrationService.IsMigrationHistoryTableExistsAsync())
+            {
+                System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
+                
+                // Старая база данных без миграций или новая установка
+                // Создаём таблицу истории если это старая БД
+                var dbPath = _context.Database.GetDbConnection().DataSource;
+                if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
+                {
+                    // Старая база данных без миграций - создаём таблицу истории
+                    System.Diagnostics.Debug.WriteLine("=== Old database found, creating migration history ===");
+                    await _migrationService.CreateMigrationHistoryTableAsync();
+                }
+                else
+                {
+                    // Новая установка
+                    System.Diagnostics.Debug.WriteLine("=== New installation, creating database ===");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
+            }
+            
+            // Применяем миграции (для новых или обновляем существующие)
+            await _migrationService.MigrateAsync();
         }
-    }
-
-    /// <summary>
-    /// Данные о чтении за один день
-    /// </summary>
-    public class DailyReadingData
-    {
-        public DateTime Date { get; set; }
-        public int PagesRead { get; set; }
-    }
-
-    /// <summary>
-    /// Статистика библиотеки
-    /// </summary>
-    public class LibraryStatistics
-    {
-        /// <summary>
-        /// Общее количество книг
-        /// </summary>
-        public int TotalBooks { get; set; }
-
-        /// <summary>
-        /// Количество прочитанных книг
-        /// </summary>
-        public int ReadBooks { get; set; }
-
-        /// <summary>
-        /// Количество книг, читаемых сейчас
-        /// </summary>
-        public int CurrentBooks { get; set; }
-
-        /// <summary>
-        /// Количество книг в планах
-        /// </summary>
-        public int PlannedBooks { get; set; }
-
-        /// <summary>
-        /// Общее количество прочитанных страниц
-        /// </summary>
-        public int TotalPagesRead { get; set; }
-
-        /// <summary>
-        /// Популярные авторы
-        /// </summary>
-        public List<AuthorStatistic> PopularAuthors { get; set; } = new List<AuthorStatistic>();
-    }
-
-    /// <summary>
-    /// Статистика по автору
-    /// </summary>
-    public class AuthorStatistic
-    {
-        /// <summary>
-        /// Имя автора
-        /// </summary>
-        public string Author { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Количество книг автора
-        /// </summary>
-        public int Count { get; set; }
     }
 }
