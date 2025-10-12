@@ -152,13 +152,13 @@
                         BackgroundColor="{DynamicResource PrimaryColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnSaveClicked" />
                 <Button Text="❌ Отмена" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnCancelClicked" />
             </StackLayout>
             

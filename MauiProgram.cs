@@ -57,6 +57,7 @@ public static class MauiProgram
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();
             builder.Services.AddSingleton<SettingsService>();
+            builder.Services.AddSingleton<PageByHourService>();
 
             // Регистрация конвертеров
             builder.Services.AddSingleton<PercentageConverter>();
@@ -64,6 +65,7 @@ public static class MauiProgram
             // Регистрация страниц и Shell
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<Views.YandexDiskPage>();
+            builder.Services.AddTransient<Views.ReadingSchedulePage>();
             builder.Services.AddSingleton<AppShell>();
 
             System.Diagnostics.Debug.WriteLine("=== Services registered ===");

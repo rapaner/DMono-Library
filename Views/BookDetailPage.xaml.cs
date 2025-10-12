@@ -187,4 +187,12 @@ public partial class BookDetailPage : ContentPage
             _ => "дней"
         };
     }
+
+    /// <summary>
+    /// Обработчик нажатия кнопки "График чтения по часам"
+    /// </summary>
+    private async void OnReadingScheduleClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(ReadingSchedulePage)}?bookId={_book.Id}");
+    }
 }

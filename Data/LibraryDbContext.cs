@@ -24,6 +24,16 @@ namespace Library.Data
         public DbSet<PagesReadInDate> PagesReadHistory { get; set; }
 
         /// <summary>
+        /// Коллекция расписаний чтения книг
+        /// </summary>
+        public DbSet<BookReadingSchedule> BookReadingSchedules { get; set; }
+
+        /// <summary>
+        /// Глобальные настройки часов чтения по умолчанию
+        /// </summary>
+        public DbSet<DefaultReadingHoursSettings> DefaultReadingHoursSettings { get; set; }
+
+        /// <summary>
         /// Конструктор контекста базы данных
         /// </summary>
         /// <param name="options">Опции для настройки контекста</param>
@@ -104,6 +114,51 @@ namespace Library.Data
                 // Значения по умолчанию
                 entity.Property(e => e.IsCurrentlyReading)
                     .HasDefaultValue(false);
+
+                // Настройка связи one-to-one с расписанием чтения
+                entity.HasOne(e => e.ReadingSchedule)
+                    .WithOne(e => e.Book)
+                    .HasForeignKey<BookReadingSchedule>(e => e.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Настройка таблицы BookReadingSchedules
+            modelBuilder.Entity<BookReadingSchedule>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.TargetFinishDate)
+                    .IsRequired();
+
+                // Индекс для быстрого поиска по BookId
+                entity.HasIndex(e => e.BookId)
+                    .HasDatabaseName("IX_BookReadingSchedules_BookId")
+                    .IsUnique(); // One-to-one связь
+            });
+
+            // Настройка таблицы DefaultReadingHoursSettings
+            modelBuilder.Entity<DefaultReadingHoursSettings>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.DefaultStartHour)
+                    .IsRequired()
+                    .HasDefaultValue(6);
+
+                entity.Property(e => e.DefaultEndHour)
+                    .IsRequired()
+                    .HasDefaultValue(23);
+
+                // Добавляем начальные данные
+                entity.HasData(new DefaultReadingHoursSettings
+                {
+                    Id = 1,
+                    DefaultStartHour = 6,
+                    DefaultEndHour = 23
+                });
             });
 
             // Настройка таблицы PagesReadInDate

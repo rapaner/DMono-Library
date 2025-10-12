@@ -33,6 +33,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -46,6 +47,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
         }
 
@@ -59,6 +61,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
@@ -74,6 +77,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -144,6 +148,18 @@ namespace Library.Services
             book.DateAdded = DateTime.Now;
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
+            
+            // Создаем расписание чтения по умолчанию (дата окончания = дата добавления + 20 дней)
+            var schedule = new BookReadingSchedule
+            {
+                BookId = book.Id,
+                TargetFinishDate = book.DateAdded.AddDays(20),
+                StartHour = null, // Будет использовано глобальное значение по умолчанию
+                EndHour = null    // Будет использовано глобальное значение по умолчанию
+            };
+            _context.BookReadingSchedules.Add(schedule);
+            await _context.SaveChangesAsync();
+            
             return book;
         }
 
@@ -472,6 +488,114 @@ namespace Library.Services
                 .ToList();
 
             return dailyData;
+        }
+
+        // ===== Методы для работы с расписанием чтения =====
+
+        /// <summary>
+        /// Получить глобальные настройки часов чтения по умолчанию
+        /// </summary>
+        /// <returns>Настройки часов или настройки по умолчанию, если не найдены</returns>
+        public async Task<DefaultReadingHoursSettings> GetDefaultReadingHoursAsync()
+        {
+            var settings = await _context.DefaultReadingHoursSettings
+                .FirstOrDefaultAsync(s => s.Id == 1);
+                
+            if (settings == null)
+            {
+                // Создаем настройки по умолчанию, если их нет
+                settings = new DefaultReadingHoursSettings
+                {
+                    Id = 1,
+                    DefaultStartHour = 6,
+                    DefaultEndHour = 23
+                };
+                _context.DefaultReadingHoursSettings.Add(settings);
+                await _context.SaveChangesAsync();
+            }
+            
+            return settings;
+        }
+
+        /// <summary>
+        /// Сохранить глобальные настройки часов чтения
+        /// </summary>
+        /// <param name="settings">Настройки для сохранения</param>
+        /// <returns>Сохраненные настройки</returns>
+        public async Task<DefaultReadingHoursSettings> SaveDefaultReadingHoursAsync(DefaultReadingHoursSettings settings)
+        {
+            settings.Id = 1; // Всегда работаем с одной записью
+            
+            var existing = await _context.DefaultReadingHoursSettings
+                .FirstOrDefaultAsync(s => s.Id == 1);
+                
+            if (existing == null)
+            {
+                _context.DefaultReadingHoursSettings.Add(settings);
+            }
+            else
+            {
+                existing.DefaultStartHour = settings.DefaultStartHour;
+                existing.DefaultEndHour = settings.DefaultEndHour;
+            }
+            
+            await _context.SaveChangesAsync();
+            return settings;
+        }
+
+        /// <summary>
+        /// Получить расписание чтения для книги
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <returns>Расписание чтения или null, если не найдено</returns>
+        public async Task<BookReadingSchedule?> GetBookReadingScheduleAsync(int bookId)
+        {
+            return await _context.BookReadingSchedules
+                .Include(s => s.Book)
+                    .ThenInclude(b => b.PagesReadHistory)
+                .FirstOrDefaultAsync(s => s.BookId == bookId);
+        }
+
+        /// <summary>
+        /// Обновить расписание чтения для книги
+        /// </summary>
+        /// <param name="schedule">Расписание для обновления</param>
+        /// <returns>Обновленное расписание</returns>
+        public async Task<BookReadingSchedule> UpdateBookReadingScheduleAsync(BookReadingSchedule schedule)
+        {
+            var existing = await _context.BookReadingSchedules
+                .FirstOrDefaultAsync(s => s.BookId == schedule.BookId);
+                
+            if (existing == null)
+            {
+                // Если расписания нет, создаем новое
+                _context.BookReadingSchedules.Add(schedule);
+            }
+            else
+            {
+                existing.TargetFinishDate = schedule.TargetFinishDate;
+                existing.StartHour = schedule.StartHour;
+                existing.EndHour = schedule.EndHour;
+            }
+            
+            await _context.SaveChangesAsync();
+            return schedule;
+        }
+
+        /// <summary>
+        /// Получить эффективные часы чтения для книги (индивидуальные или глобальные)
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <returns>Кортеж (час начала, час окончания)</returns>
+        public async Task<(int startHour, int endHour)> GetEffectiveReadingHoursAsync(int bookId)
+        {
+            var schedule = await GetBookReadingScheduleAsync(bookId);
+            var defaultSettings = await GetDefaultReadingHoursAsync();
+            
+            int startHour = schedule?.StartHour ?? defaultSettings.DefaultStartHour;
+            int endHour = schedule?.EndHour ?? defaultSettings.DefaultEndHour;
+            
+            return (startHour, endHour);
         }
 
         /// <summary>

@@ -66,5 +66,10 @@ namespace Library.Models
         /// Дата завершения чтения книги (null если книга не прочитана)
         /// </summary>
         public DateTime? DateFinished { get; set; }
+
+        /// <summary>
+        /// Расписание чтения книги (one-to-one связь)
+        /// </summary>
+        public BookReadingSchedule? ReadingSchedule { get; set; }
     }
 }

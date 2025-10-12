@@ -88,6 +88,61 @@ namespace Library.Data.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("Library.Models.BookReadingSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("EndHour")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("StartHour")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("TargetFinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BookReadingSchedules_BookId");
+
+                    b.ToTable("BookReadingSchedules");
+                });
+
+            modelBuilder.Entity("Library.Models.DefaultReadingHoursSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DefaultEndHour")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(23);
+
+                    b.Property<int>("DefaultStartHour")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(6);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DefaultReadingHoursSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DefaultEndHour = 23,
+                            DefaultStartHour = 6
+                        });
+                });
+
             modelBuilder.Entity("Library.Models.PagesReadInDate", b =>
                 {
                     b.Property<int>("Id")
@@ -127,6 +182,17 @@ namespace Library.Data.Migrations
                     b.ToTable("BookAuthors", (string)null);
                 });
 
+            modelBuilder.Entity("Library.Models.BookReadingSchedule", b =>
+                {
+                    b.HasOne("Library.Models.Book", "Book")
+                        .WithOne("ReadingSchedule")
+                        .HasForeignKey("Library.Models.BookReadingSchedule", "BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("Library.Models.PagesReadInDate", b =>
                 {
                     b.HasOne("Library.Models.Book", "Book")
@@ -158,6 +224,8 @@ namespace Library.Data.Migrations
                     b.Navigation("Authors");
 
                     b.Navigation("PagesReadHistory");
+
+                    b.Navigation("ReadingSchedule");
                 });
 
             modelBuilder.Entity("Library.Models.Author", b =>
