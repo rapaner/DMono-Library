@@ -485,49 +485,26 @@ namespace Library.Services
             // Проверяем, существует ли таблица истории миграций
             if (!await migrationService.IsMigrationHistoryTableExistsAsync())
             {
-                System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
-                
                 // Проверяем, существует ли файл базы данных (старая БД без миграций)
                 if (File.Exists(_appConfig.DatabasePath))
                 {
-                    System.Diagnostics.Debug.WriteLine("=== Old database found, starting migration process ===");
-                    
-                    // Экспортируем данные из старой БД в JSON
-                    await migrationService.ExportDataToJsonAsync();
-                    
-                    // Создаём файловый бэкап старой базы данных (на случай проблем)
-                    await migrationService.CreateBackupAsync();
-                    
-                    // Удаляем старую базу данных
-                    File.Delete(_appConfig.DatabasePath);
-                    System.Diagnostics.Debug.WriteLine("=== Old database deleted ===");
-                    
-                    // Применяем миграции (создаём новую БД)
-                    await migrationService.MigrateAsync();
-                    
-                    // Импортируем данные из JSON
-                    await migrationService.ImportDataFromJsonAsync();
-                    
-                    // Удаляем JSON бэкап после успешного импорта
-                    migrationService.DeleteBackups();
-                    
-                    System.Diagnostics.Debug.WriteLine("=== Migration from old database completed ===");
+                    // Старая база данных без миграций - создаём таблицу истории
+                    System.Diagnostics.Debug.WriteLine("=== Old database found, creating migration history ===");
+                    await migrationService.CreateMigrationHistoryTableAsync();
                 }
                 else
                 {
+                    // Новая установка
                     System.Diagnostics.Debug.WriteLine("=== New installation, creating database ===");
-                    
-                    // Новая установка - просто применяем миграции
-                    await migrationService.MigrateAsync();
                 }
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
-                
-                // База данных уже использует миграции - просто применяем новые миграции
-                await migrationService.MigrateAsync();
             }
+            
+            // Применяем миграции (для новых или обновляем существующие)
+            await migrationService.MigrateAsync();
         }
     }
 
