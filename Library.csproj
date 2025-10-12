@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>1.9</ApplicationDisplayVersion>
-		<ApplicationVersion>9</ApplicationVersion>
+		<ApplicationDisplayVersion>1.10</ApplicationDisplayVersion>
+		<ApplicationVersion>10</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -60,6 +60,14 @@
 	  <AndroidSigningKeyAlias>myappalias</AndroidSigningKeyAlias>
 	  <AndroidSigningKeyPass>$(AndroidKeyPass)</AndroidSigningKeyPass>
 	  <AndroidSigningStorePass>$(AndroidStorePass)</AndroidSigningStorePass>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 
