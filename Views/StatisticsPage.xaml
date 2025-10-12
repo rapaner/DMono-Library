@@ -2,6 +2,7 @@
 <ContentPage x:Class="Library.Views.StatisticsPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Library.Models"
              xmlns:services="clr-namespace:Library.Services"
              xmlns:system="clr-namespace:System;assembly=netstandard"
              Title="Статистика"
@@ -239,7 +240,7 @@
                     <CollectionView x:Name="AuthorsCollectionView" 
                                      Margin="0,15,0,0">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="services:AuthorStatistic">
+                            <DataTemplate x:DataType="models:AuthorStatistic">
                                 <Grid ColumnDefinitions="*,Auto" Padding="10">
                                     <Label Grid.Column="0" 
                                            Text="{Binding Author}" 
