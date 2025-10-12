@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Library.Data;
+using Library.Models;
 using Microsoft.Data.Sqlite;
 
 namespace Library.Services
@@ -16,11 +17,11 @@ namespace Library.Services
         /// Конструктор сервиса миграции
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
-        /// <param name="dbPath">Путь к файлу базы данных</param>
-        public DatabaseMigrationService(LibraryDbContext context, string dbPath)
+        /// <param name="appConfig">Конфигурация приложения</param>
+        public DatabaseMigrationService(LibraryDbContext context, AppConfiguration appConfig)
         {
             _context = context;
-            _dbPath = dbPath;
+            _dbPath = appConfig.DatabasePath;
         }
 
         /// <summary>

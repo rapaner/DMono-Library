@@ -52,6 +52,7 @@ public static class MauiProgram
                     sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly)));
 
             // Регистрация сервисов
+            builder.Services.AddScoped<DatabaseMigrationService>();
             builder.Services.AddScoped<LibraryService>();
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();

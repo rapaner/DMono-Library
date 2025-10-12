@@ -11,17 +11,17 @@ namespace Library.Services
     public class LibraryService
     {
         private readonly LibraryDbContext _context;
-        private readonly AppConfiguration _appConfig;
+        private readonly DatabaseMigrationService _migrationService;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
-        /// <param name="appConfig">Конфигурация приложения</param>
-        public LibraryService(LibraryDbContext context, AppConfiguration appConfig)
+        /// <param name="migrationService">Сервис миграций</param>
+        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService)
         {
             _context = context;
-            _appConfig = appConfig;
+            _migrationService = migrationService;
         }
 
         /// <summary>
@@ -480,17 +480,19 @@ namespace Library.Services
         /// <returns>Задача асинхронной операции</returns>
         public async Task InitializeDatabaseAsync()
         {
-            var migrationService = new DatabaseMigrationService(_context, _appConfig.DatabasePath);
-
             // Проверяем, существует ли таблица истории миграций
-            if (!await migrationService.IsMigrationHistoryTableExistsAsync())
+            if (!await _migrationService.IsMigrationHistoryTableExistsAsync())
             {
-                // Проверяем, существует ли файл базы данных (старая БД без миграций)
-                if (File.Exists(_appConfig.DatabasePath))
+                System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
+                
+                // Старая база данных без миграций или новая установка
+                // Создаём таблицу истории если это старая БД
+                var dbPath = _context.Database.GetDbConnection().DataSource;
+                if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
                 {
                     // Старая база данных без миграций - создаём таблицу истории
                     System.Diagnostics.Debug.WriteLine("=== Old database found, creating migration history ===");
-                    await migrationService.CreateMigrationHistoryTableAsync();
+                    await _migrationService.CreateMigrationHistoryTableAsync();
                 }
                 else
                 {
@@ -504,68 +506,7 @@ namespace Library.Services
             }
             
             // Применяем миграции (для новых или обновляем существующие)
-            await migrationService.MigrateAsync();
+            await _migrationService.MigrateAsync();
         }
-    }
-
-    /// <summary>
-    /// Данные о чтении за один день
-    /// </summary>
-    public class DailyReadingData
-    {
-        public DateTime Date { get; set; }
-        public int PagesRead { get; set; }
-    }
-
-    /// <summary>
-    /// Статистика библиотеки
-    /// </summary>
-    public class LibraryStatistics
-    {
-        /// <summary>
-        /// Общее количество книг
-        /// </summary>
-        public int TotalBooks { get; set; }
-
-        /// <summary>
-        /// Количество прочитанных книг
-        /// </summary>
-        public int ReadBooks { get; set; }
-
-        /// <summary>
-        /// Количество книг, читаемых сейчас
-        /// </summary>
-        public int CurrentBooks { get; set; }
-
-        /// <summary>
-        /// Количество книг в планах
-        /// </summary>
-        public int PlannedBooks { get; set; }
-
-        /// <summary>
-        /// Общее количество прочитанных страниц
-        /// </summary>
-        public int TotalPagesRead { get; set; }
-
-        /// <summary>
-        /// Популярные авторы
-        /// </summary>
-        public List<AuthorStatistic> PopularAuthors { get; set; } = new List<AuthorStatistic>();
-    }
-
-    /// <summary>
-    /// Статистика по автору
-    /// </summary>
-    public class AuthorStatistic
-    {
-        /// <summary>
-        /// Имя автора
-        /// </summary>
-        public string Author { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Количество книг автора
-        /// </summary>
-        public int Count { get; set; }
     }
 }
