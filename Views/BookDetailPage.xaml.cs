@@ -24,6 +24,20 @@ public partial class BookDetailPage : ContentPage
         _ = LoadChartData();
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        
+        // Перезагружаем данные книги из базы данных
+        var updatedBook = await _libraryService.GetBookByIdAsync(_book.Id);
+        if (updatedBook != null)
+        {
+            _book = updatedBook;
+            LoadBookData();
+            await LoadChartData();
+        }
+    }
+
     private void LoadBookData()
     {
         BookTitle.Text = _book.Title;

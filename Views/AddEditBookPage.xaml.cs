@@ -39,6 +39,11 @@ public partial class AddEditBookPage : ContentPage
         {
             LoadBookData();
         }
+        else
+        {
+            // Для новой книги установить статус "В планах" по умолчанию
+            StatusPicker.SelectedIndex = 0;
+        }
     }
 
     private void LoadBookData()
