@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Library.Core.Models;
+using Library.Core.Data;
 using Library.Models;
-using Library.Data;
 using System.Collections.ObjectModel;
 
 namespace Library.Services
@@ -12,16 +13,19 @@ namespace Library.Services
     {
         private readonly LibraryDbContext _context;
         private readonly DatabaseMigrationService _migrationService;
+        private readonly AppConfiguration _appConfig;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
         /// <param name="migrationService">Сервис миграций</param>
-        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService)
+        /// <param name="appConfig">Конфигурация приложения</param>
+        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService, AppConfiguration appConfig)
         {
             _context = context;
             _migrationService = migrationService;
+            _appConfig = appConfig;
         }
 
         /// <summary>
@@ -33,6 +37,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -46,6 +51,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
         }
 
@@ -59,6 +65,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
@@ -74,6 +81,7 @@ namespace Library.Services
             return await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -144,6 +152,18 @@ namespace Library.Services
             book.DateAdded = DateTime.Now;
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
+            
+            // Создаем расписание чтения по умолчанию (дата окончания = дата добавления + 20 дней)
+            var schedule = new BookReadingSchedule
+            {
+                BookId = book.Id,
+                TargetFinishDate = book.DateAdded.AddDays(20),
+                StartHour = null, // Будет использовано глобальное значение по умолчанию
+                EndHour = null    // Будет использовано глобальное значение по умолчанию
+            };
+            _context.BookReadingSchedules.Add(schedule);
+            await _context.SaveChangesAsync();
+            
             return book;
         }
 
@@ -474,6 +494,62 @@ namespace Library.Services
             return dailyData;
         }
 
+        // ===== Методы для работы с расписанием чтения =====
+
+        /// <summary>
+        /// Получить расписание чтения для книги
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <returns>Расписание чтения или null, если не найдено</returns>
+        public async Task<BookReadingSchedule?> GetBookReadingScheduleAsync(int bookId)
+        {
+            return await _context.BookReadingSchedules
+                .Include(s => s.Book)
+                    .ThenInclude(b => b.PagesReadHistory)
+                .FirstOrDefaultAsync(s => s.BookId == bookId);
+        }
+
+        /// <summary>
+        /// Обновить расписание чтения для книги
+        /// </summary>
+        /// <param name="schedule">Расписание для обновления</param>
+        /// <returns>Обновленное расписание</returns>
+        public async Task<BookReadingSchedule> UpdateBookReadingScheduleAsync(BookReadingSchedule schedule)
+        {
+            var existing = await _context.BookReadingSchedules
+                .FirstOrDefaultAsync(s => s.BookId == schedule.BookId);
+                
+            if (existing == null)
+            {
+                // Если расписания нет, создаем новое
+                _context.BookReadingSchedules.Add(schedule);
+            }
+            else
+            {
+                existing.TargetFinishDate = schedule.TargetFinishDate;
+                existing.StartHour = schedule.StartHour;
+                existing.EndHour = schedule.EndHour;
+            }
+            
+            await _context.SaveChangesAsync();
+            return schedule;
+        }
+
+        /// <summary>
+        /// Получить эффективные часы чтения для книги (индивидуальные или глобальные)
+        /// </summary>
+        /// <param name="bookId">Идентификатор книги</param>
+        /// <returns>Кортеж (час начала, час окончания)</returns>
+        public async Task<(int startHour, int endHour)> GetEffectiveReadingHoursAsync(int bookId)
+        {
+            var schedule = await GetBookReadingScheduleAsync(bookId);
+            
+            int startHour = schedule?.StartHour ?? _appConfig.DefaultStartHour;
+            int endHour = schedule?.EndHour ?? _appConfig.DefaultEndHour;
+            
+            return (startHour, endHour);
+        }
+
         /// <summary>
         /// Инициализировать базу данных с использованием миграций
         /// </summary>
@@ -487,7 +563,7 @@ namespace Library.Services
                 
                 // Старая база данных без миграций или новая установка
                 // Создаём таблицу истории если это старая БД
-                var dbPath = _context.Database.GetDbConnection().DataSource;
+                var dbPath = _appConfig.DatabasePath;
                 if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
                 {
                     // Старая база данных без миграций - создаём таблицу истории
@@ -503,6 +579,14 @@ namespace Library.Services
             else
             {
                 System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
+            }
+            
+            // КРИТИЧНО: Принудительно закрываем все подключения перед миграцией
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != System.Data.ConnectionState.Closed)
+            {
+                await connection.CloseAsync();
+                System.Diagnostics.Debug.WriteLine("=== Database connection closed before migration ===");
             }
             
             // Применяем миграции (для новых или обновляем существующие)

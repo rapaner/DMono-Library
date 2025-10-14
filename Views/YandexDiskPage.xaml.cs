@@ -1,4 +1,5 @@
 using Library.Services;
+using Library.Core.Models;
 using Library.Models;
 using YandexDisk.Client.Protocol;
 
@@ -348,9 +349,9 @@ namespace Library.Views
             }
         }
 
-        private void OnBackupTapped(object sender, TappedEventArgs e)
+        private void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is Border border && border.BindingContext is YandexDisk.Client.Protocol.Resource backup)
+            if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
             {
                 _selectedBackup = backup;
                 DisplayAlert("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления.", "OK");

@@ -15,6 +15,7 @@ public partial class AppShell : Shell
             
             // Регистрация маршрутов для навигации
             Routing.RegisterRoute(nameof(YandexDiskPage), typeof(YandexDiskPage));
+            Routing.RegisterRoute(nameof(ReadingSchedulePage), typeof(ReadingSchedulePage));
             System.Diagnostics.Debug.WriteLine("=== AppShell routes registered ===");
             
             System.Diagnostics.Debug.WriteLine("=== AppShell constructor completed ===");

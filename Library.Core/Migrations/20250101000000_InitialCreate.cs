@@ -1,22 +1,15 @@
-using Microsoft.EntityFrameworkCore.Migrations;
-using Library.Data;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Library.Data.Migrations
+namespace Library.Core.Migrations
 {
-    /// <summary>
-    /// Начальная миграция для создания базы данных библиотеки
-    /// </summary>
-    [DbContext(typeof(LibraryDbContext))]
-    [Migration("20250101000000_InitialCreate")]
+    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Создание таблицы Authors
             migrationBuilder.CreateTable(
                 name: "Authors",
                 columns: table => new
@@ -30,7 +23,6 @@ namespace Library.Data.Migrations
                     table.PrimaryKey("PK_Authors", x => x.Id);
                 });
 
-            // Создание таблицы Books
             migrationBuilder.CreateTable(
                 name: "Books",
                 columns: table => new
@@ -42,37 +34,14 @@ namespace Library.Data.Migrations
                     SeriesNumber = table.Column<int>(type: "INTEGER", nullable: true),
                     TotalPages = table.Column<int>(type: "INTEGER", nullable: false),
                     IsCurrentlyReading = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    DateAdded = table.Column<string>(type: "TEXT", nullable: false),
-                    DateFinished = table.Column<string>(type: "TEXT", nullable: true)
+                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DateFinished = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Books", x => x.Id);
                 });
 
-            // Создание таблицы PagesReadInDate
-            migrationBuilder.CreateTable(
-                name: "PagesReadInDate",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    BookId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Date = table.Column<string>(type: "TEXT", nullable: false),
-                    PagesRead = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PagesReadInDate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PagesReadInDate_Books_BookId",
-                        column: x => x.BookId,
-                        principalTable: "Books",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            // Создание таблицы многие-ко-многим BookAuthors
             migrationBuilder.CreateTable(
                 name: "BookAuthors",
                 columns: table => new
@@ -97,22 +66,36 @@ namespace Library.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            // Создание индексов для Authors
+            migrationBuilder.CreateTable(
+                name: "PagesReadInDate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    BookId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    PagesRead = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PagesReadInDate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PagesReadInDate_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Authors_Name",
                 table: "Authors",
                 column: "Name");
 
-            // Создание индексов для Books
             migrationBuilder.CreateIndex(
-                name: "IX_Books_Title",
-                table: "Books",
-                column: "Title");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Books_IsCurrentlyReading",
-                table: "Books",
-                column: "IsCurrentlyReading");
+                name: "IX_BookAuthors_BooksId",
+                table: "BookAuthors",
+                column: "BooksId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_DateAdded",
@@ -125,28 +108,30 @@ namespace Library.Data.Migrations
                 column: "DateFinished");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Books_IsCurrentlyReading",
+                table: "Books",
+                column: "IsCurrentlyReading");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Books_SeriesTitle",
                 table: "Books",
                 column: "SeriesTitle");
 
-            // Создание индексов для PagesReadInDate
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_Title",
+                table: "Books",
+                column: "Title");
+
             migrationBuilder.CreateIndex(
                 name: "IX_PagesReadInDate_BookId_Date",
                 table: "PagesReadInDate",
                 columns: new[] { "BookId", "Date" },
                 unique: true);
-
-            // Создание индексов для BookAuthors
-            migrationBuilder.CreateIndex(
-                name: "IX_BookAuthors_BooksId",
-                table: "BookAuthors",
-                column: "BooksId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Удаление таблиц в обратном порядке (учитывая внешние ключи)
             migrationBuilder.DropTable(
                 name: "BookAuthors");
 
@@ -154,11 +139,10 @@ namespace Library.Data.Migrations
                 name: "PagesReadInDate");
 
             migrationBuilder.DropTable(
-                name: "Books");
+                name: "Authors");
 
             migrationBuilder.DropTable(
-                name: "Authors");
+                name: "Books");
         }
     }
 }
-

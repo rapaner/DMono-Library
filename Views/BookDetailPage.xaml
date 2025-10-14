@@ -73,6 +73,14 @@
                             CornerRadius="10" 
                             Margin="0,15,0,0" 
                             Clicked="OnUpdateProgressClicked" />
+                    
+                    <!-- Кнопка графика чтения по часам -->
+                    <Button Text="⏰ График чтения по часам" 
+                            BackgroundColor="{DynamicResource TertiaryColor}" 
+                            TextColor="{DynamicResource PrimaryTextColor}" 
+                            CornerRadius="10" 
+                            Margin="0,10,0,0" 
+                            Clicked="OnReadingScheduleClicked" />
                 </StackLayout>
             </Border>
 
@@ -184,13 +192,13 @@
                         BackgroundColor="{DynamicResource SecondaryColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnEditBookClicked" />
                 <Button Text="🗑️ Удалить" 
                         BackgroundColor="{DynamicResource ErrorColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnDeleteBookClicked" />
             </StackLayout>
 

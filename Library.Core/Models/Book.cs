@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Library.Models
+namespace Library.Core.Models
 {
     /// <summary>
     /// Модель книги для хранения в базе данных
@@ -66,5 +66,10 @@ namespace Library.Models
         /// Дата завершения чтения книги (null если книга не прочитана)
         /// </summary>
         public DateTime? DateFinished { get; set; }
+
+        /// <summary>
+        /// Расписание чтения книги (one-to-one связь)
+        /// </summary>
+        public BookReadingSchedule? ReadingSchedule { get; set; }
     }
 }

@@ -1,7 +1,7 @@
+using Library.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Library.Models;
 
-namespace Library.Data
+namespace Library.Core.Data
 {
     /// <summary>
     /// Контекст базы данных для библиотеки книг
@@ -24,6 +24,11 @@ namespace Library.Data
         public DbSet<PagesReadInDate> PagesReadHistory { get; set; }
 
         /// <summary>
+        /// Коллекция расписаний чтения книг
+        /// </summary>
+        public DbSet<BookReadingSchedule> BookReadingSchedules { get; set; }
+
+        /// <summary>
         /// Конструктор контекста базы данных
         /// </summary>
         /// <param name="options">Опции для настройки контекста</param>
@@ -43,7 +48,7 @@ namespace Library.Data
             modelBuilder.Entity<Author>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
@@ -60,7 +65,7 @@ namespace Library.Data
             modelBuilder.Entity<Book>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
@@ -104,13 +109,40 @@ namespace Library.Data
                 // Значения по умолчанию
                 entity.Property(e => e.IsCurrentlyReading)
                     .HasDefaultValue(false);
+
+                // Настройка связи one-to-one с расписанием чтения
+                entity.HasOne(e => e.ReadingSchedule)
+                    .WithOne(e => e.Book)
+                    .HasForeignKey<BookReadingSchedule>(e => e.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Настройка таблицы BookReadingSchedules
+            modelBuilder.Entity<BookReadingSchedule>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.TargetFinishDate)
+                    .IsRequired();
+
+                entity.Property(e => e.StartHour);
+
+                entity.Property(e => e.EndHour);
+
+                // Индекс для быстрого поиска по BookId
+                entity.HasIndex(e => e.BookId)
+                    .HasDatabaseName("IX_BookReadingSchedules_BookId")
+                    .IsUnique(); // One-to-one связь
             });
 
             // Настройка таблицы PagesReadInDate
             modelBuilder.Entity<PagesReadInDate>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
