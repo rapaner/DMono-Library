@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Library.Models
+namespace Library.Core.Models
 {
     /// <summary>
     /// Модель книги для хранения в базе данных

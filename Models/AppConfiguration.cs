@@ -25,10 +25,20 @@ namespace Library.Models
         /// </summary>
         public string AppVersion { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Имя приложения
-        /// </summary>
-        public string AppName { get; set; } = "Library";
-    }
+    /// <summary>
+    /// Имя приложения
+    /// </summary>
+    public string AppName { get; set; } = "Library";
+
+    /// <summary>
+    /// Час начала чтения по умолчанию
+    /// </summary>
+    public int DefaultStartHour { get; set; } = 6;
+
+    /// <summary>
+    /// Час окончания чтения по умолчанию
+    /// </summary>
+    public int DefaultEndHour { get; set; } = 23;
+}
 }
 

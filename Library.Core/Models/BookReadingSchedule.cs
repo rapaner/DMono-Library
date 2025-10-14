@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Library.Models
+namespace Library.Core.Models
 {
     /// <summary>
     /// Модель для хранения параметров расписания чтения книги
@@ -46,4 +46,3 @@ namespace Library.Models
         public int? EndHour { get; set; }
     }
 }
-

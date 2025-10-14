@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Library.Data
+namespace Library.Core.Data
 {
     /// <summary>
     /// Фабрика для создания контекста базы данных во время разработки
@@ -16,13 +16,13 @@ namespace Library.Data
         public LibraryDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<LibraryDbContext>();
-            
+
             // Используем временную базу данных для миграций
             // Явно указываем сборку с миграциями
             optionsBuilder.UseSqlite(
                 "Data Source=library.db",
                 sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(LibraryDbContext).Assembly.GetName().Name));
-            
+
             return new LibraryDbContext(optionsBuilder.Options);
         }
     }

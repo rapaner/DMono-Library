@@ -1,22 +1,16 @@
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Library.Data;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
-namespace Library.Data.Migrations
+namespace Library.Core.Migrations
 {
-    /// <summary>
-    /// Миграция для добавления функциональности расписания чтения по часам
-    /// </summary>
-    [DbContext(typeof(LibraryDbContext))]
-    [Migration("20250112000000_AddReadingSchedule")]
-    public partial class AddReadingSchedule : Migration
+    /// <inheritdoc />
+    public partial class AddBookReadingSchedule : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Создание таблицы BookReadingSchedules
             migrationBuilder.CreateTable(
                 name: "BookReadingSchedules",
                 columns: table => new
@@ -24,7 +18,7 @@ namespace Library.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BookId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TargetFinishDate = table.Column<string>(type: "TEXT", nullable: false),
+                    TargetFinishDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     StartHour = table.Column<int>(type: "INTEGER", nullable: true),
                     EndHour = table.Column<int>(type: "INTEGER", nullable: true)
                 },
@@ -39,7 +33,6 @@ namespace Library.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            // Создание индекса для BookReadingSchedules
             migrationBuilder.CreateIndex(
                 name: "IX_BookReadingSchedules_BookId",
                 table: "BookReadingSchedules",
@@ -50,10 +43,8 @@ namespace Library.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Удаление таблиц в обратном порядке (учитывая внешние ключи)
             migrationBuilder.DropTable(
                 name: "BookReadingSchedules");
         }
     }
 }
-

@@ -1,7 +1,7 @@
+using Library.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Library.Models;
 
-namespace Library.Data
+namespace Library.Core.Data
 {
     /// <summary>
     /// Контекст базы данных для библиотеки книг
@@ -29,11 +29,6 @@ namespace Library.Data
         public DbSet<BookReadingSchedule> BookReadingSchedules { get; set; }
 
         /// <summary>
-        /// Глобальные настройки часов чтения по умолчанию
-        /// </summary>
-        public DbSet<DefaultReadingHoursSettings> DefaultReadingHoursSettings { get; set; }
-
-        /// <summary>
         /// Конструктор контекста базы данных
         /// </summary>
         /// <param name="options">Опции для настройки контекста</param>
@@ -53,7 +48,7 @@ namespace Library.Data
             modelBuilder.Entity<Author>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
@@ -70,7 +65,7 @@ namespace Library.Data
             modelBuilder.Entity<Book>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
@@ -126,13 +121,13 @@ namespace Library.Data
             modelBuilder.Entity<BookReadingSchedule>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.TargetFinishDate)
-                    .IsRequired(); 
-                
+                    .IsRequired();
+
                 entity.Property(e => e.StartHour);
 
                 entity.Property(e => e.EndHour);
@@ -143,33 +138,11 @@ namespace Library.Data
                     .IsUnique(); // One-to-one связь
             });
 
-            // Настройка таблицы DefaultReadingHoursSettings
-            modelBuilder.Entity<DefaultReadingHoursSettings>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                entity.Property(e => e.DefaultStartHour)
-                    .IsRequired()
-                    .HasDefaultValue(6);
-
-                entity.Property(e => e.DefaultEndHour)
-                    .IsRequired()
-                    .HasDefaultValue(23);
-
-                // Добавляем начальные данные
-                entity.HasData(new DefaultReadingHoursSettings
-                {
-                    Id = 1,
-                    DefaultStartHour = 6,
-                    DefaultEndHour = 23
-                });
-            });
-
             // Настройка таблицы PagesReadInDate
             modelBuilder.Entity<PagesReadInDate>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
 

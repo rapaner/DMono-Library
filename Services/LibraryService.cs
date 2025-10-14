@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Library.Core.Models;
+using Library.Core.Data;
 using Library.Models;
-using Library.Data;
 using System.Collections.ObjectModel;
 
 namespace Library.Services
@@ -12,16 +13,19 @@ namespace Library.Services
     {
         private readonly LibraryDbContext _context;
         private readonly DatabaseMigrationService _migrationService;
+        private readonly AppConfiguration _appConfig;
 
         /// <summary>
         /// Конструктор сервиса библиотеки
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
         /// <param name="migrationService">Сервис миграций</param>
-        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService)
+        /// <param name="appConfig">Конфигурация приложения</param>
+        public LibraryService(LibraryDbContext context, DatabaseMigrationService migrationService, AppConfiguration appConfig)
         {
             _context = context;
             _migrationService = migrationService;
+            _appConfig = appConfig;
         }
 
         /// <summary>
@@ -493,57 +497,6 @@ namespace Library.Services
         // ===== Методы для работы с расписанием чтения =====
 
         /// <summary>
-        /// Получить глобальные настройки часов чтения по умолчанию
-        /// </summary>
-        /// <returns>Настройки часов или настройки по умолчанию, если не найдены</returns>
-        public async Task<DefaultReadingHoursSettings> GetDefaultReadingHoursAsync()
-        {
-            var settings = await _context.DefaultReadingHoursSettings
-                .FirstOrDefaultAsync(s => s.Id == 1);
-                
-            if (settings == null)
-            {
-                // Создаем настройки по умолчанию, если их нет
-                settings = new DefaultReadingHoursSettings
-                {
-                    Id = 1,
-                    DefaultStartHour = 6,
-                    DefaultEndHour = 23
-                };
-                _context.DefaultReadingHoursSettings.Add(settings);
-                await _context.SaveChangesAsync();
-            }
-            
-            return settings;
-        }
-
-        /// <summary>
-        /// Сохранить глобальные настройки часов чтения
-        /// </summary>
-        /// <param name="settings">Настройки для сохранения</param>
-        /// <returns>Сохраненные настройки</returns>
-        public async Task<DefaultReadingHoursSettings> SaveDefaultReadingHoursAsync(DefaultReadingHoursSettings settings)
-        {
-            settings.Id = 1; // Всегда работаем с одной записью
-            
-            var existing = await _context.DefaultReadingHoursSettings
-                .FirstOrDefaultAsync(s => s.Id == 1);
-                
-            if (existing == null)
-            {
-                _context.DefaultReadingHoursSettings.Add(settings);
-            }
-            else
-            {
-                existing.DefaultStartHour = settings.DefaultStartHour;
-                existing.DefaultEndHour = settings.DefaultEndHour;
-            }
-            
-            await _context.SaveChangesAsync();
-            return settings;
-        }
-
-        /// <summary>
         /// Получить расписание чтения для книги
         /// </summary>
         /// <param name="bookId">Идентификатор книги</param>
@@ -590,10 +543,9 @@ namespace Library.Services
         public async Task<(int startHour, int endHour)> GetEffectiveReadingHoursAsync(int bookId)
         {
             var schedule = await GetBookReadingScheduleAsync(bookId);
-            var defaultSettings = await GetDefaultReadingHoursAsync();
             
-            int startHour = schedule?.StartHour ?? defaultSettings.DefaultStartHour;
-            int endHour = schedule?.EndHour ?? defaultSettings.DefaultEndHour;
+            int startHour = schedule?.StartHour ?? _appConfig.DefaultStartHour;
+            int endHour = schedule?.EndHour ?? _appConfig.DefaultEndHour;
             
             return (startHour, endHour);
         }
@@ -611,7 +563,7 @@ namespace Library.Services
                 
                 // Старая база данных без миграций или новая установка
                 // Создаём таблицу истории если это старая БД
-                var dbPath = _context.Database.GetDbConnection().DataSource;
+                var dbPath = _appConfig.DatabasePath;
                 if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
                 {
                     // Старая база данных без миграций - создаём таблицу истории
@@ -627,6 +579,14 @@ namespace Library.Services
             else
             {
                 System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
+            }
+            
+            // КРИТИЧНО: Принудительно закрываем все подключения перед миграцией
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != System.Data.ConnectionState.Closed)
+            {
+                await connection.CloseAsync();
+                System.Diagnostics.Debug.WriteLine("=== Database connection closed before migration ===");
             }
             
             // Применяем миграции (для новых или обновляем существующие)

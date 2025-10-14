@@ -1,3 +1,4 @@
+using Library.Core.Models;
 using Library.Models;
 using Library.Services;
 using System.Collections.ObjectModel;
@@ -12,18 +13,19 @@ namespace Library.Views
     {
         private readonly LibraryService _libraryService;
         private readonly PageByHourService _pageByHourService;
+        private readonly AppConfiguration _appConfig;
         
         private Book? _book;
         private BookReadingSchedule? _schedule;
-        private DefaultReadingHoursSettings? _defaultSettings;
 
         public string? BookId { get; set; }
 
-        public ReadingSchedulePage(LibraryService libraryService, PageByHourService pageByHourService)
+        public ReadingSchedulePage(LibraryService libraryService, PageByHourService pageByHourService, AppConfiguration appConfig)
         {
             InitializeComponent();
             _libraryService = libraryService;
             _pageByHourService = pageByHourService;
+            _appConfig = appConfig;
         }
 
         protected override async void OnAppearing()
@@ -59,9 +61,6 @@ namespace Library.Views
 
                 // Загружаем расписание
                 _schedule = await _libraryService.GetBookReadingScheduleAsync(bookId);
-                
-                // Загружаем глобальные настройки
-                _defaultSettings = await _libraryService.GetDefaultReadingHoursAsync();
 
                 // Отображаем информацию о книге
                 BookTitleLabel.Text = _book.Title;
@@ -143,7 +142,7 @@ namespace Library.Views
                 }
                 else
                 {
-                    startHour = _defaultSettings?.DefaultStartHour ?? 6;
+                    startHour = _appConfig.DefaultStartHour;
                 }
 
                 if (int.TryParse(EndHourEntry.Text, out int customEnd))
@@ -152,7 +151,7 @@ namespace Library.Views
                 }
                 else
                 {
-                    endHour = _defaultSettings?.DefaultEndHour ?? 23;
+                    endHour = _appConfig.DefaultEndHour;
                 }
 
                 // Валидация часов
@@ -191,7 +190,6 @@ namespace Library.Views
                     decimal pagesPerHour = recordsList.Count > 0 ? (decimal)remainingPages / recordsList.Count : 0;
                     
                     ScheduleSummaryLabel.Text = $"Осталось прочитать: {remainingPages} страниц\n" +
-                                               $"Часов до завершения: {recordsList.Count}\n" +
                                                $"Страниц в час: ~{Math.Ceiling(pagesPerHour)}";
                     
                     ScheduleBorder.IsVisible = true;
