@@ -1,4 +1,3 @@
-using Library.Core.Models;
 using Library.Services;
 using Library.Views;
 
@@ -14,7 +13,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _libraryService = libraryService;
         _settingsService = settingsService;
-        
+
         // Добавляем обработчики нажатий для карточек меню
         AddTapGestures();
     }
@@ -55,7 +54,7 @@ public partial class MainPage : ContentPage
     private async Task UpdateCurrentBookDisplay()
     {
         var currentBook = await _libraryService.GetCurrentBookAsync();
-        
+
         if (currentBook != null)
         {
             CurrentBookTitle.Text = currentBook.Title;

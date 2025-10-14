@@ -9,25 +9,25 @@ public partial class App : Application
     public App(IServiceProvider serviceProvider)
     {
         System.Diagnostics.Debug.WriteLine("=== App constructor started ===");
-        
+
         try
         {
             InitializeComponent();
             System.Diagnostics.Debug.WriteLine("=== App InitializeComponent completed ===");
-            
+
             _serviceProvider = serviceProvider;
-            
+
             // Применяем сохраненные настройки темы
             ApplySavedThemePreference();
             System.Diagnostics.Debug.WriteLine("=== Theme preference loaded ===");
-            
+
             // Применение темы в зависимости от системных настроек
             LoadTheme();
             System.Diagnostics.Debug.WriteLine("=== Theme loaded ===");
-            
+
             // Подписываемся на изменение темы
             RequestedThemeChanged += OnRequestedThemeChanged;
-            
+
             System.Diagnostics.Debug.WriteLine("=== App constructor completed ===");
         }
         catch (Exception ex)
@@ -43,14 +43,14 @@ public partial class App : Application
         try
         {
             System.Diagnostics.Debug.WriteLine("=== CreateWindow started ===");
-            
+
             // Показываем страницу загрузки, которая инициализирует БД
             var loadingPage = new Views.LoadingPage(_serviceProvider);
             System.Diagnostics.Debug.WriteLine("=== LoadingPage created ===");
-            
+
             var window = new Window(loadingPage);
             System.Diagnostics.Debug.WriteLine("=== Window created successfully ===");
-            
+
             return window;
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ public partial class App : Application
             using var scope = _serviceProvider.CreateScope();
             var settingsService = scope.ServiceProvider.GetRequiredService<SettingsService>();
             var savedTheme = settingsService.GetThemePreference();
-            
+
             // Устанавливаем сохраненную тему
             UserAppTheme = savedTheme switch
             {
@@ -76,7 +76,7 @@ public partial class App : Application
                 "Dark" => AppTheme.Dark,
                 _ => AppTheme.Unspecified // Auto
             };
-            
+
             System.Diagnostics.Debug.WriteLine($"=== Applied saved theme preference: {savedTheme} ===");
         }
         catch (Exception ex)
@@ -97,22 +97,22 @@ public partial class App : Application
     {
         // Получаем текущую системную тему
         var currentTheme = Application.Current?.RequestedTheme ?? AppTheme.Light;
-        
+
         try
         {
             // Удаляем старые цветовые схемы если они есть
             var toRemove = Resources.MergedDictionaries
                 .Where(d => d.GetType().Name.Contains("Colors"))
                 .ToList();
-            
+
             foreach (var dict in toRemove)
             {
                 Resources.MergedDictionaries.Remove(dict);
             }
-            
+
             // Загружаем новую цветовую схему
             ResourceDictionary colorDictionary;
-            
+
             if (currentTheme == AppTheme.Dark)
             {
                 colorDictionary = new Resources.Styles.ColorsDark();
@@ -121,9 +121,9 @@ public partial class App : Application
             {
                 colorDictionary = new Resources.Styles.ColorsLight();
             }
-            
+
             Resources.MergedDictionaries.Add(colorDictionary);
-            
+
             System.Diagnostics.Debug.WriteLine($"=== Loaded {currentTheme} theme ===");
         }
         catch (Exception ex)

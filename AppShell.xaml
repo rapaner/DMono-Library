@@ -6,8 +6,7 @@
        Title="Моя Библиотека"
        FlyoutBehavior="Disabled">
 
-    <ShellContent Title="Главная" 
-                  Icon="home.png" 
+    <ShellContent Title="Главная"
+                  Icon="home.png"
                   ContentTemplate="{DataTemplate local:MainPage}" />
-
 </Shell>

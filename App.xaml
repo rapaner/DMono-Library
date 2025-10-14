@@ -9,7 +9,7 @@
                 <!-- Стили -->
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <!-- Конвертеры -->
             <converters:PercentageConverter x:Key="PercentageConverter" />
         </ResourceDictionary>

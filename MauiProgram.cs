@@ -1,14 +1,11 @@
 using Library.Converters;
-using Library.Core.Data;
-using Library.Core.Models;
 using Library.Models;
 using Library.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
-using System.Reflection;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace Library;
 
@@ -19,7 +16,7 @@ public static class MauiProgram
         try
         {
             System.Diagnostics.Debug.WriteLine("=== CreateMauiApp started ===");
-            
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -35,13 +32,13 @@ public static class MauiProgram
             // Загрузка конфигурации из appsettings.json
             var assembly = Assembly.GetExecutingAssembly();
             using var stream = assembly.GetManifestResourceStream("Library.appsettings.json");
-            
+
             if (stream != null)
             {
                 var config = new ConfigurationBuilder()
                     .AddJsonStream(stream)
                     .Build();
-                
+
                 builder.Configuration.AddConfiguration(config);
             }
 
@@ -67,9 +64,9 @@ public static class MauiProgram
             {
                 System.Diagnostics.Debug.WriteLine("=== Using default reading hours: 6-23 ===");
             }
-            
+
             builder.Services.AddSingleton(appConfig);
-            
+
             System.Diagnostics.Debug.WriteLine($"=== App configuration created ===");
             System.Diagnostics.Debug.WriteLine($"=== Database path: {appConfig.DatabasePath} ===");
             System.Diagnostics.Debug.WriteLine($"=== App version: {appConfig.AppVersion} ===");
@@ -131,9 +128,9 @@ public static class MauiProgram
             System.Diagnostics.Debug.WriteLine("=== Services registered ===");
 
             var app = builder.Build();
-            
+
             System.Diagnostics.Debug.WriteLine("=== CreateMauiApp completed successfully ===");
-            
+
             return app;
         }
         catch (Exception ex)
