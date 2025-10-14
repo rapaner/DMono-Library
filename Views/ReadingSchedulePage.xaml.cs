@@ -155,9 +155,9 @@ namespace Library.Views
                 }
 
                 // Валидация часов
-                if (startHour < 0 || startHour > 23 || endHour < 1 || endHour > 24 || startHour >= endHour)
+                if (startHour < 0 || startHour > 23 || endHour < 0 || endHour > 23 || startHour >= endHour)
                 {
-                    await DisplayAlert("Ошибка", "Некорректные часы чтения. Начало должно быть от 0 до 23, окончание от 1 до 24, и начало должно быть меньше окончания.", "OK");
+                    await DisplayAlert("Ошибка", "Некорректные часы чтения. Начало должно быть от 0 до 23, окончание от 0 до 23, и начало должно быть меньше окончания.", "OK");
                     return;
                 }
 
