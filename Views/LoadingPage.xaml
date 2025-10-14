@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Library.Views.LoadingPage"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    
+    <VerticalStackLayout 
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Spacing="30">
+        
+        <Image 
+            Source="appiconfg.svg"
+            WidthRequest="120"
+            HeightRequest="120"
+            HorizontalOptions="Center" />
+        
+        <ActivityIndicator 
+            IsRunning="True"
+            Color="{DynamicResource Primary}"
+            WidthRequest="40"
+            HeightRequest="40"
+            HorizontalOptions="Center" />
+        
+    </VerticalStackLayout>
+    
+</ContentPage>
+

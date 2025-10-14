@@ -1,4 +1,4 @@
-using Library.Models;
+using Library.Core.Models;
 using Library.Services;
 
 namespace Library.Views;

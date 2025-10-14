@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Library.Models
+namespace Library.Core.Models
 {
     /// <summary>
     /// Вычисляемые свойства модели Book
@@ -58,9 +58,8 @@ namespace Library.Models
         /// Текстовое представление авторов книги (вычисляемое свойство)
         /// </summary>
         [NotMapped]
-        public string AuthorsText => Authors != null && Authors.Any() 
-            ? string.Join(", ", Authors.Select(a => a.Name)) 
+        public string AuthorsText => Authors != null && Authors.Any()
+            ? string.Join(", ", Authors.Select(a => a.Name))
             : "Автор не указан";
     }
 }
-

@@ -28,24 +28,6 @@ public partial class App : Application
             // Подписываемся на изменение темы
             RequestedThemeChanged += OnRequestedThemeChanged;
             
-            // Инициализация базы данных при запуске приложения
-            Task.Run(async () =>
-            {
-                try
-                {
-                    System.Diagnostics.Debug.WriteLine("=== Starting database initialization ===");
-                    using var scope = serviceProvider.CreateScope();
-                    var libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
-                    await libraryService.InitializeDatabaseAsync();
-                    System.Diagnostics.Debug.WriteLine("=== Database initialization completed ===");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"=== ERROR in database initialization: {ex.Message} ===");
-                    System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
-                }
-            });
-            
             System.Diagnostics.Debug.WriteLine("=== App constructor completed ===");
         }
         catch (Exception ex)
@@ -62,11 +44,11 @@ public partial class App : Application
         {
             System.Diagnostics.Debug.WriteLine("=== CreateWindow started ===");
             
-            // Получаем AppShell через DI
-            var shell = _serviceProvider.GetRequiredService<AppShell>();
-            System.Diagnostics.Debug.WriteLine("=== AppShell obtained from DI ===");
+            // Показываем страницу загрузки, которая инициализирует БД
+            var loadingPage = new Views.LoadingPage(_serviceProvider);
+            System.Diagnostics.Debug.WriteLine("=== LoadingPage created ===");
             
-            var window = new Window(shell);
+            var window = new Window(loadingPage);
             System.Diagnostics.Debug.WriteLine("=== Window created successfully ===");
             
             return window;

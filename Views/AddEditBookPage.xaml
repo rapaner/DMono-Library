@@ -2,7 +2,7 @@
 <ContentPage x:Class="Library.Views.AddEditBookPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:Library.Models"
+             xmlns:models="clr-namespace:Library.Core.Models;assembly=Library.Core"
              Title="Добавить книгу"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -152,13 +152,13 @@
                         BackgroundColor="{DynamicResource PrimaryColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnSaveClicked" />
                 <Button Text="❌ Отмена" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
-                        HorizontalOptions="FillAndExpand" 
+                        HorizontalOptions="Fill" 
                         Clicked="OnCancelClicked" />
             </StackLayout>
             

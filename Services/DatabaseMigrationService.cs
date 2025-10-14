@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Library.Data;
+using Library.Core.Data;
+using Library.Core.Models;
 using Library.Models;
 using Microsoft.Data.Sqlite;
 
@@ -11,6 +12,7 @@ namespace Library.Services
     public class DatabaseMigrationService
     {
         private readonly LibraryDbContext _context;
+        private readonly IDbContextFactory<LibraryDbContext> _contextFactory;
         private readonly string _dbPath;
 
         /// <summary>
@@ -18,9 +20,10 @@ namespace Library.Services
         /// </summary>
         /// <param name="context">Контекст базы данных</param>
         /// <param name="appConfig">Конфигурация приложения</param>
-        public DatabaseMigrationService(LibraryDbContext context, AppConfiguration appConfig)
+        public DatabaseMigrationService(LibraryDbContext context, IDbContextFactory<LibraryDbContext> contextFactory, AppConfiguration appConfig)
         {
             _context = context;
+            _contextFactory = contextFactory;
             _dbPath = appConfig.DatabasePath;
         }
 
@@ -187,32 +190,67 @@ namespace Library.Services
             {
                 System.Diagnostics.Debug.WriteLine("=== Applying migrations ===");
 
-                // Получаем список ожидающих миграций
-                var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+                // Критично: закрываем текущее соединение и чистим пулы, чтобы снять блокировки
+                await _context.Database.CloseConnectionAsync();
+                SqliteConnection.ClearAllPools();
+
+                // Используем «свежий» контекст из фабрики
+                await using var ctx = await _contextFactory.CreateDbContextAsync();
+
+                // Улучшаем совместимость с параллельными чтениями
+                try
+                {
+                    await ctx.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL;");
+                    await ctx.Database.ExecuteSqlRawAsync("PRAGMA busy_timeout=5000;");
+                }
+                catch { /* PRAGMA может быть недоступен в некоторых средах */ }
+
+                // Защита от зависшего миграционного лока (__EFMigrationsLock)
+                try
+                {
+                    // Удаляем блокировку, если она старше 2 минут
+                    await ctx.Database.ExecuteSqlRawAsync(
+                        "DELETE FROM \"__EFMigrationsLock\" WHERE \"Id\"=1 AND (julianday('now') - julianday(\"Timestamp\")) > (2.0/1440.0);");
+                }
+                catch
+                {
+                    // Игнорируем: таблицы может не быть до первой миграции
+                }
+
+                // Диагностика: список ожидающих и применённых
+                var pendingMigrations = await ctx.Database.GetPendingMigrationsAsync();
                 System.Diagnostics.Debug.WriteLine($"=== Pending migrations count: {pendingMigrations.Count()} ===");
-                
-                foreach (var migration in pendingMigrations)
+                foreach (var m in pendingMigrations)
                 {
-                    System.Diagnostics.Debug.WriteLine($"    - {migration}");
+                    System.Diagnostics.Debug.WriteLine($"    - {m}");
                 }
 
-                // Получаем список уже применённых миграций
-                var appliedMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                if (!pendingMigrations.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine("=== No pending migrations ===");
+                    return;
+                }
+
+                var appliedMigrations = await ctx.Database.GetAppliedMigrationsAsync();
                 System.Diagnostics.Debug.WriteLine($"=== Applied migrations count: {appliedMigrations.Count()} ===");
-                
-                foreach (var migration in appliedMigrations)
+                foreach (var m in appliedMigrations)
                 {
-                    System.Diagnostics.Debug.WriteLine($"    - {migration}");
+                    System.Diagnostics.Debug.WriteLine($"    - {m}");
                 }
 
-                // Применяем миграции
-                await _context.Database.MigrateAsync();
-                
+                // Применяем миграции с увеличенным таймаутом
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+                await ctx.Database.MigrateAsync(cts.Token);
+
                 System.Diagnostics.Debug.WriteLine("=== Migrations applied successfully ===");
-                
-                // Проверяем финальное состояние
-                var finalMigrations = await _context.Database.GetAppliedMigrationsAsync();
+
+                var finalMigrations = await ctx.Database.GetAppliedMigrationsAsync();
                 System.Diagnostics.Debug.WriteLine($"=== Final applied migrations count: {finalMigrations.Count()} ===");
+            }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("=== Migration timeout ===");
+                throw new InvalidOperationException("Миграция превысила таймаут");
             }
             catch (Exception ex)
             {

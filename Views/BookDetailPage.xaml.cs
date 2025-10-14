@@ -1,4 +1,4 @@
-using Library.Models;
+using Library.Core.Models;
 using Library.Services;
 using Library.Controls;
 
@@ -200,5 +200,13 @@ public partial class BookDetailPage : ContentPage
             2 or 3 or 4 => "дня",
             _ => "дней"
         };
+    }
+
+    /// <summary>
+    /// Обработчик нажатия кнопки "График чтения по часам"
+    /// </summary>
+    private async void OnReadingScheduleClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(ReadingSchedulePage)}?bookId={_book.Id}");
     }
 }

@@ -71,12 +71,12 @@
                                 Clicked="OnSaveTokenClicked"
                                 BackgroundColor="{DynamicResource PrimaryColor}"
                                 TextColor="{DynamicResource SecondaryTextColor}"
-                                HorizontalOptions="FillAndExpand"/>
+                                HorizontalOptions="Fill"/>
                         <Button Text="Отключить" 
                                 Clicked="OnDisconnectClicked"
                                 BackgroundColor="{DynamicResource Gray400}"
                                 TextColor="{DynamicResource PrimaryTextColor}"
-                                HorizontalOptions="FillAndExpand"/>
+                                HorizontalOptions="Fill"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
@@ -104,14 +104,14 @@
                     
                     <Button Text="Восстановить из резервной копии" 
                             Clicked="OnRestoreClicked"
-            BackgroundColor="{DynamicResource SecondaryColor}"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"/>
                     
                     <!-- Автоматическое резервное копирование -->
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Автоматическое резервное копирование" 
                                VerticalOptions="Center"
-                               HorizontalOptions="StartAndExpand"
+                               HorizontalOptions="Start"
                                TextColor="{DynamicResource PrimaryTextColor}"/>
                         <Switch x:Name="AutoBackupSwitch" 
                                 Toggled="OnAutoBackupToggled"/>
@@ -145,7 +145,7 @@
                         <Label Text="Резервные копии" 
                                FontSize="18" 
                                FontAttributes="Bold"
-                               HorizontalOptions="StartAndExpand"
+                               HorizontalOptions="Start"
                                VerticalOptions="Center"
                                TextColor="{DynamicResource PrimaryTextColor}"/>
                         <Button Text="Обновить" 
@@ -161,27 +161,93 @@
                                      Color="{DynamicResource PrimaryColor}"/>
                     
                     <CollectionView x:Name="BackupsCollectionView" 
-                                  SelectionMode="None">
+                                  SelectionMode="Single"
+                                  SelectionChanged="OnBackupSelectionChanged">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="10" Margin="0,5" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="0">
+                                <Border Padding="10" 
+                                       Margin="0,5" 
+                                       BackgroundColor="{DynamicResource Gray100}" 
+                                       StrokeThickness="2"
+                                       Stroke="Transparent">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="5"/>
                                     </Border.StrokeShape>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnBackupTapped" />
-                                    </Border.GestureRecognizers>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Gray100}" />
+                                                    <Setter Property="Stroke" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource PrimaryColor}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
                                     <VerticalStackLayout Spacing="5">
-                                        <Label Text="{Binding Name}" 
+                                        <Label x:Name="BackupNameLabel"
+                                               Text="{Binding Name}" 
                                                FontSize="14" 
                                                FontAttributes="Bold"
-                                               TextColor="{DynamicResource PrimaryTextColor}"/>
-                                        <Label Text="{Binding Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" 
+                                               TextColor="{DynamicResource PrimaryTextColor}">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </Label>
+                                        <Label x:Name="BackupCreatedLabel"
+                                               Text="{Binding Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" 
                                                FontSize="12"
-                                               TextColor="{DynamicResource SecondaryTextColor}"/>
-                                        <Label Text="{Binding Size, StringFormat='Размер: {0:N0} байт'}" 
+                                               TextColor="{DynamicResource SecondaryTextColor}">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </Label>
+                                        <Label x:Name="BackupSizeLabel"
+                                               Text="{Binding Size, StringFormat='Размер: {0:N0} байт'}" 
                                                FontSize="12"
-                                               TextColor="{DynamicResource SecondaryTextColor}"/>
+                                               TextColor="{DynamicResource SecondaryTextColor}">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </Label>
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
