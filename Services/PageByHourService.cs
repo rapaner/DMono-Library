@@ -29,11 +29,17 @@ namespace Library.Services
             int count = 0;
             while (dateNow <= dateToEnd)
             {
-                if (dateNow.Hour > startHour && dateNow.Hour <= endHour)
+                if (dateNow.Hour >= startHour && dateNow.Hour <= endHour)
                 {
                     count++;
                 }
                 dateNow = dateNow.AddHours(1);
+            }
+
+            //  Проверяем, что есть доступные часы для чтения
+            if (count == 0)
+            {
+                return Task.FromResult(Enumerable.Empty<ReadByHourRecord>());
             }
 
             //  Считаем разницу между прочитано и надо
@@ -50,7 +56,7 @@ namespace Library.Services
 
             while (count > 0)
             {
-                if (dateNow.Hour > startHour && dateNow.Hour <= endHour)
+                if (dateNow.Hour >= startHour && dateNow.Hour <= endHour)
                 {
                     records.Add(new ReadByHourRecord(dateNow, pages: pagesTemp + pagesForHour));
                     pagesTemp += pagesForHour;

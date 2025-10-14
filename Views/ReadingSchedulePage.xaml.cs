@@ -187,7 +187,7 @@ namespace Library.Views
                     
                     // Вычисляем сколько страниц в час нужно читать
                     int remainingPages = pagesToRead - pagesRead;
-                    decimal pagesPerHour = recordsList.Count > 0 ? (decimal)remainingPages / recordsList.Count : 0;
+                    decimal pagesPerHour = recordsList.Count > 0 ? (decimal)remainingPages / records.Count() : 0;
                     
                     ScheduleSummaryLabel.Text = $"Осталось прочитать: {remainingPages} страниц\n" +
                                                $"Страниц в час: ~{Math.Ceiling(pagesPerHour)}";
