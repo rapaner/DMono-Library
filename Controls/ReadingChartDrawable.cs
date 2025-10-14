@@ -1,5 +1,3 @@
-using Microsoft.Maui.Graphics;
-
 namespace Library.Controls
 {
     /// <summary>
@@ -44,8 +42,8 @@ namespace Library.Controls
         {
             canvas.FontColor = TextColor;
             canvas.FontSize = 16;
-            canvas.DrawString("Нет данных для отображения", 
-                dirtyRect.Width / 2, dirtyRect.Height / 2, 
+            canvas.DrawString("Нет данных для отображения",
+                dirtyRect.Width / 2, dirtyRect.Height / 2,
                 HorizontalAlignment.Center);
         }
 
@@ -92,7 +90,7 @@ namespace Library.Controls
                 // Градиент для столбца
                 var startColor = PrimaryColor;
                 var endColor = Color.FromRgba(PrimaryColor.Red, PrimaryColor.Green, PrimaryColor.Blue, 0.6f);
-                
+
                 var paint = new LinearGradientPaint
                 {
                     StartPoint = new Point(x, y),
@@ -112,8 +110,8 @@ namespace Library.Controls
                 {
                     canvas.FontColor = TextColor;
                     canvas.FontSize = 9;
-                    canvas.DrawString(item.PagesRead.ToString(), 
-                        x + barWidth / 2, y - 5, 
+                    canvas.DrawString(item.PagesRead.ToString(),
+                        x + barWidth / 2, y - 5,
                         HorizontalAlignment.Center);
                 }
             }
@@ -177,4 +175,3 @@ namespace Library.Controls
         public int PagesRead { get; set; }
     }
 }
-
