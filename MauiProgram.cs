@@ -1,8 +1,9 @@
-using Library.Services;
 using Library.Converters;
 using Library.Data;
 using Library.Models;
+using Library.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Library;
 
@@ -47,9 +48,15 @@ public static class MauiProgram
             System.Diagnostics.Debug.WriteLine($"=== Migrations assembly: {migrationsAssembly} ===");
             
             builder.Services.AddDbContext<LibraryDbContext>(options =>
+            {
                 options.UseSqlite(
                     $"Data Source={appConfig.DatabasePath}",
-                    sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly)));
+                    sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly));
+                //options.ConfigureWarnings(builder =>
+                //{
+                //    builder.Ignore(RelationalEventId.PendingModelChangesWarning);
+                //});
+            });
 
             // Регистрация сервисов
             builder.Services.AddScoped<DatabaseMigrationService>();

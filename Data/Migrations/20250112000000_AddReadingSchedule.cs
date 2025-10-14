@@ -16,20 +16,6 @@ namespace Library.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Создание таблицы DefaultReadingHoursSettings
-            migrationBuilder.CreateTable(
-                name: "DefaultReadingHoursSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    DefaultStartHour = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 6),
-                    DefaultEndHour = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 23)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DefaultReadingHoursSettings", x => x.Id);
-                });
-
             // Создание таблицы BookReadingSchedules
             migrationBuilder.CreateTable(
                 name: "BookReadingSchedules",
@@ -59,12 +45,6 @@ namespace Library.Data.Migrations
                 table: "BookReadingSchedules",
                 column: "BookId",
                 unique: true);
-
-            // Вставка начальных данных для DefaultReadingHoursSettings
-            migrationBuilder.InsertData(
-                table: "DefaultReadingHoursSettings",
-                columns: new[] { "Id", "DefaultStartHour", "DefaultEndHour" },
-                values: new object[] { 1, 6, 23 });
         }
 
         /// <inheritdoc />
@@ -73,9 +53,6 @@ namespace Library.Data.Migrations
             // Удаление таблиц в обратном порядке (учитывая внешние ключи)
             migrationBuilder.DropTable(
                 name: "BookReadingSchedules");
-
-            migrationBuilder.DropTable(
-                name: "DefaultReadingHoursSettings");
         }
     }
 }

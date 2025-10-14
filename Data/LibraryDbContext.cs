@@ -131,7 +131,11 @@ namespace Library.Data
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.TargetFinishDate)
-                    .IsRequired();
+                    .IsRequired(); 
+                
+                entity.Property(e => e.StartHour);
+
+                entity.Property(e => e.EndHour);
 
                 // Индекс для быстрого поиска по BookId
                 entity.HasIndex(e => e.BookId)

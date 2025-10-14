@@ -5,6 +5,8 @@ namespace Library;
 public partial class App : Application
 {
     private readonly IServiceProvider _serviceProvider;
+    private static readonly SemaphoreSlim _dbInitializationLock = new SemaphoreSlim(1, 1);
+    private static bool _isDatabaseInitialized = false;
 
     public App(IServiceProvider serviceProvider)
     {
@@ -28,24 +30,6 @@ public partial class App : Application
             // Подписываемся на изменение темы
             RequestedThemeChanged += OnRequestedThemeChanged;
             
-            // Инициализация базы данных при запуске приложения
-            Task.Run(async () =>
-            {
-                try
-                {
-                    System.Diagnostics.Debug.WriteLine("=== Starting database initialization ===");
-                    using var scope = serviceProvider.CreateScope();
-                    var libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
-                    await libraryService.InitializeDatabaseAsync();
-                    System.Diagnostics.Debug.WriteLine("=== Database initialization completed ===");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"=== ERROR in database initialization: {ex.Message} ===");
-                    System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
-                }
-            });
-            
             System.Diagnostics.Debug.WriteLine("=== App constructor completed ===");
         }
         catch (Exception ex)
@@ -62,6 +46,10 @@ public partial class App : Application
         {
             System.Diagnostics.Debug.WriteLine("=== CreateWindow started ===");
             
+            // Инициализируем БД синхронно перед созданием Shell
+            InitializeDatabaseSync();
+            System.Diagnostics.Debug.WriteLine("=== Database ready ===");
+            
             // Получаем AppShell через DI
             var shell = _serviceProvider.GetRequiredService<AppShell>();
             System.Diagnostics.Debug.WriteLine("=== AppShell obtained from DI ===");
@@ -76,6 +64,43 @@ public partial class App : Application
             System.Diagnostics.Debug.WriteLine($"=== ERROR in CreateWindow: {ex.Message} ===");
             System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
             throw;
+        }
+    }
+
+    private void InitializeDatabaseSync()
+    {
+        // Быстрая проверка без блокировки
+        if (_isDatabaseInitialized)
+            return;
+
+        // Блокировка для потокобезопасности
+        _dbInitializationLock.Wait();
+        try
+        {
+            // Двойная проверка после получения блокировки
+            if (_isDatabaseInitialized)
+                return;
+
+            System.Diagnostics.Debug.WriteLine("=== Starting database initialization (sync) ===");
+            
+            using var scope = _serviceProvider.CreateScope();
+            var libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
+            
+            // Синхронное выполнение асинхронного метода
+            libraryService.InitializeDatabaseAsync().GetAwaiter().GetResult();
+            
+            _isDatabaseInitialized = true;
+            System.Diagnostics.Debug.WriteLine("=== Database initialization completed (sync) ===");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"=== ERROR in database initialization: {ex.Message} ===");
+            System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
+            throw; // Пробрасываем исключение, чтобы приложение не запустилось с нерабочей БД
+        }
+        finally
+        {
+            _dbInitializationLock.Release();
         }
     }
 
