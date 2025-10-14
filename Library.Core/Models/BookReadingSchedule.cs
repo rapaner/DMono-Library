@@ -42,7 +42,7 @@ namespace Library.Core.Models
         /// <summary>
         /// Час окончания чтения (nullable - если не задан, используется глобальное значение по умолчанию)
         /// </summary>
-        [Range(1, 24)]
+        [Range(0, 23)]
         public int? EndHour { get; set; }
     }
 }
