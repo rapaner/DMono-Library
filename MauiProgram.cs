@@ -30,18 +30,44 @@ public static class MauiProgram
 
             System.Diagnostics.Debug.WriteLine("=== MAUI builder configured ===");
 
-            // Загрузка конфигурации из appsettings.json
+            // Загрузка конфигурации из appsettings.json, appsettings.Development.json и переменных окружения
             var assembly = Assembly.GetExecutingAssembly();
+            var configBuilder = new ConfigurationBuilder();
+            
+            // 1. Загрузка base appsettings.json
             using var stream = assembly.GetManifestResourceStream("Library.appsettings.json");
-
             if (stream != null)
             {
-                var config = new ConfigurationBuilder()
-                    .AddJsonStream(stream)
-                    .Build();
-
-                builder.Configuration.AddConfiguration(config);
+                configBuilder.AddJsonStream(stream);
+                System.Diagnostics.Debug.WriteLine("=== Loaded appsettings.json ===");
             }
+
+#if DEBUG
+            // 2. Загрузка appsettings.Development.json для разработки (работает на всех платформах)
+            using var devStream = assembly.GetManifestResourceStream("Library.appsettings.Development.json");
+            if (devStream != null)
+            {
+                configBuilder.AddJsonStream(devStream);
+                System.Diagnostics.Debug.WriteLine("=== Loaded appsettings.Development.json ===");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("=== appsettings.Development.json not found (optional) ===");
+            }
+#endif
+
+            // 3. Переменные окружения (наивысший приоритет)
+            configBuilder.AddEnvironmentVariables();
+
+            var config = configBuilder.Build();
+            builder.Configuration.AddConfiguration(config);
+            
+            System.Diagnostics.Debug.WriteLine("=== Configuration loaded ===");
+            
+            // Диагностика: выводим ключи Yandex OAuth
+            System.Diagnostics.Debug.WriteLine("=== Yandex OAuth Configuration: ===");
+            System.Diagnostics.Debug.WriteLine($"  YandexOAuth:ClientId = {config["YandexOAuth:ClientId"]}");
+            System.Diagnostics.Debug.WriteLine($"  YandexOAuth:CallbackScheme = {config["YandexOAuth:CallbackScheme"]}");
 
             // Создание и регистрация конфигурации приложения
             var appConfig = new AppConfiguration
@@ -64,6 +90,19 @@ public static class MauiProgram
             else
             {
                 System.Diagnostics.Debug.WriteLine("=== Using default reading hours: 6-23 ===");
+            }
+
+            // Загрузка настроек Yandex OAuth из конфигурации
+            var yandexOAuthConfig = builder.Configuration.GetSection("YandexOAuth");
+            if (yandexOAuthConfig.Exists())
+            {
+                appConfig.YandexOAuthClientId = yandexOAuthConfig.GetValue<string>("ClientId", string.Empty) ?? string.Empty;
+                appConfig.YandexOAuthCallbackScheme = yandexOAuthConfig.GetValue<string>("CallbackScheme", string.Empty) ?? string.Empty;
+                System.Diagnostics.Debug.WriteLine($"=== Loaded Yandex OAuth config: ClientId={appConfig.YandexOAuthClientId}, CallbackScheme={appConfig.YandexOAuthCallbackScheme} ===");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("=== Yandex OAuth config not found ===");
             }
 
             builder.Services.AddSingleton(appConfig);
@@ -93,10 +132,6 @@ public static class MauiProgram
                     .UseSqlite(connectionString, sqliteOptions => sqliteOptions.MigrationsAssembly(migrationsAssembly))
                     .EnableSensitiveDataLogging()
                     .LogTo(msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Information);
-                //options.ConfigureWarnings(builder =>
-                //{
-                //    builder.Ignore(RelationalEventId.PendingModelChangesWarning);
-                //});
             });
 
             // Фабрика контекстов для выполнения миграций в «чистом» контексте

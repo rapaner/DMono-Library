@@ -39,6 +39,16 @@ namespace Library.Models
     /// Час окончания чтения по умолчанию
     /// </summary>
     public int DefaultEndHour { get; set; } = 23;
+
+    /// <summary>
+    /// Yandex OAuth Client ID
+    /// </summary>
+    public string YandexOAuthClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Yandex OAuth Callback Scheme
+    /// </summary>
+    public string YandexOAuthCallbackScheme { get; set; } = string.Empty;
 }
 }
 
