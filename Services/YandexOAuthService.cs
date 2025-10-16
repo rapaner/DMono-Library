@@ -1,3 +1,4 @@
+using Library.Models;
 using System.Text;
 
 namespace Library.Services
@@ -7,12 +8,18 @@ namespace Library.Services
     /// </summary>
     public class YandexOAuthService
     {
-        // Client ID для приложения (нужно зарегистрировать на https://oauth.yandex.ru/)
-        // Для тестирования можно использовать этот публичный Client ID
-        private const string ClientId = "92dbf014613440249d8c6fe833f1e368";
-        
-        // Callback URL для получения токена
-        private const string CallbackScheme = "ru.rapaner.library";
+        private readonly string _clientId;
+        private readonly string _callbackScheme;
+
+        /// <summary>
+        /// Конструктор с внедрением зависимости конфигурации
+        /// </summary>
+        /// <param name="appConfiguration">Конфигурация приложения</param>
+        public YandexOAuthService(AppConfiguration appConfiguration)
+        {
+            _clientId = appConfiguration.YandexOAuthClientId;
+            _callbackScheme = appConfiguration.YandexOAuthCallbackScheme;
+        }
         
         /// <summary>
         /// Запустить процесс OAuth авторизации
@@ -22,13 +29,26 @@ namespace Library.Services
         {
             try
             {
+                // Проверка наличия необходимой конфигурации
+                if (string.IsNullOrWhiteSpace(_clientId))
+                {
+                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Client ID не настроен в конфигурации");
+                    return null;
+                }
+
+                if (string.IsNullOrWhiteSpace(_callbackScheme))
+                {
+                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Callback Scheme не настроен в конфигурации");
+                    return null;
+                }
+
                 // Формируем URL для авторизации
                 var authUrl = BuildAuthUrl();
                 
                 // Запускаем WebAuthenticator
                 var authResult = await WebAuthenticator.Default.AuthenticateAsync(
                     new Uri(authUrl),
-                    new Uri($"{CallbackScheme}://oauth"));
+                    new Uri($"{_callbackScheme}://oauth"));
 
                 // Яндекс возвращает токен в fragment (#access_token=...)
                 // WebAuthenticator автоматически парсит его
@@ -59,7 +79,7 @@ namespace Library.Services
             var sb = new StringBuilder();
             sb.Append("https://oauth.yandex.ru/authorize?");
             sb.Append($"response_type=token");
-            sb.Append($"&client_id={ClientId}");
+            sb.Append($"&client_id={_clientId}");
             
             return sb.ToString();
         }
