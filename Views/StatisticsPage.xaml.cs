@@ -111,6 +111,10 @@ public partial class StatisticsPage : ContentPage
         // Топ авторов
         AuthorsCollectionView.ItemsSource = statistics.PopularAuthors;
         
+        // Рейтинг книг
+        var bookRankings = await _libraryService.GetBookRankingsAsync(startDate, endDate);
+        BookRankingsCollectionView.ItemsSource = bookRankings;
+        
         // Загрузка данных для графика
         await LoadChartData(startDate, endDate);
     }
