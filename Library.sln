@@ -1,10 +1,23 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11111.16 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library", "Library.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Core", "Library.Core\Library.Core.csproj", "{B2C3D4E5-F6A7-8901-BCDE-FA2345678901}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{79149F64-3A16-4F90-8DB8-27F5903106C9}"
+	ProjectSection(SolutionItems) = preProject
+		.github\BADGES.md = .github\BADGES.md
+		.github\DEPLOYMENT_GUIDE.md = .github\DEPLOYMENT_GUIDE.md
+		.github\GITHUB_ACTIONS_SUMMARY.md = .github\GITHUB_ACTIONS_SUMMARY.md
+		.github\INDEX.md = .github\INDEX.md
+		.github\PIPELINE_OVERVIEW.md = .github\PIPELINE_OVERVIEW.md
+		.github\README.md = .github\README.md
+		.github\REMOVE_KEYSTORE.md = .github\REMOVE_KEYSTORE.md
+		.github\SETUP_COMPLETE.md = .github\SETUP_COMPLETE.md
+		.github\SETUP_SECRETS.md = .github\SETUP_SECRETS.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +27,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2C3D4E5-F6A7-8901-BCDE-FA2345678901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
