@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Library.Core.Models;
 using Library.Core.Data;
+using Library.Core.Models;
 using Library.Models;
-using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.Services
 {
@@ -131,14 +130,14 @@ namespace Library.Services
         {
             var author = await _context.Authors
                 .FirstOrDefaultAsync(a => a.Name == name);
-            
+
             if (author == null)
             {
                 author = new Author { Name = name };
                 _context.Authors.Add(author);
                 await _context.SaveChangesAsync();
             }
-            
+
             return author;
         }
 
@@ -152,7 +151,7 @@ namespace Library.Services
             book.DateAdded = DateTime.Now;
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
-            
+
             // Создаем расписание чтения по умолчанию (дата окончания = дата добавления + 20 дней)
             var schedule = new BookReadingSchedule
             {
@@ -163,7 +162,7 @@ namespace Library.Services
             };
             _context.BookReadingSchedules.Add(schedule);
             await _context.SaveChangesAsync();
-            
+
             return book;
         }
 
@@ -207,7 +206,7 @@ namespace Library.Services
 
             // Установить новую текущую книгу
             book.IsCurrentlyReading = true;
-            
+
             await _context.SaveChangesAsync();
         }
 
@@ -287,7 +286,7 @@ namespace Library.Services
             }
 
             await _context.SaveChangesAsync();
-            
+
             // Перезагружаем книгу с обновленными данными
             return await GetBookByIdAsync(bookId) ?? book;
         }
@@ -314,14 +313,14 @@ namespace Library.Services
             if (entry != null)
             {
                 _context.PagesReadHistory.Remove(entry);
-                
+
                 // Обновляем статус книги
                 var currentPage = book.PagesReadHistory.Where(p => p.Date != date).Sum(p => p.PagesRead);
                 if (currentPage < book.TotalPages)
                 {
                     book.DateFinished = null;
                 }
-                
+
                 await _context.SaveChangesAsync();
             }
 
@@ -353,7 +352,7 @@ namespace Library.Services
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .ToListAsync();
-            
+
             // Фильтрация книг по датам (для статуса "Прочитано")
             var filteredBooks = books;
             if (startDate.HasValue || endDate.HasValue)
@@ -367,7 +366,7 @@ namespace Library.Services
                         return (!startDate.HasValue || dateToCheck >= startDate.Value.Date) &&
                                (!endDate.HasValue || dateToCheck <= endDate.Value.Date);
                     }
-                    
+
                     // Для других книг проверяем, есть ли записи о чтении в указанный период
                     if (b.PagesReadHistory.Any())
                     {
@@ -375,12 +374,12 @@ namespace Library.Services
                             (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
                             (!endDate.HasValue || p.Date <= endDate.Value.Date));
                     }
-                    
+
                     // Книги без истории чтения и без даты завершения
                     return false;
                 }).ToList();
             }
-            
+
             // Подсчет популярных авторов на основе отфильтрованных книг
             var authorStats = filteredBooks
                 .SelectMany(b => b.Authors)
@@ -389,7 +388,7 @@ namespace Library.Services
                 .OrderByDescending(a => a.Count)
                 .Take(10)
                 .ToList();
-            
+
             // Подсчет страниц с учетом фильтра по датам
             int totalPagesRead = 0;
             foreach (var book in books)
@@ -408,7 +407,7 @@ namespace Library.Services
                     totalPagesRead += book.CurrentPage;
                 }
             }
-            
+
             return new LibraryStatistics
             {
                 TotalBooks = filteredBooks.Count,
@@ -518,7 +517,7 @@ namespace Library.Services
         {
             var existing = await _context.BookReadingSchedules
                 .FirstOrDefaultAsync(s => s.BookId == schedule.BookId);
-                
+
             if (existing == null)
             {
                 // Если расписания нет, создаем новое
@@ -530,7 +529,7 @@ namespace Library.Services
                 existing.StartHour = schedule.StartHour;
                 existing.EndHour = schedule.EndHour;
             }
-            
+
             await _context.SaveChangesAsync();
             return schedule;
         }
@@ -543,11 +542,63 @@ namespace Library.Services
         public async Task<(int startHour, int endHour)> GetEffectiveReadingHoursAsync(int bookId)
         {
             var schedule = await GetBookReadingScheduleAsync(bookId);
-            
+
             int startHour = schedule?.StartHour ?? _appConfig.DefaultStartHour;
             int endHour = schedule?.EndHour ?? _appConfig.DefaultEndHour;
-            
+
             return (startHour, endHour);
+        }
+
+        /// <summary>
+        /// Получить рейтинг книг по среднему количеству прочитанных страниц в день
+        /// </summary>
+        /// <param name="startDate">Начальная дата периода для фильтрации книг (null для всего времени)</param>
+        /// <param name="endDate">Конечная дата периода для фильтрации книг (null для всего времени)</param>
+        /// <returns>Список книг с рейтингом, отсортированный по убыванию среднего количества страниц в день</returns>
+        public async Task<List<BookRanking>> GetBookRankingsAsync(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            // Получаем все книги с авторами и историей чтения
+            var books = await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
+                .ToListAsync();
+
+            // Фильтруем книги: оставляем только те, у которых есть история чтения
+            var booksWithHistory = books.Where(b => b.PagesReadHistory.Any()).ToList();
+
+            // Если указан фильтр по датам, оставляем только книги с записями в этом периоде
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                booksWithHistory = booksWithHistory.Where(b =>
+                    b.PagesReadHistory.Any(p =>
+                        (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
+                        (!endDate.HasValue || p.Date <= endDate.Value.Date))
+                ).ToList();
+            }
+
+            // Создаем рейтинг для каждой книги
+            var rankings = booksWithHistory.Select(b =>
+            {
+                // Считаем ВСЮ историю чтения (не только период фильтра)
+                var totalPagesRead = b.PagesReadHistory.Sum(p => p.PagesRead);
+                var uniqueDaysCount = b.PagesReadHistory.Select(p => p.Date.Date).Distinct().Count();
+                var averagePagesPerDay = uniqueDaysCount > 0 ? (double)totalPagesRead / uniqueDaysCount : 0;
+
+                return new BookRanking
+                {
+                    BookId = b.Id,
+                    Title = b.Title,
+                    AuthorsText = b.AuthorsText,
+                    TotalPagesRead = totalPagesRead,
+                    UniqueDaysCount = uniqueDaysCount,
+                    AveragePagesPerDay = averagePagesPerDay
+                };
+            })
+            .OrderByDescending(r => r.AveragePagesPerDay)
+            .ThenByDescending(r => r.TotalPagesRead)
+            .ToList();
+
+            return rankings;
         }
 
         /// <summary>
@@ -560,7 +611,7 @@ namespace Library.Services
             if (!await _migrationService.IsMigrationHistoryTableExistsAsync())
             {
                 System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
-                
+
                 // Старая база данных без миграций или новая установка
                 // Создаём таблицу истории если это старая БД
                 var dbPath = _appConfig.DatabasePath;
@@ -580,7 +631,7 @@ namespace Library.Services
             {
                 System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
             }
-            
+
             // КРИТИЧНО: Принудительно закрываем все подключения перед миграцией
             var connection = _context.Database.GetDbConnection();
             if (connection.State != System.Data.ConnectionState.Closed)
@@ -588,7 +639,7 @@ namespace Library.Services
                 await connection.CloseAsync();
                 System.Diagnostics.Debug.WriteLine("=== Database connection closed before migration ===");
             }
-            
+
             // Применяем миграции (для новых или обновляем существующие)
             await _migrationService.MigrateAsync();
         }
