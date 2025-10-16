@@ -1,0 +1,94 @@
+name: Android Build and Release
+
+on:
+  push:
+    branches:
+      - main
+      - github_pipeline
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore Library.sln
+
+      - name: Decode Keystore
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")
+          [IO.File]::WriteAllBytes("${{ github.workspace }}/library.keystore", $bytes)
+
+      - name: Build Android App (Debug)
+        if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
+        run: |
+          dotnet build Library.csproj -c Debug -f net9.0-android /p:AndroidPackageFormats=apk
+
+      - name: Build and Sign Android App (Release)
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        run: |
+          dotnet publish Library.csproj `
+            -c Release `
+            -f net9.0-android `
+            /p:AndroidPackageFormats=apk `
+            /p:AndroidKeyStore=true `
+            /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
+            /p:AndroidSigningKeyAlias=myappalias `
+            /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
+            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
+
+      - name: Upload Debug APK
+        if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk-${{ github.sha }}
+          path: |
+            bin/Debug/net9.0-android/**/*.apk
+          retention-days: 7
+
+      - name: Upload Signed Release APK
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-signed-apk-${{ github.sha }}
+          path: |
+            bin/Release/net9.0-android/**/*-Signed.apk
+          retention-days: 90
+
+      - name: Create GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            bin/Release/net9.0-android/**/*-Signed.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup Keystore
+        if: always() && (github.ref_type == 'tag' || github.event_name == 'workflow_dispatch')
+        run: |
+          if (Test-Path "${{ github.workspace }}/library.keystore") {
+            Remove-Item "${{ github.workspace }}/library.keystore" -Force
+          }
+

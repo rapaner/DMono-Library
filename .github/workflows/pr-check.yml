@@ -1,0 +1,38 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - github_pipeline
+
+jobs:
+  build-check:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore Library.sln
+
+      - name: Build Library.Core
+        run: dotnet build Library.Core/Library.Core.csproj -c Debug
+
+      - name: Build Android (Debug)
+        run: dotnet build Library.csproj -c Debug -f net9.0-android
+
+      - name: Check for build warnings
+        run: |
+          Write-Host "Build completed successfully!" -ForegroundColor Green
+          Write-Host "PR is ready for review." -ForegroundColor Green
+

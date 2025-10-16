@@ -116,6 +116,23 @@ dotnet ef database update --project Library.csproj
 - 🚀 [YANDEX_DISK_QUICK_START.md](YANDEX_DISK_QUICK_START.md) - Быстрый старт
 - 🔐 [OAUTH_IMPLEMENTATION.md](OAUTH_IMPLEMENTATION.md) - Детали реализации OAuth
 
+## 🚀 CI/CD и автоматизация
+
+Проект использует GitHub Actions для автоматической сборки и публикации APK.
+
+- 📦 [.github/INDEX.md](.github/INDEX.md) - Полный индекс документации CI/CD
+- 🚀 [.github/README.md](.github/README.md) - Быстрый старт с GitHub Actions
+- 📝 [.github/SETUP_SECRETS.md](.github/SETUP_SECRETS.md) - Настройка секретов для подписи APK
+- 📊 [.github/PIPELINE_OVERVIEW.md](.github/PIPELINE_OVERVIEW.md) - Визуальный обзор pipeline
+
+**Создание релиза:**
+```bash
+git tag v1.14
+git push origin v1.14
+```
+
+APK автоматически соберётся, подпишется и опубликуется в GitHub Releases!
+
 ## 📝 Лицензия
 
 Этот проект создан в образовательных целях.

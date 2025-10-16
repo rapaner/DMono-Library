@@ -80,8 +80,8 @@
 	
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>
-	  <AndroidSigningKeyStore>myapp.keystore</AndroidSigningKeyStore>
-	  <AndroidSigningKeyAlias>myappalias</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyStore>library.keystore</AndroidSigningKeyStore>
+	  <AndroidSigningKeyAlias>dmonolibrary</AndroidSigningKeyAlias>
 	  <AndroidSigningKeyPass>$(AndroidKeyPass)</AndroidSigningKeyPass>
 	  <AndroidSigningStorePass>$(AndroidStorePass)</AndroidSigningStorePass>
 	</PropertyGroup>
