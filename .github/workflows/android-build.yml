@@ -54,6 +54,9 @@ jobs:
               /p:AndroidSigningKeyAlias=dmonolibrary `
               /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
               /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
+        env:
+          YandexOAuth__ClientId: ${{ secrets.YANDEX_OAUTH_CLIENT_ID }}
+          YandexOAuth__CallbackScheme: ${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
 
       - name: Upload Debug APK
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
