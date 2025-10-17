@@ -51,7 +51,7 @@ jobs:
               /p:AndroidPackageFormats=apk `
               /p:AndroidKeyStore=true `
               /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
-              /p:AndroidSigningKeyAlias=myappalias `
+              /p:AndroidSigningKeyAlias=dmonolibrary `
               /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
               /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
 
