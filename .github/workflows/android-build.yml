@@ -45,15 +45,15 @@ jobs:
       - name: Build and Sign Android App (Release)
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         run: |
-          dotnet publish Library.csproj `
-            -c Release `
-            -f net9.0-android `
-            /p:AndroidPackageFormats=apk `
-            /p:AndroidKeyStore=true `
-            /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
-            /p:AndroidSigningKeyAlias=myappalias `
-            /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
-            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
+            dotnet publish Library.csproj `
+              -c Release `
+              -f net9.0-android `
+              /p:AndroidPackageFormats=apk `
+              /p:AndroidKeyStore=true `
+              /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
+              /p:AndroidSigningKeyAlias=myappalias `
+              /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
+              /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
 
       - name: Upload Debug APK
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
