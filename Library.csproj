@@ -78,7 +78,7 @@
 	  <ProjectReference Include="Library.Core\Library.Core.csproj" />
 	</ItemGroup>
 	
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>
 	  <AndroidSigningKeyStore>library.keystore</AndroidSigningKeyStore>
 	  <AndroidSigningKeyAlias>dmonolibrary</AndroidSigningKeyAlias>
