@@ -253,21 +253,32 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10"/>
                                     </Border.StrokeShape>
-                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                                        <StackLayout Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" 
-                                                     VerticalOptions="Center"
-                                                     Spacing="3">
-                                            <Label Text="{Binding Title}" 
-                                                   FontSize="16" 
-                                                   FontAttributes="Bold"
-                                                   TextColor="{DynamicResource PrimaryTextColor}" />
-                                            <Label Text="{Binding AuthorsText}" 
-                                                   FontSize="13" 
-                                                   TextColor="{DynamicResource SecondaryTextColor}" />
-                                        </StackLayout>
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                        <!-- Название книги -->
+                                        <Label Grid.Column="0" Grid.Row="0"
+                                               Text="{Binding Title}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryTextColor}"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"
+                                               VerticalOptions="Start" />
+                                        
+                                        <!-- Авторы -->
+                                        <Label Grid.Column="0" Grid.Row="1"
+                                               Text="{Binding AuthorsText}" 
+                                               FontSize="13" 
+                                               TextColor="{DynamicResource SecondaryTextColor}"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"
+                                               VerticalOptions="Start"
+                                               Margin="0,5,0,0" />
+                                        
+                                        <!-- Статистика чтения -->
                                         <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                                      VerticalOptions="Center"
-                                                     HorizontalOptions="End">
+                                                     HorizontalOptions="End"
+                                                     Spacing="2">
                                             <Label Text="{Binding AveragePagesPerDay, StringFormat='{0:F2}'}" 
                                                    FontSize="20" 
                                                    FontAttributes="Bold"
@@ -278,6 +289,14 @@
                                                    TextColor="{DynamicResource SecondaryTextColor}"
                                                    HorizontalOptions="End" />
                                         </StackLayout>
+                                        
+                                        <!-- Дополнительная информация -->
+                                        <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                                               Text="{Binding TotalPagesRead, StringFormat='Всего прочитано: {0} страниц'}" 
+                                               FontSize="11" 
+                                               TextColor="{DynamicResource SecondaryTextColor}"
+                                               VerticalOptions="Start"
+                                               Margin="0,8,0,0" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
