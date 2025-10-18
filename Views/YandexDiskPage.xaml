@@ -183,8 +183,8 @@
                                             </VisualState>
                                             <VisualState Name="Selected">
                                                 <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource PrimaryColor}" />
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource SecondaryColor}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource SecondaryColor}" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>

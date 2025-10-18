@@ -45,13 +45,18 @@ jobs:
       - name: Build and Sign Android App (Release)
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         run: |
+            echo "Checking secrets availability..."
+            echo "Key alias length: $(${{ secrets.ANDROID_KEY_ALIAS }}.Length)"
+            echo "Key password length: $(${{ secrets.ANDROID_KEY_PASSWORD }}.Length)"
+            echo "Store password length: $(${{ secrets.ANDROID_STORE_PASSWORD }}.Length)"
+
             dotnet publish Library.csproj `
               -c Release `
               -f net9.0-android `
               /p:AndroidPackageFormats=apk `
               /p:AndroidKeyStore=true `
               /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
-              /p:AndroidSigningKeyAlias=dmonolibrary `
+              /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} `
               /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
               /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}
         env:
