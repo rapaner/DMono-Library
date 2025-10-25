@@ -80,7 +80,9 @@ jobs:
           dotnet publish Library.csproj `
             -c Release `
             -f net9.0-android `
-            /p:AndroidPackageFormats=apk
+            /p:AndroidPackageFormats=apk `
+            /p:YandexOAuth__ClientId=${{ secrets.YANDEX_OAUTH_CLIENT_ID }} `
+            /p:YandexOAuth__CallbackScheme=${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
             
           # Verify APK was created
           $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse
