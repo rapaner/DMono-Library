@@ -24,22 +24,26 @@ namespace Library.Services
         /// <summary>
         /// Запустить процесс OAuth авторизации
         /// </summary>
-        /// <returns>OAuth токен или null в случае ошибки</returns>
-        public async Task<string?> AuthenticateAsync()
+        /// <returns>OAuth токен</returns>
+        /// <exception cref="InvalidOperationException">Выбрасывается при ошибках конфигурации или авторизации</exception>
+        /// <exception cref="TaskCanceledException">Выбрасывается при отмене авторизации пользователем</exception>
+        public async Task<string> AuthenticateAsync()
         {
             try
             {
                 // Проверка наличия необходимой конфигурации
                 if (string.IsNullOrWhiteSpace(_clientId))
                 {
-                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Client ID не настроен в конфигурации");
-                    return null;
+                    var errorMessage1 = "Ошибка OAuth авторизации: Client ID не настроен в конфигурации";
+                    System.Diagnostics.Debug.WriteLine(errorMessage1);
+                    throw new InvalidOperationException(errorMessage1);
                 }
 
                 if (string.IsNullOrWhiteSpace(_callbackScheme))
                 {
-                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Callback Scheme не настроен в конфигурации");
-                    return null;
+                    var errorMessage2 = "Ошибка OAuth авторизации: Callback Scheme не настроен в конфигурации";
+                    System.Diagnostics.Debug.WriteLine(errorMessage2);
+                    throw new InvalidOperationException(errorMessage2);
                 }
 
                 // Формируем URL для авторизации
@@ -57,7 +61,9 @@ namespace Library.Services
                     return token;
                 }
 
-                return null;
+                var errorMessage = "Не удалось получить токен доступа из ответа OAuth";
+                System.Diagnostics.Debug.WriteLine(errorMessage);
+                throw new InvalidOperationException(errorMessage);
             }
             catch (TaskCanceledException)
             {
@@ -66,8 +72,9 @@ namespace Library.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка OAuth авторизации: {ex.Message}");
-                return null;
+                var errorMessage = $"Ошибка OAuth авторизации: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine(errorMessage);
+                throw new InvalidOperationException(errorMessage, ex);
             }
         }
 
