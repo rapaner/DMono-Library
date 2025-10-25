@@ -22,11 +22,10 @@ namespace Library.Services
         }
         
         /// <summary>
-        /// Запустить процесс OAuth авторизации
+        /// Запустить процесс OAuth авторизации для ручного копирования токена
         /// </summary>
-        /// <returns>OAuth токен</returns>
-        /// <exception cref="InvalidOperationException">Выбрасывается при ошибках конфигурации или авторизации</exception>
-        /// <exception cref="TaskCanceledException">Выбрасывается при отмене авторизации пользователем</exception>
+        /// <returns>null - пользователь должен скопировать токен из браузера</returns>
+        /// <exception cref="InvalidOperationException">Выбрасывается при ошибках конфигурации</exception>
         public async Task<string> AuthenticateAsync()
         {
             try
@@ -39,35 +38,14 @@ namespace Library.Services
                     throw new InvalidOperationException(errorMessage1);
                 }
 
-                if (string.IsNullOrWhiteSpace(_callbackScheme))
-                {
-                    var errorMessage2 = "Ошибка OAuth авторизации: Callback Scheme не настроен в конфигурации";
-                    System.Diagnostics.Debug.WriteLine(errorMessage2);
-                    throw new InvalidOperationException(errorMessage2);
-                }
-
                 // Формируем URL для авторизации
                 var authUrl = BuildAuthUrl();
                 
-                // Запускаем WebAuthenticator
-                var authResult = await WebAuthenticator.Default.AuthenticateAsync(
-                    new Uri(authUrl),
-                    new Uri($"{_callbackScheme}://oauth"));
+                // Открываем браузер для авторизации
+                // Пользователь должен скопировать токен из открывшегося окна
+                await Browser.OpenAsync(authUrl, BrowserLaunchMode.External);
 
-                // Яндекс возвращает токен в fragment (#access_token=...)
-                // WebAuthenticator автоматически парсит его
-                if (authResult.Properties.TryGetValue("access_token", out var token))
-                {
-                    return token;
-                }
-
-                var errorMessage = "Не удалось получить токен доступа из ответа OAuth";
-                System.Diagnostics.Debug.WriteLine(errorMessage);
-                throw new InvalidOperationException(errorMessage);
-            }
-            catch (TaskCanceledException)
-            {
-                // Пользователь отменил авторизацию
+                // Возвращаем null, так как токен нужно вводить вручную
                 return null;
             }
             catch (Exception ex)
@@ -87,17 +65,17 @@ namespace Library.Services
             sb.Append("https://oauth.yandex.ru/authorize?");
             sb.Append($"response_type=token");
             sb.Append($"&client_id={_clientId}");
-            sb.Append($"&redirect_uri={Uri.EscapeDataString($"{_callbackScheme}://oauth")}");
+            sb.Append($"&display=popup"); // Отображать токен в popup окне
             
             return sb.ToString();
         }
 
         /// <summary>
-        /// Проверить, поддерживается ли WebAuthenticator на текущей платформе
+        /// Проверить, поддерживается ли Browser на текущей платформе
         /// </summary>
         public bool IsSupported()
         {
-            // WebAuthenticator поддерживается на Android, iOS, macOS, Windows
+            // Browser поддерживается на всех платформах MAUI
             return true;
         }
     }

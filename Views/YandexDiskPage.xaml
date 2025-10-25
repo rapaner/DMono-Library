@@ -46,7 +46,7 @@
                            TextColor="{DynamicResource SecondaryTextColor}"/>
                     
                     <!-- Автоматическая авторизация через браузер -->
-                    <Button Text="🔐 Войти через Яндекс" 
+                    <Button Text="🌐 Открыть браузер для авторизации" 
                             Clicked="OnGetTokenClicked"
                             BackgroundColor="{DynamicResource PrimaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"
@@ -54,7 +54,7 @@
                             FontAttributes="Bold"
                             HeightRequest="50"/>
                     
-                    <Label Text="и введите токен вручную:" 
+                    <Label Text="После авторизации скопируйте токен из адресной строки браузера:" 
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            HorizontalOptions="Center"
