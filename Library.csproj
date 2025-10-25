@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>1.16</ApplicationDisplayVersion>
-		<ApplicationVersion>16</ApplicationVersion>
+		<ApplicationDisplayVersion>1.17</ApplicationDisplayVersion>
+		<ApplicationVersion>17</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
