@@ -61,7 +61,6 @@ jobs:
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
         run: |
           dotnet build Library.csproj -c Debug -f net9.0-android /p:AndroidPackageFormats=apk
-          ����������� ���������
           # Verify APK was created
           $apkFiles = Get-ChildItem -Path "bin\Debug\net9.0-android" -Filter "*.apk" -Recurse
           if ($apkFiles.Count -eq 0) {
@@ -77,12 +76,16 @@ jobs:
           YandexOAuth__ClientId: ${{ secrets.YANDEX_OAUTH_CLIENT_ID }}
           YandexOAuth__CallbackScheme: ${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
         run: |
+          # Debug: Show environment variables
+          Write-Host "=== Environment Variables Debug ==="
+          Write-Host "YandexOAuth__ClientId: $env:YandexOAuth__ClientId"
+          Write-Host "YandexOAuth__CallbackScheme: $env:YandexOAuth__CallbackScheme"
+          Write-Host "====================================="
+          
           dotnet publish Library.csproj `
             -c Release `
             -f net9.0-android `
-            /p:AndroidPackageFormats=apk `
-            /p:YandexOAuth__ClientId=${{ secrets.YANDEX_OAUTH_CLIENT_ID }} `
-            /p:YandexOAuth__CallbackScheme=${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
+            /p:AndroidPackageFormats=apk
             
           # Verify APK was created
           $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse
