@@ -2,6 +2,7 @@
 <ContentPage x:Class="Library.Views.ReadingSchedulePage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Library.Models"
              Title="График чтения"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -50,7 +51,6 @@
                                TextColor="{DynamicResource SecondaryTextColor}" />
                         <DatePicker x:Name="FinishDatePicker" 
                                     MinimumDate="01/01/2020"
-                                    Date="{Binding TargetFinishDate}"
                                     DateSelected="OnFinishDateSelected"
                                     TextColor="{DynamicResource PrimaryTextColor}"
                                     BackgroundColor="{DynamicResource InputBackgroundColor}"
@@ -130,7 +130,7 @@
                     <CollectionView x:Name="ScheduleCollectionView"
                                    SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="models:ReadByHourRecord">
                                 <Border BackgroundColor="{DynamicResource InputBackgroundColor}" 
                                        Padding="15" 
                                        Margin="0,5"

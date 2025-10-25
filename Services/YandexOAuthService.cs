@@ -9,7 +9,6 @@ namespace Library.Services
     public class YandexOAuthService
     {
         private readonly string _clientId;
-        private readonly string _callbackScheme;
 
         /// <summary>
         /// Конструктор с внедрением зависимости конфигурации
@@ -18,15 +17,13 @@ namespace Library.Services
         public YandexOAuthService(AppConfiguration appConfiguration)
         {
             _clientId = appConfiguration.YandexOAuthClientId;
-            _callbackScheme = appConfiguration.YandexOAuthCallbackScheme;
         }
         
         /// <summary>
         /// Запустить процесс OAuth авторизации для ручного копирования токена
         /// </summary>
-        /// <returns>null - пользователь должен скопировать токен из браузера</returns>
         /// <exception cref="InvalidOperationException">Выбрасывается при ошибках конфигурации</exception>
-        public async Task<string> AuthenticateAsync()
+        public async Task AuthenticateAsync()
         {
             try
             {
@@ -44,9 +41,6 @@ namespace Library.Services
                 // Открываем браузер для авторизации
                 // Пользователь должен скопировать токен из открывшегося окна
                 await Browser.OpenAsync(authUrl, BrowserLaunchMode.External);
-
-                // Возвращаем null, так как токен нужно вводить вручную
-                return null;
             }
             catch (Exception ex)
             {

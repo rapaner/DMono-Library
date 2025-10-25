@@ -64,8 +64,7 @@ public static class MauiProgram
             
             // Диагностика: выводим ключи Yandex OAuth
             System.Diagnostics.Debug.WriteLine("=== Yandex OAuth Configuration: ===");
-            System.Diagnostics.Debug.WriteLine($"  YandexOAuth:ClientId = {config["YandexOAuth:ClientId"]}");
-            System.Diagnostics.Debug.WriteLine($"  YandexOAuth:CallbackScheme = {config["YandexOAuth:CallbackScheme"]}");
+            System.Diagnostics.Debug.WriteLine($"  YandexOAuthClientId = {config["YandexOAuthClientId"]}");
 
             // Создание и регистрация конфигурации приложения
             var appConfig = new AppConfiguration
@@ -91,12 +90,11 @@ public static class MauiProgram
             }
 
             // Загрузка настроек Yandex OAuth из конфигурации
-            var yandexOAuthConfig = builder.Configuration.GetSection("YandexOAuth");
-            if (yandexOAuthConfig.Exists())
+            var yandexOAuthClientId = builder.Configuration.GetValue<string>("YandexOAuthClientId");
+            if (string.IsNullOrEmpty(yandexOAuthClientId) is false)
             {
-                appConfig.YandexOAuthClientId = yandexOAuthConfig.GetValue<string>("ClientId", string.Empty) ?? string.Empty;
-                appConfig.YandexOAuthCallbackScheme = yandexOAuthConfig.GetValue<string>("CallbackScheme", string.Empty) ?? string.Empty;
-                System.Diagnostics.Debug.WriteLine($"=== Loaded Yandex OAuth config: ClientId={appConfig.YandexOAuthClientId}, CallbackScheme={appConfig.YandexOAuthCallbackScheme} ===");
+                appConfig.YandexOAuthClientId = yandexOAuthClientId ?? string.Empty;
+                System.Diagnostics.Debug.WriteLine($"=== Loaded Yandex OAuth config: ClientId={appConfig.YandexOAuthClientId} ===");
             }
             else
             {

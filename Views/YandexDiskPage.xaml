@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:yd="clr-namespace:YandexDisk.Client.Protocol;assembly=YandexDisk.Client"
              x:Class="Library.Views.YandexDiskPage"
              Title="Яндекс Диск"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
@@ -164,7 +165,7 @@
                                   SelectionMode="Single"
                                   SelectionChanged="OnBackupSelectionChanged">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="yd:Resource">
                                 <Border Padding="10" 
                                        Margin="0,5" 
                                        BackgroundColor="{DynamicResource Gray100}" 
