@@ -105,11 +105,36 @@ jobs:
           path: bin/Release/net9.0-android/**/*.apk
           retention-days: 90
 
+      - name: List APK files before release
+        if: github.ref_type == 'tag'
+        run: |
+          Write-Host "APK files found:"
+          Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse | ForEach-Object {
+            Write-Host "  $($_.FullName)"
+          }
+          
+          # Verify specific APK files exist
+          $apk1 = "bin\Release\net9.0-android\ru.rapaner.library.apk"
+          $apk2 = "bin\Release\net9.0-android\ru.rapaner.library-Signed.apk"
+          
+          if (-not (Test-Path $apk1)) {
+            Write-Error "APK file not found: $apk1"
+            exit 1
+          }
+          if (-not (Test-Path $apk2)) {
+            Write-Error "Signed APK file not found: $apk2"
+            exit 1
+          }
+          
+          Write-Host "All required APK files found successfully"
+
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: bin/Release/net9.0-android/**/*.apk
+          files: |
+            bin/Release/net9.0-android/ru.rapaner.library.apk
+            bin/Release/net9.0-android/ru.rapaner.library-Signed.apk
           draft: false
           prerelease: false
           generate_release_notes: true
