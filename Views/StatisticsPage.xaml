@@ -253,7 +253,7 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10"/>
                                     </Border.StrokeShape>
-                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
                                         <!-- Название книги -->
                                         <Label Grid.Column="0" Grid.Row="0"
                                                Text="{Binding Title}" 
@@ -297,6 +297,12 @@
                                                TextColor="{DynamicResource SecondaryTextColor}"
                                                VerticalOptions="Start"
                                                Margin="0,8,0,0" />
+                                        <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                               Text="{Binding UniqueDaysCount, StringFormat='Читалось: {0} дней'}" 
+                                               FontSize="11" 
+                                               TextColor="{DynamicResource SecondaryTextColor}"
+                                               VerticalOptions="Start"
+                                               Margin="0,2,0,0" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

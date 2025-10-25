@@ -42,7 +42,6 @@ public static class MauiProgram
                 System.Diagnostics.Debug.WriteLine("=== Loaded appsettings.json ===");
             }
 
-#if DEBUG
             // 2. Загрузка appsettings.Development.json для разработки (работает на всех платформах)
             using var devStream = assembly.GetManifestResourceStream("Library.appsettings.Development.json");
             if (devStream != null)
@@ -54,7 +53,6 @@ public static class MauiProgram
             {
                 System.Diagnostics.Debug.WriteLine("=== appsettings.Development.json not found (optional) ===");
             }
-#endif
 
             // 3. Переменные окружения (наивысший приоритет)
             configBuilder.AddEnvironmentVariables();
