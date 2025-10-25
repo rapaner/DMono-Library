@@ -31,39 +31,67 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore Library.sln
 
+      - name: Verify project structure
+        run: |
+          if (-not (Test-Path "Library.csproj")) {
+            Write-Error "Library.csproj not found"
+            exit 1
+          }
+          if (-not (Test-Path "Library.Core\Library.Core.csproj")) {
+            Write-Error "Library.Core.csproj not found"
+            exit 1
+          }
+
       - name: Decode Keystore
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         run: |
           $bytes = [Convert]::FromBase64String("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")
           [IO.File]::WriteAllBytes("${{ github.workspace }}/library.keystore", $bytes)
+          
+          # Verify keystore was created successfully
+          if (-not (Test-Path "${{ github.workspace }}/library.keystore")) {
+            Write-Error "Failed to create keystore file"
+            exit 1
+          }
 
       - name: Build Android App (Debug)
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
         run: |
           dotnet build Library.csproj -c Debug -f net9.0-android /p:AndroidPackageFormats=apk
+          Исправление пайплайна
+          # Verify APK was created
+          $apkFiles = Get-ChildItem -Path "bin\Debug\net9.0-android" -Filter "*.apk" -Recurse
+          if ($apkFiles.Count -eq 0) {
+            Write-Error "No APK files found after build"
+            exit 1
+          }
 
       - name: Build and Sign Android App (Release)
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        env:
+          AndroidKeyPass: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          AndroidStorePass: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          YandexOAuth__ClientId: ${{ secrets.YANDEX_OAUTH_CLIENT_ID }}
+          YandexOAuth__CallbackScheme: ${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
         run: |
-            dotnet publish Library.csproj `
-              -c Release `
-              -f net9.0-android `
-              /p:AndroidPackageFormats=apk `
-              /p:AndroidKeyStore=true `
-              /p:AndroidSigningKeyStore="${{ github.workspace }}/library.keystore" `
-              /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} `
-              /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} `
-              /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }} `
-              /p:YandexOAuth__ClientId=${{ secrets.YANDEX_OAUTH_CLIENT_ID }} `
-              /p:YandexOAuth__CallbackScheme=${{ secrets.YANDEX_OAUTH_CALLBACK_SCHEME }}
+          dotnet publish Library.csproj `
+            -c Release `
+            -f net9.0-android `
+            /p:AndroidPackageFormats=apk
+            
+          # Verify APK was created
+          $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse
+          if ($apkFiles.Count -eq 0) {
+            Write-Error "No APK files found after publish"
+            exit 1
+          }
 
       - name: Upload Debug APK
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk-${{ github.sha }}
-          path: |
-            bin/Debug/net9.0-android/**/*.apk
+          path: bin/Debug/net9.0-android/**/*.apk
           retention-days: 7
 
       - name: Upload Signed Release APK
@@ -71,16 +99,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-release-signed-apk-${{ github.sha }}
-          path: |
-            bin/Release/net9.0-android/**/*-Signed.apk
+          path: bin/Release/net9.0-android/**/*.apk
           retention-days: 90
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            bin/Release/net9.0-android/**/*-Signed.apk
+          files: bin/Release/net9.0-android/**/*.apk
           draft: false
           prerelease: false
           generate_release_notes: true
