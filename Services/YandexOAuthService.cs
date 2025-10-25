@@ -87,6 +87,7 @@ namespace Library.Services
             sb.Append("https://oauth.yandex.ru/authorize?");
             sb.Append($"response_type=token");
             sb.Append($"&client_id={_clientId}");
+            sb.Append($"&redirect_uri={Uri.EscapeDataString($"{_callbackScheme}://oauth")}");
             
             return sb.ToString();
         }
