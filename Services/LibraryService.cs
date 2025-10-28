@@ -345,13 +345,23 @@ namespace Library.Services
         /// </summary>
         /// <param name="startDate">Начальная дата периода (null для всего времени)</param>
         /// <param name="endDate">Конечная дата периода (null для всего времени)</param>
+        /// <param name="searchText">Текст для поиска по названию или автору (null или пустая строка для отключения фильтра)</param>
         /// <returns>Статистика библиотеки</returns>
-        public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
             var books = await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .ToListAsync();
+
+            // Фильтрация книг по тексту поиска
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                books = books.Where(b =>
+                    b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
 
             // Фильтрация книг по датам (для статуса "Прочитано")
             var filteredBooks = books;
@@ -389,9 +399,9 @@ namespace Library.Services
                 .Take(10)
                 .ToList();
 
-            // Подсчет страниц с учетом фильтра по датам
+            // Подсчет страниц с учетом фильтра по датам (только для отфильтрованных книг)
             int totalPagesRead = 0;
-            foreach (var book in books)
+            foreach (var book in filteredBooks)
             {
                 if (startDate.HasValue || endDate.HasValue)
                 {
@@ -424,11 +434,29 @@ namespace Library.Services
         /// </summary>
         /// <param name="startDate">Начальная дата периода (null для всего времени)</param>
         /// <param name="endDate">Конечная дата периода (null для всего времени)</param>
+        /// <param name="searchText">Текст для поиска по названию или автору (null или пустая строка для отключения фильтра)</param>
         /// <returns>Список данных о прочитанных страницах по дням</returns>
-        public async Task<List<DailyReadingData>> GetDailyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<List<DailyReadingData>> GetDailyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
-            // Получаем все записи о чтении
+            // Получаем все книги с авторами и историей чтения
+            var books = await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
+                .ToListAsync();
+
+            // Фильтрация книг по тексту поиска
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                books = books.Where(b =>
+                    b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
+
+            // Получаем все записи о чтении только для отфильтрованных книг
+            var bookIds = books.Select(b => b.Id).ToList();
             var allReadingHistory = await _context.PagesReadHistory
+                .Where(p => bookIds.Contains(p.BookId))
                 .OrderBy(p => p.Date)
                 .ToListAsync();
 
@@ -554,14 +582,24 @@ namespace Library.Services
         /// </summary>
         /// <param name="startDate">Начальная дата периода для фильтрации книг (null для всего времени)</param>
         /// <param name="endDate">Конечная дата периода для фильтрации книг (null для всего времени)</param>
+        /// <param name="searchText">Текст для поиска по названию или автору (null или пустая строка для отключения фильтра)</param>
         /// <returns>Список книг с рейтингом, отсортированный по убыванию среднего количества страниц в день</returns>
-        public async Task<List<BookRanking>> GetBookRankingsAsync(DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<List<BookRanking>> GetBookRankingsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
             // Получаем все книги с авторами и историей чтения
             var books = await _context.Books
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .ToListAsync();
+
+            // Фильтрация книг по тексту поиска
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                books = books.Where(b =>
+                    b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
 
             // Фильтруем книги: оставляем только те, у которых есть история чтения
             var booksWithHistory = books.Where(b => b.PagesReadHistory.Any()).ToList();

@@ -9,6 +9,7 @@ public partial class StatisticsPage : ContentPage
 {
     private readonly LibraryService _libraryService;
     private readonly ReadingChartDrawable _chartDrawable;
+    private string _searchText = string.Empty;
 
     public StatisticsPage(LibraryService libraryService)
     {
@@ -51,6 +52,12 @@ public partial class StatisticsPage : ContentPage
     private async void OnCustomDateChanged(object sender, DateChangedEventArgs e)
     {
         // Загружаем статистику при изменении произвольных дат
+        await LoadStatistics();
+    }
+
+    private async void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        _searchText = e.NewTextValue ?? string.Empty;
         await LoadStatistics();
     }
 
@@ -99,7 +106,8 @@ public partial class StatisticsPage : ContentPage
                 break;
         }
 
-        var statistics = await _libraryService.GetStatisticsAsync(startDate, endDate);
+        var searchText = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText;
+        var statistics = await _libraryService.GetStatisticsAsync(startDate, endDate, searchText);
         
         // Общая статистика
         TotalBooksLabel.Text = statistics.TotalBooks.ToString();
@@ -112,7 +120,7 @@ public partial class StatisticsPage : ContentPage
         AuthorsCollectionView.ItemsSource = statistics.PopularAuthors;
         
         // Рейтинг книг
-        var bookRankings = await _libraryService.GetBookRankingsAsync(startDate, endDate);
+        var bookRankings = await _libraryService.GetBookRankingsAsync(startDate, endDate, searchText);
         BookRankingsCollectionView.ItemsSource = bookRankings;
         
         // Загрузка данных для графика
@@ -121,7 +129,8 @@ public partial class StatisticsPage : ContentPage
     
     private async Task LoadChartData(DateTime? startDate, DateTime? endDate)
     {
-        var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate);
+        var searchText = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText;
+        var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
         
         // Обновляем данные графика
         _chartDrawable.Data = dailyData.Select(d => new Library.Controls.DailyReadingData
