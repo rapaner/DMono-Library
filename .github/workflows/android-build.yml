@@ -134,13 +134,26 @@ jobs:
           
           Write-Host "All required APK files found successfully"
 
+      - name: Copy APK with tag version
+        if: github.ref_type == 'tag'
+        run: |
+          $sourceApk = "bin\Release\net9.0-android\ru.rapaner.library-Signed.apk"
+          $destApk = "bin\Release\net9.0-android\ru.rapaner.library-${{ github.ref_name }}.apk"
+          
+          if (-not (Test-Path $sourceApk)) {
+            Write-Error "Source APK file not found: $sourceApk"
+            exit 1
+          }
+          
+          Copy-Item $sourceApk $destApk
+          Write-Host "Copied APK to: $destApk"
+
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            bin/Release/net9.0-android/ru.rapaner.library.apk
-            bin/Release/net9.0-android/ru.rapaner.library-Signed.apk
+            bin/Release/net9.0-android/ru.rapaner.library-${{ github.ref_name }}.apk
           draft: false
           prerelease: false
           generate_release_notes: true
