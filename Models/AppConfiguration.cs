@@ -25,30 +25,24 @@ namespace Library.Models
         /// </summary>
         public string AppVersion { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Имя приложения
-    /// </summary>
-    public string AppName { get; set; } = "Library";
+        /// <summary>
+        /// Имя приложения
+        /// </summary>
+        public string AppName { get; set; } = "Library";
 
-    /// <summary>
-    /// Час начала чтения по умолчанию
-    /// </summary>
-    public int DefaultStartHour { get; set; } = 6;
+        /// <summary>
+        /// Час начала чтения по умолчанию
+        /// </summary>
+        public int DefaultStartHour { get; set; } = 6;
 
-    /// <summary>
-    /// Час окончания чтения по умолчанию
-    /// </summary>
-    public int DefaultEndHour { get; set; } = 23;
+        /// <summary>
+        /// Час окончания чтения по умолчанию
+        /// </summary>
+        public int DefaultEndHour { get; set; } = 23;
 
-    /// <summary>
-    /// Yandex OAuth Client ID
-    /// </summary>
-    public string YandexOAuthClientId { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Yandex OAuth Callback Scheme
-    /// </summary>
-    public string YandexOAuthCallbackScheme { get; set; } = string.Empty;
+        /// <summary>
+        /// Yandex OAuth Client ID
+        /// </summary>
+        public string YandexOAuthClientId { get; set; } = string.Empty;
+    }
 }
-}
-

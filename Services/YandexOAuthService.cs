@@ -9,7 +9,6 @@ namespace Library.Services
     public class YandexOAuthService
     {
         private readonly string _clientId;
-        private readonly string _callbackScheme;
 
         /// <summary>
         /// Конструктор с внедрением зависимости конфигурации
@@ -18,56 +17,36 @@ namespace Library.Services
         public YandexOAuthService(AppConfiguration appConfiguration)
         {
             _clientId = appConfiguration.YandexOAuthClientId;
-            _callbackScheme = appConfiguration.YandexOAuthCallbackScheme;
         }
         
         /// <summary>
-        /// Запустить процесс OAuth авторизации
+        /// Запустить процесс OAuth авторизации для ручного копирования токена
         /// </summary>
-        /// <returns>OAuth токен или null в случае ошибки</returns>
-        public async Task<string?> AuthenticateAsync()
+        /// <exception cref="InvalidOperationException">Выбрасывается при ошибках конфигурации</exception>
+        public async Task AuthenticateAsync()
         {
             try
             {
                 // Проверка наличия необходимой конфигурации
                 if (string.IsNullOrWhiteSpace(_clientId))
                 {
-                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Client ID не настроен в конфигурации");
-                    return null;
-                }
-
-                if (string.IsNullOrWhiteSpace(_callbackScheme))
-                {
-                    System.Diagnostics.Debug.WriteLine("Ошибка OAuth авторизации: Callback Scheme не настроен в конфигурации");
-                    return null;
+                    var errorMessage1 = "Ошибка OAuth авторизации: Client ID не настроен в конфигурации";
+                    System.Diagnostics.Debug.WriteLine(errorMessage1);
+                    throw new InvalidOperationException(errorMessage1);
                 }
 
                 // Формируем URL для авторизации
                 var authUrl = BuildAuthUrl();
                 
-                // Запускаем WebAuthenticator
-                var authResult = await WebAuthenticator.Default.AuthenticateAsync(
-                    new Uri(authUrl),
-                    new Uri($"{_callbackScheme}://oauth"));
-
-                // Яндекс возвращает токен в fragment (#access_token=...)
-                // WebAuthenticator автоматически парсит его
-                if (authResult.Properties.TryGetValue("access_token", out var token))
-                {
-                    return token;
-                }
-
-                return null;
-            }
-            catch (TaskCanceledException)
-            {
-                // Пользователь отменил авторизацию
-                return null;
+                // Открываем браузер для авторизации
+                // Пользователь должен скопировать токен из открывшегося окна
+                await Browser.OpenAsync(authUrl, BrowserLaunchMode.SystemPreferred);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка OAuth авторизации: {ex.Message}");
-                return null;
+                var errorMessage = $"Ошибка OAuth авторизации: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine(errorMessage);
+                throw new InvalidOperationException(errorMessage, ex);
             }
         }
 
@@ -80,16 +59,17 @@ namespace Library.Services
             sb.Append("https://oauth.yandex.ru/authorize?");
             sb.Append($"response_type=token");
             sb.Append($"&client_id={_clientId}");
+            sb.Append($"&display=popup"); // Отображать токен в popup окне
             
             return sb.ToString();
         }
 
         /// <summary>
-        /// Проверить, поддерживается ли WebAuthenticator на текущей платформе
+        /// Проверить, поддерживается ли Browser на текущей платформе
         /// </summary>
         public bool IsSupported()
         {
-            // WebAuthenticator поддерживается на Android, iOS, macOS, Windows
+            // Browser поддерживается на всех платформах MAUI
             return true;
         }
     }

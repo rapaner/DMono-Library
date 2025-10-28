@@ -90,30 +90,21 @@ namespace Library.Views
                 LoadingIndicator.IsVisible = true;
 
                 // Запускаем OAuth авторизацию через браузер
-                var token = await _oauthService.AuthenticateAsync();
+                await _oauthService.AuthenticateAsync();
 
-                if (!string.IsNullOrEmpty(token))
-                {
-                    // Автоматически сохраняем полученный токен
-                    _yandexDiskService.SetOAuthToken(token);
-                    
-                    // Проверяем токен
-                    await _yandexDiskService.GetDiskInfoAsync();
-
-                    // Сохраняем токен в настройках
-                    var settings = _settingsService.GetYandexDiskSettings();
-                    settings.OAuthToken = token;
-                    _settingsService.SaveYandexDiskSettings(settings);
-
-                    await UpdateStatusAsync();
-                    await LoadBackupsAsync();
-
-                    await DisplayAlert("Успех", "Авторизация прошла успешно! Вы подключены к Яндекс Диску.", "OK");
-                }
+                // Показываем инструкции пользователю
+                await DisplayAlert(
+                    "Инструкции по получению токена",
+                    "В открывшемся окне браузера:\n\n" +
+                    "1. Войдите в свой аккаунт Яндекс\n" +
+                    "2. Разрешите доступ приложению\n" +
+                    "3. Скопируйте токен из адресной строки (после #access_token=)\n" +
+                    "4. Вставьте токен в поле ниже и нажмите 'Сохранить токен'",
+                    "Понятно");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось выполнить авторизацию: {ex.Message}", "OK");
+                await DisplayAlert("Ошибка", $"Не удалось открыть браузер для авторизации: {ex.Message}", "OK");
             }
             finally
             {

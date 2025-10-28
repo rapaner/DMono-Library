@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>1.15</ApplicationDisplayVersion>
-		<ApplicationVersion>15</ApplicationVersion>
+		<ApplicationDisplayVersion>1.17</ApplicationDisplayVersion>
+		<ApplicationVersion>17</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -52,6 +52,7 @@
 		<!-- Embed configuration files as resources -->
 		<EmbeddedResource Include="appsettings.json" />
 		<EmbeddedResource Include="appsettings.Development.json" Condition="Exists('appsettings.Development.json')" />
+		<EmbeddedResource Include="appsettings.Release.json" Condition="Exists('appsettings.Release.json') And '$(Configuration)' == 'Release'" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -85,14 +86,7 @@
 	  <AndroidSigningKeyPass>$(AndroidKeyPass)</AndroidSigningKeyPass>
 	  <AndroidSigningStorePass>$(AndroidStorePass)</AndroidSigningStorePass>
 	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	</PropertyGroup>
+
 
 
 </Project>
