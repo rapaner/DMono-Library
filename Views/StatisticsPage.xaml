@@ -63,6 +63,27 @@
                 </StackLayout>
             </Border>
             
+            <!-- Поиск по названию или автору -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   Padding="20" 
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout Spacing="15">
+                    <Label Text="🔍 Поиск" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Entry x:Name="SearchEntry"
+                           Placeholder="Поиск по названию или автору"
+                           TextChanged="OnSearchTextChanged"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           PlaceholderColor="{DynamicResource SecondaryTextColor}" />
+                </StackLayout>
+            </Border>
+            
             <!-- Общая статистика -->
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
