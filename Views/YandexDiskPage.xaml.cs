@@ -276,6 +276,59 @@ namespace Library.Views
             }
         }
 
+        private async void OnDeleteBackupClicked(object sender, EventArgs e)
+        {
+            if (!_yandexDiskService.IsAuthorized)
+            {
+                await DisplayAlert("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+                return;
+            }
+
+            if (_selectedBackup == null)
+            {
+                await DisplayAlert("Ошибка", "Выберите резервную копию для удаления", "OK");
+                return;
+            }
+
+            var confirm = await DisplayAlert(
+                "Подтверждение",
+                $"Вы уверены, что хотите удалить резервную копию?\n\n{_selectedBackup.Name}\n\nЭто действие нельзя отменить.",
+                "Да",
+                "Нет");
+
+            if (!confirm)
+                return;
+
+            try
+            {
+                LoadingIndicator.IsRunning = true;
+                LoadingIndicator.IsVisible = true;
+
+                var success = await _yandexDiskService.DeleteFileAsync(_selectedBackup.Path, permanently: true);
+
+                if (success)
+                {
+                    await DisplayAlert("Успех", "Резервная копия удалена", "OK");
+                    
+                    _selectedBackup = null;
+                    await LoadBackupsAsync();
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось удалить резервную копию", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось удалить резервную копию: {ex.Message}", "OK");
+            }
+            finally
+            {
+                LoadingIndicator.IsRunning = false;
+                LoadingIndicator.IsVisible = false;
+            }
+        }
+
         private void OnAutoBackupToggled(object sender, ToggledEventArgs e)
         {
             FrequencyLayout.IsVisible = e.Value;
@@ -345,7 +398,7 @@ namespace Library.Views
             if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
             {
                 _selectedBackup = backup;
-                DisplayAlert("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления.", "OK");
+                DisplayAlert("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.", "OK");
             }
         }
     }
