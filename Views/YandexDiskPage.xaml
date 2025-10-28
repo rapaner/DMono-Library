@@ -108,6 +108,11 @@
                             BackgroundColor="{DynamicResource SecondaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"/>
                     
+                    <Button Text="Удалить резервную копию" 
+                            Clicked="OnDeleteBackupClicked"
+                            BackgroundColor="{DynamicResource ErrorColor}"
+                            TextColor="{DynamicResource SecondaryTextColor}"/>
+                    
                     <!-- Автоматическое резервное копирование -->
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Автоматическое резервное копирование" 
