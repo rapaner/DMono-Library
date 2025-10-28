@@ -9,6 +9,7 @@ public partial class LibraryPage : ContentPage
     private readonly LibraryService _libraryService;
     private ObservableCollection<BookViewModel> _books;
     private string _currentFilter = "All";
+    private string _currentSort = "Default";
 
     public LibraryPage(LibraryService libraryService)
     {
@@ -16,6 +17,9 @@ public partial class LibraryPage : ContentPage
         _libraryService = libraryService;
         _books = new ObservableCollection<BookViewModel>();
         BooksCollectionView.ItemsSource = _books;
+        
+        // Установить сортировку по умолчанию
+        SortPicker.SelectedIndex = 0;
         
         _ = LoadBooks();
     }
@@ -38,6 +42,14 @@ public partial class LibraryPage : ContentPage
             "Planned" => allBooks.Where(b => b.Status == BookStatus.Planned).ToList(),
             "Finished" => allBooks.Where(b => b.Status == BookStatus.Finished).ToList(),
             _ => allBooks
+        };
+
+        // Применить сортировку
+        books = _currentSort switch
+        {
+            "Title" => books.OrderBy(b => b.Title).ToList(),
+            "Author" => books.OrderBy(b => b.AuthorsText).ThenBy(b => b.Title).ToList(),
+            _ => books // По умолчанию - оставляем порядок из БД (DateAdded descending)
         };
 
         foreach (var book in books)
@@ -74,6 +86,22 @@ public partial class LibraryPage : ContentPage
             "В планах" => "Planned",
             "Прочитано" => "Finished",
             _ => "All"
+        };
+
+        await LoadBooks();
+    }
+
+    private async void OnSortChanged(object sender, EventArgs e)
+    {
+        var picker = sender as Picker;
+        if (picker == null) return;
+
+        _currentSort = picker.SelectedIndex switch
+        {
+            0 => "Default",
+            1 => "Title",
+            2 => "Author",
+            _ => "Default"
         };
 
         await LoadBooks();

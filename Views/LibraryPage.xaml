@@ -6,7 +6,7 @@
              Title="Вся библиотека"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         
         <!-- Фильтры -->
         <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -42,9 +42,31 @@
             </StackLayout>
         </ScrollView>
 
+        <!-- Сортировка -->
+        <StackLayout Grid.Row="1" 
+                     Orientation="Horizontal" 
+                     Padding="15,10" 
+                     Spacing="10">
+            <Label Text="Сортировка:" 
+                   FontSize="14" 
+                   VerticalOptions="Center" 
+                   TextColor="{DynamicResource PrimaryTextColor}" />
+            <Picker x:Name="SortPicker" 
+                    SelectedIndexChanged="OnSortChanged"
+                    WidthRequest="200">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>По умолчанию</x:String>
+                        <x:String>По названию</x:String>
+                        <x:String>По автору</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        </StackLayout>
+
         <!-- Список книг -->
         <CollectionView x:Name="BooksCollectionView" 
-                         Grid.Row="1"
+                         Grid.Row="2"
                          SelectionMode="Single"
                          SelectionChanged="OnBookSelected">
             <CollectionView.ItemTemplate>
@@ -93,7 +115,7 @@
         </CollectionView>
 
         <!-- Кнопка добавления -->
-        <Button Grid.Row="2" 
+        <Button Grid.Row="3" 
                 Text="➕ Добавить книгу" 
                 BackgroundColor="{DynamicResource PrimaryColor}" 
                 TextColor="{DynamicResource SecondaryTextColor}" 
