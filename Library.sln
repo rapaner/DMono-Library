@@ -14,9 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{79149F
 		.github\GITHUB_ACTIONS_SUMMARY.md = .github\GITHUB_ACTIONS_SUMMARY.md
 		.github\INDEX.md = .github\INDEX.md
 		.github\PIPELINE_OVERVIEW.md = .github\PIPELINE_OVERVIEW.md
-		.github\README.md = .github\README.md
-		.github\REMOVE_KEYSTORE.md = .github\REMOVE_KEYSTORE.md
-		.github\SETUP_COMPLETE.md = .github\SETUP_COMPLETE.md
 		.github\SETUP_SECRETS.md = .github\SETUP_SECRETS.md
 	EndProjectSection
 EndProject

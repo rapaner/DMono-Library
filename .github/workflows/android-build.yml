@@ -68,6 +68,15 @@ jobs:
             exit 1
           }
 
+      - name: Create appsettings.Release.json
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        run: |
+          $json = @{
+            YandexOAuthClientId = "${{ secrets.YANDEX_OAUTH_CLIENT_ID }}"
+          } | ConvertTo-Json -Depth 10
+          Set-Content -Path "appsettings.Release.json" -Value $json -NoNewline
+          Write-Host "Created appsettings.Release.json with YandexOAuthClientId"
+
       - name: Build and Sign Android App (Release)
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         env:
@@ -77,8 +86,7 @@ jobs:
           dotnet publish Library.csproj `
             -c Release `
             -f net9.0-android `
-            /p:AndroidPackageFormats=apk `
-            /p:YandexOAuthClientId="${{ secrets.YANDEX_OAUTH_CLIENT_ID }}"
+            /p:AndroidPackageFormats=apk
             
           # Verify APK was created
           $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse
