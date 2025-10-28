@@ -54,6 +54,14 @@ public static class MauiProgram
                 System.Diagnostics.Debug.WriteLine("=== appsettings.Development.json not found (optional) ===");
             }
 
+            // 2.5. Загрузка appsettings.Release.json для Release сборки (высокий приоритет, переопределяет appsettings.json)
+            using var releaseStream = assembly.GetManifestResourceStream("Library.appsettings.Release.json");
+            if (releaseStream != null)
+            {
+                configBuilder.AddJsonStream(releaseStream);
+                System.Diagnostics.Debug.WriteLine("=== Loaded appsettings.Release.json ===");
+            }
+
             // 3. Переменные окружения (наивысший приоритет)
             configBuilder.AddEnvironmentVariables();
 

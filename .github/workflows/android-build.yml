@@ -73,12 +73,12 @@ jobs:
         env:
           AndroidKeyPass: ${{ secrets.ANDROID_KEY_PASSWORD }}
           AndroidStorePass: ${{ secrets.ANDROID_STORE_PASSWORD }}
-          YandexOAuthClientId: ${{ secrets.YANDEX_OAUTH_CLIENT_ID }}
         run: |          
           dotnet publish Library.csproj `
             -c Release `
             -f net9.0-android `
-            /p:AndroidPackageFormats=apk
+            /p:AndroidPackageFormats=apk `
+            /p:YandexOAuthClientId="${{ secrets.YANDEX_OAUTH_CLIENT_ID }}"
             
           # Verify APK was created
           $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse

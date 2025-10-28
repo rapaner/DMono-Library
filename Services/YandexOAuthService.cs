@@ -40,7 +40,7 @@ namespace Library.Services
                 
                 // Открываем браузер для авторизации
                 // Пользователь должен скопировать токен из открывшегося окна
-                await Browser.OpenAsync(authUrl, BrowserLaunchMode.External);
+                await Browser.OpenAsync(authUrl, BrowserLaunchMode.SystemPreferred);
             }
             catch (Exception ex)
             {

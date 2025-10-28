@@ -52,6 +52,7 @@
 		<!-- Embed configuration files as resources -->
 		<EmbeddedResource Include="appsettings.json" />
 		<EmbeddedResource Include="appsettings.Development.json" Condition="Exists('appsettings.Development.json')" />
+		<EmbeddedResource Include="appsettings.Release.json" Condition="Exists('appsettings.Release.json') And '$(Configuration)' == 'Release'" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -85,6 +86,13 @@
 	  <AndroidSigningKeyPass>$(AndroidKeyPass)</AndroidSigningKeyPass>
 	  <AndroidSigningStorePass>$(AndroidStorePass)</AndroidSigningStorePass>
 	</PropertyGroup>
+
+	<!-- MSBuild target to create appsettings.Release.json if YandexOAuthClientId property is set -->
+	<Target Name="CreateAppSettingsRelease" BeforeTargets="PrepareForBuild" Condition="'$(YandexOAuthClientId)' != '' And '$(Configuration)' == 'Release'">
+		<Message Text="Creating appsettings.Release.json with YandexOAuthClientId from MSBuild property" Importance="high" />
+		<Exec Command="powershell -NonInteractive -ExecutionPolicy Bypass -Command &quot;$json = @{ YandexOAuthClientId = '$(YandexOAuthClientId)' } | ConvertTo-Json -Depth 10; Set-Content 'appsettings.Release.json' -Value $json -NoNewline&quot;" />
+		<Message Text="Successfully created appsettings.Release.json" Importance="high" />
+	</Target>
 
 
 </Project>
