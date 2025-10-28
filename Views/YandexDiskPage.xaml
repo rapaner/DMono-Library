@@ -111,7 +111,7 @@
                     <Button Text="Удалить резервную копию" 
                             Clicked="OnDeleteBackupClicked"
                             BackgroundColor="{DynamicResource ErrorColor}"
-                            TextColor="{DynamicResource SecondaryTextColor}"/>
+                            TextColor="{DynamicResource PrimaryTextColor}"/>
                     
                     <!-- Автоматическое резервное копирование -->
                     <HorizontalStackLayout Spacing="10">
