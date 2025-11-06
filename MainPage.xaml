@@ -70,7 +70,7 @@
             </Border>
 
             <!-- Меню действий -->
-            <Grid x:Name="menuGrid" ColumnDefinitions="*,*" RowDefinitions="*,*" ColumnSpacing="15" RowSpacing="15">
+            <Grid x:Name="menuGrid" ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="15" RowSpacing="15">
 
                 <!-- Просмотр библиотеки -->
                 <Border x:Name="libraryFrame" Grid.Row="0" Grid.Column="0"
@@ -138,8 +138,30 @@
                     </StackLayout>
                 </Border>
 
+                <!-- Выбор книги -->
+                <Border x:Name="bookChooseFrame" Grid.Row="1" Grid.Column="1"
+                        BackgroundColor="{DynamicResource CardBackgroundColor}"
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="🎲" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Выбор книги"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Рандомный выбор"
+                               FontSize="12"
+                               HorizontalOptions="Center"
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Border>
+
                 <!-- Настройки -->
-                <Border x:Name="settingsFrame" Grid.Row="1" Grid.Column="1"
+                <Border x:Name="settingsFrame" Grid.Row="2" Grid.Column="0"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
