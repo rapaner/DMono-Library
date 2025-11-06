@@ -71,5 +71,20 @@ namespace Library.Core.Models
         /// Расписание чтения книги (one-to-one связь)
         /// </summary>
         public BookReadingSchedule? ReadingSchedule { get; set; }
+
+        /// <summary>
+        /// Первая страница основного издания книги (для альтернативного расчета страниц)
+        /// </summary>
+        public int? MainFirstPage { get; set; }
+
+        /// <summary>
+        /// Первая страница альтернативного издания книги (для альтернативного расчета страниц)
+        /// </summary>
+        public int? AlternativeFirstPage { get; set; }
+
+        /// <summary>
+        /// Последняя страница альтернативного издания книги (для альтернативного расчета страниц)
+        /// </summary>
+        public int? AlternativeLastPage { get; set; }
     }
 }
