@@ -209,4 +209,21 @@ public partial class BookDetailPage : ContentPage
     {
         await Shell.Current.GoToAsync($"{nameof(ReadingSchedulePage)}?bookId={_book.Id}");
     }
+
+    /// <summary>
+    /// Обработчик нажатия кнопки "Альтернативный расчет страниц"
+    /// </summary>
+    private async void OnAlternativePageCalculationClicked(object sender, EventArgs e)
+    {
+        // Перезагружаем книгу из базы данных для получения актуальных данных
+        var updatedBook = await _libraryService.GetBookByIdAsync(_book.Id);
+        if (updatedBook != null)
+        {
+            await Navigation.PushAsync(new AlternativePageCalculationPage(updatedBook, _libraryService));
+        }
+        else
+        {
+            await Navigation.PushAsync(new AlternativePageCalculationPage(_book, _libraryService));
+        }
+    }
 }

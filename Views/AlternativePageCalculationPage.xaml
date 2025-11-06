@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.AlternativePageCalculationPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Альтернативный расчет страниц"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <!-- Информация о книге -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   Padding="20" 
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout>
+                    <Label x:Name="BookTitleLabel" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label x:Name="BookAuthorLabel" 
+                           FontSize="16" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                    <Label x:Name="TotalPagesLabel" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                </StackLayout>
+            </Border>
+
+            <!-- Инструкции -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   Padding="20" 
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout>
+                    <Label Text="ℹ️ Как использовать" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <Label Text="Этот функционал позволяет переводить страницы между бумажным и электронным изданиями книги.&#x0a;&#x0a;1. Введите первую страницу основного (бумажного) издания. Последняя страница берется из общего количества страниц книги.&#x0a;&#x0a;2. Введите первую и последнюю страницы альтернативного (электронного) издания.&#x0a;&#x0a;3. После ввода данных вы сможете конвертировать страницы в реальном времени:&#x0a;   - Введите страницу основного издания → справа отобразится эквивалент в альтернативном&#x0a;   - Введите страницу альтернативного издания → справа отобразится эквивалент в основном" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,10,0,0" />
+                </StackLayout>
+            </Border>
+
+            <!-- Настройка диапазонов -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   Padding="20" 
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout Spacing="15">
+                    
+                    <Label Text="📖 Настройка диапазонов страниц" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <!-- Первая страница основного издания -->
+                    <Label Text="Первая страница основного издания:" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,10,0,0" />
+                    <Entry x:Name="MainFirstPageEntry" 
+                           Placeholder="Введите номер первой страницы" 
+                           Keyboard="Numeric"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                           TextChanged="OnMainFirstPageChanged" />
+                    <Label Text="Последняя страница основного издания берется из общего количества страниц книги" 
+                           FontSize="12" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
+                    
+                    <!-- Первая страница альтернативного издания -->
+                    <Label Text="Первая страница альтернативного издания:" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,15,0,0" />
+                    <Entry x:Name="AlternativeFirstPageEntry" 
+                           Placeholder="Введите номер первой страницы" 
+                           Keyboard="Numeric"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                           TextChanged="OnAlternativeFirstPageChanged" />
+                    
+                    <!-- Последняя страница альтернативного издания -->
+                    <Label Text="Последняя страница альтернативного издания:" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,15,0,0" />
+                    <Entry x:Name="AlternativeLastPageEntry" 
+                           Placeholder="Введите номер последней страницы" 
+                           Keyboard="Numeric"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                           TextChanged="OnAlternativeLastPageChanged" />
+                    
+                </StackLayout>
+            </Border>
+
+            <!-- Конвертация страниц -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                   Padding="20" 
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout Spacing="15">
+                    
+                    <Label Text="🔄 Конвертация страниц" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <!-- Конвертация из основного в альтернативное -->
+                    <Label Text="Страница основного издания:" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,10,0,0" />
+                    <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                        <Entry x:Name="MainPageEntry" 
+                               Grid.Column="0"
+                               Placeholder="Введите страницу" 
+                               Keyboard="Numeric"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                               TextChanged="OnMainPageChanged" />
+                        <Label Text="→" 
+                               Grid.Column="1"
+                               FontSize="18" 
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               VerticalOptions="Center" />
+                        <Label x:Name="AlternativePageResultLabel" 
+                               Grid.Column="2"
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource TertiaryColor}"
+                               VerticalOptions="Center"
+                               Text="—" />
+                    </Grid>
+                    
+                    <!-- Конвертация из альтернативного в основное -->
+                    <Label Text="Страница альтернативного издания:" 
+                           FontSize="14" 
+                           TextColor="{DynamicResource PrimaryTextColor}" 
+                           Margin="0,15,0,0" />
+                    <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                        <Entry x:Name="AlternativePageEntry" 
+                               Grid.Column="0"
+                               Placeholder="Введите страницу" 
+                               Keyboard="Numeric"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                               TextChanged="OnAlternativePageChanged" />
+                        <Label Text="→" 
+                               Grid.Column="1"
+                               FontSize="18" 
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               VerticalOptions="Center" />
+                        <Label x:Name="MainPageResultLabel" 
+                               Grid.Column="2"
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource TertiaryColor}"
+                               VerticalOptions="Center"
+                               Text="—" />
+                    </Grid>
+                    
+                </StackLayout>
+            </Border>
+
+            <!-- Кнопки действий -->
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Button Text="✅ Сохранить" 
+                        BackgroundColor="{DynamicResource PrimaryColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="10" 
+                        HorizontalOptions="Fill" 
+                        Clicked="OnSaveClicked" />
+                <Button Text="❌ Отмена" 
+                        BackgroundColor="{DynamicResource SecondaryColor}" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
+                        CornerRadius="10" 
+                        HorizontalOptions="Fill" 
+                        Clicked="OnCancelClicked" />
+            </StackLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>
+
