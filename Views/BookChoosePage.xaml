@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Library.Views.BookChoosePage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Выбор книги"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
+                    StrokeThickness="0"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15" />
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <Label Text="Предыдущий выбор"
+                           Grid.Row="0" Grid.Column="0"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Entry x:Name="LastChosenBookNumberEntry"
+                           IsReadOnly="True"
+                           Grid.Row="0" Grid.Column="1" />
+
+                    <Label Text="Кол-во книг для расчёта"
+                           Grid.Row="1" Grid.Column="0"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Entry x:Name="BooksAmountEntry"
+                           Keyboard="Numeric"
+                           Grid.Row="1" Grid.Column="1" />
+
+                    <Label Text="Вариант расчёта"
+                           Grid.Row="2" Grid.Column="0"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Picker x:Name="BookChooseServicePicker"
+                            Title="Выберите метод"
+                            Grid.Row="2" Grid.Column="1" />
+
+                    <Button x:Name="CalculateButton"
+                            Text="Рассчитать"
+                            Grid.Row="3" Grid.ColumnSpan="2"
+                            BackgroundColor="{DynamicResource PrimaryColor}"
+                            TextColor="{DynamicResource SecondaryTextColor}"
+                            CornerRadius="10" />
+                </Grid>
+            </Border>
+
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
+                    StrokeThickness="0"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15" />
+                </Border.StrokeShape>
+                <StackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Выбранный номер"
+                           FontSize="18" FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label x:Name="ChosenBookNumberLabel"
+                           FontSize="40" FontAttributes="Bold"
+                           TextColor="{DynamicResource TertiaryColor}" />
+                </StackLayout>
+            </Border>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
+
+

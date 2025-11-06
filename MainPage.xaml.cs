@@ -44,6 +44,12 @@ public partial class MainPage : ContentPage
         statsTap.Tapped += OnStatsTapped;
         statsFrame.GestureRecognizers.Add(statsTap);
 
+        // Выбор книги
+        var bookChooseFrame = (Border)this.FindByName("bookChooseFrame");
+        var bookChooseTap = new TapGestureRecognizer();
+        bookChooseTap.Tapped += OnBookChooseTapped;
+        bookChooseFrame.GestureRecognizers.Add(bookChooseTap);
+
         // Настройки
         var settingsFrame = (Border)this.FindByName("settingsFrame");
         var settingsTap = new TapGestureRecognizer();
@@ -102,5 +108,12 @@ public partial class MainPage : ContentPage
     private async void OnSettingsTapped(object? sender, EventArgs e)
     {
         await Navigation.PushAsync(new SettingsPage(_libraryService, _settingsService));
+    }
+
+    private async void OnBookChooseTapped(object? sender, EventArgs e)
+    {
+        var serviceProvider = this.Handler?.MauiContext?.Services
+            ?? throw new InvalidOperationException("ServiceProvider not available");
+        await Navigation.PushAsync(new BookChoosePage(serviceProvider, _settingsService));
     }
 }

@@ -1,4 +1,3 @@
-using Library.Core.Models;
 using Library.Models;
 using System.Text.Json;
 
@@ -11,6 +10,9 @@ namespace Library.Services
     {
         private const string YandexDiskSettingsKey = "YandexDiskSettings";
         private const string ThemePreferenceKey = "AppThemePreference";
+        private const string BookChooseBooksAmountKey = "BookChooseBooksAmount";
+        private const string BookChooseLastChosenBookNumberKey = "BookChooseLastChosenBookNumber";
+        private const string BookChooseServiceOptionKey = "BookChooseServiceOption";
 
         /// <summary>
         /// Получить настройки Яндекс Диска
@@ -19,7 +21,7 @@ namespace Library.Services
         public YandexDiskSettings GetYandexDiskSettings()
         {
             var json = Preferences.Get(YandexDiskSettingsKey, string.Empty);
-            
+
             if (string.IsNullOrEmpty(json))
             {
                 return new YandexDiskSettings();
@@ -86,6 +88,28 @@ namespace Library.Services
         public string GetAppVersion()
         {
             return AppInfo.Current.VersionString;
+        }
+
+        /// <summary>
+        /// Прочитать настройки выбора книги.
+        /// </summary>
+        /// <returns>Кортеж (booksAmount, lastChosenBookNumber, currentOption)</returns>
+        public (int BooksAmount, int LastChosenBookNumber, int CurrentBookChooseServiceOption) GetBookChooseSettings()
+        {
+            int booksAmount = Preferences.Get(BookChooseBooksAmountKey, 1000);
+            int lastChosen = Preferences.Get(BookChooseLastChosenBookNumberKey, 0);
+            int option = Preferences.Get(BookChooseServiceOptionKey, -1);
+            return (booksAmount, lastChosen, option);
+        }
+
+        /// <summary>
+        /// Сохранить настройки выбора книги.
+        /// </summary>
+        public void SaveBookChooseSettings(int booksAmount, int lastChosenBookNumber, int currentBookChooseServiceOption)
+        {
+            Preferences.Set(BookChooseBooksAmountKey, booksAmount);
+            Preferences.Set(BookChooseLastChosenBookNumberKey, lastChosenBookNumber);
+            Preferences.Set(BookChooseServiceOptionKey, currentBookChooseServiceOption);
         }
     }
 }

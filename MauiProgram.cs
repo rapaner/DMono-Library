@@ -33,7 +33,7 @@ public static class MauiProgram
             // Загрузка конфигурации из appsettings.json, appsettings.Development.json и переменных окружения
             var assembly = Assembly.GetExecutingAssembly();
             var configBuilder = new ConfigurationBuilder();
-            
+
             // 1. Загрузка base appsettings.json
             using var stream = assembly.GetManifestResourceStream("Library.appsettings.json");
             if (stream != null)
@@ -67,9 +67,9 @@ public static class MauiProgram
 
             var config = configBuilder.Build();
             builder.Configuration.AddConfiguration(config);
-            
+
             System.Diagnostics.Debug.WriteLine("=== Configuration loaded ===");
-            
+
             // Диагностика: выводим ключи Yandex OAuth
             System.Diagnostics.Debug.WriteLine("=== Yandex OAuth Configuration: ===");
             System.Diagnostics.Debug.WriteLine($"  YandexOAuthClientId = {config["YandexOAuthClientId"]}");
@@ -163,6 +163,11 @@ public static class MauiProgram
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<Views.YandexDiskPage>();
             builder.Services.AddTransient<Views.ReadingSchedulePage>();
+            builder.Services.AddTransient<Views.BookChoosePage>();
+
+            // Сервисы выбора книги (keyed)
+            builder.Services.AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(Models.BookChooseServiceKey.PrioritizedRandomId);
+            builder.Services.AddKeyedSingleton<IBookChooseService, RandomBookChooseService>(Models.BookChooseServiceKey.RandomId);
             builder.Services.AddSingleton<AppShell>();
 
             System.Diagnostics.Debug.WriteLine("=== Services registered ===");
