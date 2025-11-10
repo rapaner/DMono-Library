@@ -46,6 +46,33 @@ public partial class BookDetailPage : ContentPage
         TotalPagesLabel.Text = _book.TotalPages.ToString();
         StatusLabel.Text = _book.StatusText;
         DateAddedLabel.Text = _book.DateAdded.ToString("dd.MM.yyyy");
+
+        var startDate = _book.StartDateFromHistory;
+        if (startDate.HasValue)
+        {
+            DateStartedLabel.Text = startDate.Value.ToString("dd.MM.yyyy");
+            DateStartedLabel.IsVisible = true;
+            DateStartedCaptionLabel.IsVisible = true;
+        }
+        else
+        {
+            DateStartedLabel.IsVisible = false;
+            DateStartedCaptionLabel.IsVisible = false;
+        }
+
+        var finishedDate = _book.DateFinished;
+
+        if (finishedDate.HasValue)
+        {
+            DateFinishedLabel.Text = finishedDate.Value.ToString("dd.MM.yyyy");
+            DateFinishedLabel.IsVisible = true;
+            DateFinishedCaptionLabel.IsVisible = true;
+        }
+        else
+        {
+            DateFinishedLabel.IsVisible = false;
+            DateFinishedCaptionLabel.IsVisible = false;
+        }
         
         // Отображение цикла
         if (!string.IsNullOrEmpty(_book.SeriesTitle))
@@ -70,6 +97,10 @@ public partial class BookDetailPage : ContentPage
         ProgressBar.Progress = _book.ProgressPercentage / 100;
         ProgressText.Text = _book.ProgressText;
         ProgressPercentage.Text = $"{_book.ProgressPercentage:F2}%";
+        bool isFinished = _book.Status == BookStatus.Finished;
+        UpdateProgressButton.IsVisible = !isFinished;
+        ReadingScheduleButton.IsVisible = !isFinished;
+        AlternativeCalculationButton.IsVisible = !isFinished;
         
         // Скрыть график для книг "В планах"
         ChartBorder.IsVisible = _book.Status != BookStatus.Planned;

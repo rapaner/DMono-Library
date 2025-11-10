@@ -264,7 +264,9 @@
                            Margin="0,5,0,10" />
                     
                     <CollectionView x:Name="BookRankingsCollectionView" 
-                                     Margin="0,5,0,0">
+                                     Margin="0,5,0,0"
+                                     SelectionMode="Single"
+                                     SelectionChanged="OnBookRankingSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:BookRanking">
                                 <Border BackgroundColor="{DynamicResource PageBackgroundColor}"

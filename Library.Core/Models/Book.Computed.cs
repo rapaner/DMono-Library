@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Library.Core.Models
 {
@@ -61,5 +62,15 @@ namespace Library.Core.Models
         public string AuthorsText => Authors != null && Authors.Any()
             ? string.Join(", ", Authors.Select(a => a.Name))
             : "Автор не указан";
+
+        /// <summary>
+        /// Дата начала чтения, вычисленная по первой записи в истории (null, если записи отсутствуют)
+        /// </summary>
+        [NotMapped]
+        public DateTime? StartDateFromHistory =>
+            PagesReadHistory != null && PagesReadHistory.Any()
+                ? PagesReadHistory.Min(p => p.Date)
+                : null;
+
     }
 }
