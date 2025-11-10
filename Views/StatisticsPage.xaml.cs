@@ -2,6 +2,7 @@ using Library.Core.Models;
 using Library.Services;
 using Library.Controls;
 using System.Collections.ObjectModel;
+using Library.Models;
 
 namespace Library.Views;
 
@@ -59,6 +60,23 @@ public partial class StatisticsPage : ContentPage
     {
         _searchText = e.NewTextValue ?? string.Empty;
         await LoadStatistics();
+    }
+
+    private async void OnBookRankingSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is BookRanking selectedRanking)
+        {
+            var book = await _libraryService.GetBookByIdAsync(selectedRanking.BookId);
+            if (book != null)
+            {
+                await Navigation.PushAsync(new BookDetailPage(book, _libraryService));
+            }
+        }
+
+        if (sender is CollectionView collectionView)
+        {
+            collectionView.SelectedItem = null;
+        }
     }
 
     private async Task LoadStatistics()

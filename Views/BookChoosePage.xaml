@@ -58,6 +58,8 @@
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label x:Name="ChosenBookNumberLabel"
                            FontSize="40" FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
                            TextColor="{DynamicResource TertiaryColor}" />
                 </StackLayout>
             </Border>

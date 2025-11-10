@@ -47,6 +47,18 @@ public partial class BookDetailPage : ContentPage
         StatusLabel.Text = _book.StatusText;
         DateAddedLabel.Text = _book.DateAdded.ToString("dd.MM.yyyy");
         
+        var finishedDate = _book.FinishedDateFromHistory;
+
+        if (finishedDate.HasValue)
+        {
+            DateFinishedLabel.Text = finishedDate.Value.ToString("dd.MM.yyyy");
+            DateFinishedLabel.IsVisible = true;
+        }
+        else
+        {
+            DateFinishedLabel.IsVisible = false;
+        }
+        
         // Отображение цикла
         if (!string.IsNullOrEmpty(_book.SeriesTitle))
         {
