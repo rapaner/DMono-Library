@@ -173,10 +173,12 @@
                                FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
-                        <Label Grid.Row="3" Grid.Column="0" 
+                        <Label x:Name="DateFinishedCaptionLabel"
+                               Grid.Row="3" Grid.Column="0" 
                                Text="Дата завершения:" 
                                FontSize="14" 
-                               TextColor="{DynamicResource SecondaryTextColor}" />
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               IsVisible="False" />
                         <Label x:Name="DateFinishedLabel"
                                Grid.Row="3" Grid.Column="1"
                                FontSize="14"

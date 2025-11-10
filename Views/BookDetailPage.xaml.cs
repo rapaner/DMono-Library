@@ -53,10 +53,12 @@ public partial class BookDetailPage : ContentPage
         {
             DateFinishedLabel.Text = finishedDate.Value.ToString("dd.MM.yyyy");
             DateFinishedLabel.IsVisible = true;
+            DateFinishedCaptionLabel.IsVisible = true;
         }
         else
         {
             DateFinishedLabel.IsVisible = false;
+            DateFinishedCaptionLabel.IsVisible = false;
         }
         
         // Отображение цикла
