@@ -72,13 +72,5 @@ namespace Library.Core.Models
                 ? PagesReadHistory.Min(p => p.Date)
                 : null;
 
-        /// <summary>
-        /// Дата завершения чтения, вычисленная по последней записи в истории (null, если данные отсутствуют или книга не прочитана)
-        /// </summary>
-        [NotMapped]
-        public DateTime? FinishedDateFromHistory =>
-            Status == BookStatus.Finished && PagesReadHistory != null && PagesReadHistory.Any()
-                ? PagesReadHistory.Max(p => p.Date)
-                : null;
     }
 }

@@ -60,7 +60,7 @@ public partial class BookDetailPage : ContentPage
             DateStartedCaptionLabel.IsVisible = false;
         }
 
-        var finishedDate = _book.FinishedDateFromHistory;
+        var finishedDate = _book.DateFinished;
 
         if (finishedDate.HasValue)
         {
