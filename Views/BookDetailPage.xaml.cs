@@ -84,6 +84,10 @@ public partial class BookDetailPage : ContentPage
         ProgressBar.Progress = _book.ProgressPercentage / 100;
         ProgressText.Text = _book.ProgressText;
         ProgressPercentage.Text = $"{_book.ProgressPercentage:F2}%";
+        bool isFinished = _book.Status == BookStatus.Finished;
+        UpdateProgressButton.IsVisible = !isFinished;
+        ReadingScheduleButton.IsVisible = !isFinished;
+        AlternativeCalculationButton.IsVisible = !isFinished;
         
         // Скрыть график для книг "В планах"
         ChartBorder.IsVisible = _book.Status != BookStatus.Planned;
