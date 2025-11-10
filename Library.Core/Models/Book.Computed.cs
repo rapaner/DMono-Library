@@ -64,6 +64,15 @@ namespace Library.Core.Models
             : "Автор не указан";
 
         /// <summary>
+        /// Дата начала чтения, вычисленная по первой записи в истории (null, если записи отсутствуют)
+        /// </summary>
+        [NotMapped]
+        public DateTime? StartDateFromHistory =>
+            PagesReadHistory != null && PagesReadHistory.Any()
+                ? PagesReadHistory.Min(p => p.Date)
+                : null;
+
+        /// <summary>
         /// Дата завершения чтения, вычисленная по последней записи в истории (null, если данные отсутствуют или книга не прочитана)
         /// </summary>
         [NotMapped]

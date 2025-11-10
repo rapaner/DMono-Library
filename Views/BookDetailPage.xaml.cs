@@ -46,7 +46,20 @@ public partial class BookDetailPage : ContentPage
         TotalPagesLabel.Text = _book.TotalPages.ToString();
         StatusLabel.Text = _book.StatusText;
         DateAddedLabel.Text = _book.DateAdded.ToString("dd.MM.yyyy");
-        
+
+        var startDate = _book.StartDateFromHistory;
+        if (startDate.HasValue)
+        {
+            DateStartedLabel.Text = startDate.Value.ToString("dd.MM.yyyy");
+            DateStartedLabel.IsVisible = true;
+            DateStartedCaptionLabel.IsVisible = true;
+        }
+        else
+        {
+            DateStartedLabel.IsVisible = false;
+            DateStartedCaptionLabel.IsVisible = false;
+        }
+
         var finishedDate = _book.FinishedDateFromHistory;
 
         if (finishedDate.HasValue)
