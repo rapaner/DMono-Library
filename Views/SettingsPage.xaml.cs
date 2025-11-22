@@ -93,7 +93,7 @@ public partial class SettingsPage : ContentPage
 
     private async void OnClearDataClicked(object sender, EventArgs e)
     {
-        bool result = await DisplayAlert("Подтверждение", 
+        bool result = await DisplayAlertAsync("Подтверждение", 
             "Вы уверены, что хотите удалить все данные? Это действие нельзя отменить!\n\nРекомендуется создать резервную копию на Яндекс Диске перед удалением.", 
             "Да, удалить", "Отмена");
             
@@ -107,11 +107,11 @@ public partial class SettingsPage : ContentPage
                     await _libraryService.DeleteBookAsync(book);
                 }
                 
-                await DisplayAlert("Успех", "Все данные удалены!", "OK");
+                await DisplayAlertAsync("Успех", "Все данные удалены!", "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
             }
         }
     }

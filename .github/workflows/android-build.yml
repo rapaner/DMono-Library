@@ -26,7 +26,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Install MAUI workload
         run: dotnet workload install maui
@@ -60,9 +60,9 @@ jobs:
       - name: Build Android App (Debug)
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
         run: |
-          dotnet build Library.csproj -c Debug -f net9.0-android /p:AndroidPackageFormats=apk
+          dotnet build Library.csproj -c Debug -f net10.0-android /p:AndroidPackageFormats=apk
           # Verify APK was created
-          $apkFiles = Get-ChildItem -Path "bin\Debug\net9.0-android" -Filter "*.apk" -Recurse
+          $apkFiles = Get-ChildItem -Path "bin\Debug\net10.0-android" -Filter "*.apk" -Recurse
           if ($apkFiles.Count -eq 0) {
             Write-Error "No APK files found after build"
             exit 1
@@ -85,11 +85,11 @@ jobs:
         run: |          
           dotnet publish Library.csproj `
             -c Release `
-            -f net9.0-android `
+            -f net10.0-android `
             /p:AndroidPackageFormats=apk
             
           # Verify APK was created
-          $apkFiles = Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse
+          $apkFiles = Get-ChildItem -Path "bin\Release\net10.0-android" -Filter "*.apk" -Recurse
           if ($apkFiles.Count -eq 0) {
             Write-Error "No APK files found after publish"
             exit 1
@@ -100,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk-${{ github.sha }}
-          path: bin/Debug/net9.0-android/**/*.apk
+          path: bin/Debug/net10.0-android/**/*.apk
           retention-days: 7
 
       - name: Upload Signed Release APK
@@ -108,20 +108,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-release-signed-apk-${{ github.sha }}
-          path: bin/Release/net9.0-android/**/*.apk
+          path: bin/Release/net10.0-android/**/*.apk
           retention-days: 90
 
       - name: List APK files before release
         if: github.ref_type == 'tag'
         run: |
           Write-Host "APK files found:"
-          Get-ChildItem -Path "bin\Release\net9.0-android" -Filter "*.apk" -Recurse | ForEach-Object {
+          Get-ChildItem -Path "bin\Release\net10.0-android" -Filter "*.apk" -Recurse | ForEach-Object {
             Write-Host "  $($_.FullName)"
           }
           
           # Verify specific APK files exist
-          $apk1 = "bin\Release\net9.0-android\ru.rapaner.library.apk"
-          $apk2 = "bin\Release\net9.0-android\ru.rapaner.library-Signed.apk"
+          $apk1 = "bin\Release\net10.0-android\ru.rapaner.library.apk"
+          $apk2 = "bin\Release\net10.0-android\ru.rapaner.library-Signed.apk"
           
           if (-not (Test-Path $apk1)) {
             Write-Error "APK file not found: $apk1"
@@ -137,8 +137,8 @@ jobs:
       - name: Copy APK with tag version
         if: github.ref_type == 'tag'
         run: |
-          $sourceApk = "bin\Release\net9.0-android\ru.rapaner.library-Signed.apk"
-          $destApk = "bin\Release\net9.0-android\ru.rapaner.library-${{ github.ref_name }}.apk"
+          $sourceApk = "bin\Release\net10.0-android\ru.rapaner.library-Signed.apk"
+          $destApk = "bin\Release\net10.0-android\ru.rapaner.library-${{ github.ref_name }}.apk"
           
           if (-not (Test-Path $sourceApk)) {
             Write-Error "Source APK file not found: $sourceApk"
@@ -153,7 +153,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            bin/Release/net9.0-android/ru.rapaner.library-${{ github.ref_name }}.apk
+            bin/Release/net10.0-android/ru.rapaner.library-${{ github.ref_name }}.apk
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -166,4 +166,3 @@ jobs:
           if (Test-Path "${{ github.workspace }}/library.keystore") {
             Remove-Item "${{ github.workspace }}/library.keystore" -Force
           }
-

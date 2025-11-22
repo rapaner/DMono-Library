@@ -84,7 +84,7 @@ public partial class AddEditBookPage : ContentPage
     {
         if (AuthorPicker.SelectedIndex < 0)
         {
-            await DisplayAlert("Ошибка", "Выберите автора из списка", "OK");
+            await DisplayAlertAsync("Ошибка", "Выберите автора из списка", "OK");
             return;
         }
         
@@ -109,7 +109,7 @@ public partial class AddEditBookPage : ContentPage
             var existingAuthor = _allAuthors.FirstOrDefault(a => a.Name == result);
             if (existingAuthor != null)
             {
-                await DisplayAlert("Информация", "Такой автор уже существует", "OK");
+                await DisplayAlertAsync("Информация", "Такой автор уже существует", "OK");
                 return;
             }
             
@@ -123,7 +123,7 @@ public partial class AddEditBookPage : ContentPage
             SelectedAuthorsCollectionView.ItemsSource = null;
             SelectedAuthorsCollectionView.ItemsSource = _selectedAuthors;
             
-            await DisplayAlert("Успех", "Автор добавлен!", "OK");
+            await DisplayAlertAsync("Успех", "Автор добавлен!", "OK");
         }
     }
 
@@ -139,7 +139,7 @@ public partial class AddEditBookPage : ContentPage
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        if (!ValidateInput())
+        if (!await ValidateInput())
             return;
 
         try
@@ -200,7 +200,7 @@ public partial class AddEditBookPage : ContentPage
                 await _libraryService.AddBookAsync(book);
             }
             
-            await DisplayAlert("Успех", 
+            await DisplayAlertAsync("Успех", 
                 _isEditMode ? "Книга обновлена!" : "Книга добавлена!", 
                 "OK");
             
@@ -208,27 +208,27 @@ public partial class AddEditBookPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+            await DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
         }
     }
 
-    private bool ValidateInput()
+    private async Task<bool> ValidateInput()
     {
         if (string.IsNullOrWhiteSpace(TitleEntry.Text))
         {
-            DisplayAlert("Ошибка", "Пожалуйста, введите название книги", "OK");
+            await DisplayAlertAsync("Ошибка", "Пожалуйста, введите название книги", "OK");
             return false;
         }
         
         if (_selectedAuthors.Count == 0)
         {
-            DisplayAlert("Ошибка", "Пожалуйста, выберите хотя бы одного автора", "OK");
+            await DisplayAlertAsync("Ошибка", "Пожалуйста, выберите хотя бы одного автора", "OK");
             return false;
         }
         
         if (!int.TryParse(TotalPagesEntry.Text, out int totalPages) || totalPages <= 0)
         {
-            DisplayAlert("Ошибка", "Пожалуйста, введите корректное количество страниц", "OK");
+            await DisplayAlertAsync("Ошибка", "Пожалуйста, введите корректное количество страниц", "OK");
             return false;
         }
         

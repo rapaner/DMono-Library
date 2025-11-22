@@ -128,8 +128,19 @@
                         <GraphicsView x:Name="ReadingChartView"
                                       HeightRequest="250"
                                       WidthRequest="400"
-                                      BackgroundColor="Transparent" />
+                                      BackgroundColor="Transparent">
+                            <GraphicsView.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnReadingChartTapped" />
+                            </GraphicsView.GestureRecognizers>
+                        </GraphicsView>
                     </ScrollView>
+                    
+                    <Label x:Name="ChartHintLabel"
+                           Text="Нажмите на график, чтобы отредактировать историю чтения по дням (доступно только для книг в статусе &quot;Читаю сейчас&quot;)"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryTextColor}"
+                           Margin="0,10,0,0"
+                           IsVisible="False" />
                 </StackLayout>
             </Border>
 

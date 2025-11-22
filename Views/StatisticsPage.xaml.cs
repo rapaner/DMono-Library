@@ -118,7 +118,7 @@ public partial class StatisticsPage : ContentPage
                 // Проверка правильности дат
                 if (startDate > endDate)
                 {
-                    await DisplayAlert("Ошибка", "Дата начала не может быть больше даты окончания", "OK");
+                    await DisplayAlertAsync("Ошибка", "Дата начала не может быть больше даты окончания", "OK");
                     return;
                 }
                 break;

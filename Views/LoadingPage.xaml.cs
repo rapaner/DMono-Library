@@ -44,7 +44,7 @@ public partial class LoadingPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
 
             // Показываем ошибку пользователю
-            await DisplayAlert(
+            await DisplayAlertAsync(
                 "Ошибка инициализации", 
                 $"Не удалось инициализировать базу данных:\n{ex.Message}", 
                 "OK");

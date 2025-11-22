@@ -162,25 +162,25 @@ public partial class AlternativePageCalculationPage : ContentPage
         // Валидация
         if (!int.TryParse(MainFirstPageEntry.Text, out int mainFirst) || mainFirst < 1)
         {
-            await DisplayAlert("Ошибка", "Введите корректную первую страницу основного издания", "OK");
+            await DisplayAlertAsync("Ошибка", "Введите корректную первую страницу основного издания", "OK");
             return;
         }
 
         if (mainFirst > _book.TotalPages)
         {
-            await DisplayAlert("Ошибка", $"Первая страница основного издания не может быть больше {_book.TotalPages}", "OK");
+            await DisplayAlertAsync("Ошибка", $"Первая страница основного издания не может быть больше {_book.TotalPages}", "OK");
             return;
         }
 
         if (!int.TryParse(AlternativeFirstPageEntry.Text, out int altFirst) || altFirst < 1)
         {
-            await DisplayAlert("Ошибка", "Введите корректную первую страницу альтернативного издания", "OK");
+            await DisplayAlertAsync("Ошибка", "Введите корректную первую страницу альтернативного издания", "OK");
             return;
         }
 
         if (!int.TryParse(AlternativeLastPageEntry.Text, out int altLast) || altLast < altFirst)
         {
-            await DisplayAlert("Ошибка", "Последняя страница альтернативного издания должна быть больше или равна первой", "OK");
+            await DisplayAlertAsync("Ошибка", "Последняя страница альтернативного издания должна быть больше или равна первой", "OK");
             return;
         }
 
@@ -194,12 +194,12 @@ public partial class AlternativePageCalculationPage : ContentPage
             // Сохраняем через сервис
             await _libraryService.UpdateBookAsync(_book);
             
-            await DisplayAlert("Успех", "Настройки сохранены!", "OK");
+            await DisplayAlertAsync("Успех", "Настройки сохранены!", "OK");
             await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", $"Произошла ошибка при сохранении: {ex.Message}", "OK");
+            await DisplayAlertAsync("Ошибка", $"Произошла ошибка при сохранении: {ex.Message}", "OK");
         }
     }
 
