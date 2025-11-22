@@ -93,7 +93,7 @@ namespace Library.Views
                 await _oauthService.AuthenticateAsync();
 
                 // Показываем инструкции пользователю
-                await DisplayAlert(
+                await DisplayAlertAsync(
                     "Инструкции по получению токена",
                     "В открывшемся окне браузера:\n\n" +
                     "1. Войдите в свой аккаунт Яндекс\n" +
@@ -104,7 +104,7 @@ namespace Library.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось открыть браузер для авторизации: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось открыть браузер для авторизации: {ex.Message}", "OK");
             }
             finally
             {
@@ -119,7 +119,7 @@ namespace Library.Views
 
             if (string.IsNullOrEmpty(token))
             {
-                await DisplayAlert("Ошибка", "Введите OAuth токен", "OK");
+                await DisplayAlertAsync("Ошибка", "Введите OAuth токен", "OK");
                 return;
             }
 
@@ -138,18 +138,18 @@ namespace Library.Views
                 await UpdateStatusAsync();
                 await LoadBackupsAsync();
 
-                await DisplayAlert("Успех", "OAuth токен сохранен и проверен", "OK");
+                await DisplayAlertAsync("Успех", "OAuth токен сохранен и проверен", "OK");
                 TokenEntry.Text = string.Empty;
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось подключиться к Яндекс Диску: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось подключиться к Яндекс Диску: {ex.Message}", "OK");
             }
         }
 
         private async void OnDisconnectClicked(object sender, EventArgs e)
         {
-            var confirm = await DisplayAlert(
+            var confirm = await DisplayAlertAsync(
                 "Подтверждение",
                 "Вы уверены, что хотите отключить Яндекс Диск?",
                 "Да",
@@ -163,7 +163,7 @@ namespace Library.Views
                 BackupsCollectionView.ItemsSource = null;
                 NoBackupsLabel.IsVisible = false;
                 
-                await DisplayAlert("Успех", "Яндекс Диск отключен", "OK");
+                await DisplayAlertAsync("Успех", "Яндекс Диск отключен", "OK");
             }
         }
 
@@ -171,7 +171,7 @@ namespace Library.Views
         {
             if (!_yandexDiskService.IsAuthorized)
             {
-                await DisplayAlert("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+                await DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
                 return;
             }
 
@@ -183,7 +183,7 @@ namespace Library.Views
                 // Проверяем существование файла БД
                 if (!File.Exists(_appConfig.DatabasePath))
                 {
-                    await DisplayAlert("Ошибка", $"Файл базы данных не найден:\n{_appConfig.DatabasePath}", "OK");
+                    await DisplayAlertAsync("Ошибка", $"Файл базы данных не найден:\n{_appConfig.DatabasePath}", "OK");
                     System.Diagnostics.Debug.WriteLine($"=== Database file not found: {_appConfig.DatabasePath} ===");
                     return;
                 }
@@ -201,17 +201,17 @@ namespace Library.Views
 
                     LastBackupLabel.Text = $"Последняя резервная копия: {DateTime.Now:dd.MM.yyyy HH:mm}";
 
-                    await DisplayAlert("Успех", "Резервная копия создана", "OK");
+                    await DisplayAlertAsync("Успех", "Резервная копия создана", "OK");
                     await LoadBackupsAsync();
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось создать резервную копию", "OK");
+                    await DisplayAlertAsync("Ошибка", "Не удалось создать резервную копию", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось создать резервную копию: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось создать резервную копию: {ex.Message}", "OK");
             }
             finally
             {
@@ -224,17 +224,17 @@ namespace Library.Views
         {
             if (!_yandexDiskService.IsAuthorized)
             {
-                await DisplayAlert("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+                await DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
                 return;
             }
 
             if (_selectedBackup == null)
             {
-                await DisplayAlert("Ошибка", "Выберите резервную копию для восстановления", "OK");
+                await DisplayAlertAsync("Ошибка", "Выберите резервную копию для восстановления", "OK");
                 return;
             }
 
-            var confirm = await DisplayAlert(
+            var confirm = await DisplayAlertAsync(
                 "Подтверждение",
                 $"Вы уверены, что хотите восстановить базу данных из резервной копии?\n\n{_selectedBackup.Name}\n\nТекущая база данных будет заменена.",
                 "Да",
@@ -252,7 +252,7 @@ namespace Library.Views
 
                 if (success)
                 {
-                    await DisplayAlert(
+                    await DisplayAlertAsync(
                         "Успех",
                         "База данных восстановлена из резервной копии.\n\nПриложение нужно перезапустить.",
                         "OK");
@@ -262,12 +262,12 @@ namespace Library.Views
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось восстановить базу данных", "OK");
+                    await DisplayAlertAsync("Ошибка", "Не удалось восстановить базу данных", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось восстановить базу данных: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось восстановить базу данных: {ex.Message}", "OK");
             }
             finally
             {
@@ -280,17 +280,17 @@ namespace Library.Views
         {
             if (!_yandexDiskService.IsAuthorized)
             {
-                await DisplayAlert("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+                await DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
                 return;
             }
 
             if (_selectedBackup == null)
             {
-                await DisplayAlert("Ошибка", "Выберите резервную копию для удаления", "OK");
+                await DisplayAlertAsync("Ошибка", "Выберите резервную копию для удаления", "OK");
                 return;
             }
 
-            var confirm = await DisplayAlert(
+            var confirm = await DisplayAlertAsync(
                 "Подтверждение",
                 $"Вы уверены, что хотите удалить резервную копию?\n\n{_selectedBackup.Name}\n\nЭто действие нельзя отменить.",
                 "Да",
@@ -308,19 +308,19 @@ namespace Library.Views
 
                 if (success)
                 {
-                    await DisplayAlert("Успех", "Резервная копия удалена", "OK");
+                    await DisplayAlertAsync("Успех", "Резервная копия удалена", "OK");
                     
                     _selectedBackup = null;
                     await LoadBackupsAsync();
                 }
                 else
                 {
-                    await DisplayAlert("Ошибка", "Не удалось удалить резервную копию", "OK");
+                    await DisplayAlertAsync("Ошибка", "Не удалось удалить резервную копию", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось удалить резервную копию: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось удалить резервную копию: {ex.Message}", "OK");
             }
             finally
             {
@@ -338,7 +338,7 @@ namespace Library.Views
             _settingsService.SaveYandexDiskSettings(settings);
         }
 
-        private void OnSaveFrequencyClicked(object sender, EventArgs e)
+        private async void OnSaveFrequencyClicked(object sender, EventArgs e)
         {
             if (int.TryParse(FrequencyEntry.Text, out int frequency) && frequency > 0)
             {
@@ -346,11 +346,11 @@ namespace Library.Views
                 settings.AutoBackupFrequencyDays = frequency;
                 _settingsService.SaveYandexDiskSettings(settings);
 
-                DisplayAlert("Успех", $"Частота резервного копирования установлена: {frequency} дней", "OK");
+                await DisplayAlertAsync("Успех", $"Частота резервного копирования установлена: {frequency} дней", "OK");
             }
             else
             {
-                DisplayAlert("Ошибка", "Введите корректное число дней (больше 0)", "OK");
+                await DisplayAlertAsync("Ошибка", "Введите корректное число дней (больше 0)", "OK");
             }
         }
 
@@ -384,7 +384,7 @@ namespace Library.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось загрузить список резервных копий: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось загрузить список резервных копий: {ex.Message}", "OK");
             }
             finally
             {
@@ -393,12 +393,12 @@ namespace Library.Views
             }
         }
 
-        private void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
             {
                 _selectedBackup = backup;
-                DisplayAlert("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.", "OK");
+                await DisplayAlertAsync("Резервная копия выбрана", $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.", "OK");
             }
         }
     }

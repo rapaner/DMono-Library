@@ -104,6 +104,10 @@ public partial class BookDetailPage : ContentPage
         
         // Скрыть график для книг "В планах"
         ChartBorder.IsVisible = _book.Status != BookStatus.Planned;
+        
+        // Показывать подсказку и разрешать редактирование только для книг в статусе "Читаю сейчас"
+        bool isReading = _book.Status == BookStatus.Reading;
+        ChartHintLabel.IsVisible = isReading;
     }
 
     private async void OnUpdateProgressClicked(object sender, EventArgs e)
@@ -125,14 +129,14 @@ public partial class BookDetailPage : ContentPage
 
     private async void OnDeleteBookClicked(object sender, EventArgs e)
     {
-        bool result = await DisplayAlert("Подтверждение", 
+        bool result = await DisplayAlertAsync("Подтверждение", 
             $"Вы уверены, что хотите удалить книгу \"{_book.Title}\"?", 
             "Да", "Нет");
             
         if (result)
         {
             await _libraryService.DeleteBookAsync(_book);
-            await DisplayAlert("Успех", "Книга удалена!", "OK");
+            await DisplayAlertAsync("Успех", "Книга удалена!", "OK");
             await Navigation.PopAsync();
         }
     }
@@ -255,6 +259,29 @@ public partial class BookDetailPage : ContentPage
         else
         {
             await Navigation.PushAsync(new AlternativePageCalculationPage(_book, _libraryService));
+        }
+    }
+
+    /// <summary>
+    /// Обработчик нажатия на график чтения
+    /// </summary>
+    private async void OnReadingChartTapped(object sender, EventArgs e)
+    {
+        // Открываем окно редактирования только для книг в статусе "Читаю сейчас"
+        if (_book.Status != BookStatus.Reading)
+        {
+            return;
+        }
+
+        // Перезагружаем книгу из базы данных для получения актуальных данных
+        var updatedBook = await _libraryService.GetBookByIdAsync(_book.Id);
+        if (updatedBook != null)
+        {
+            await Navigation.PushAsync(new ReadingHistoryEditPage(updatedBook, _libraryService));
+        }
+        else
+        {
+            await Navigation.PushAsync(new ReadingHistoryEditPage(_book, _libraryService));
         }
     }
 }

@@ -38,29 +38,29 @@ public partial class UpdateProgressPage : ContentPage
         // Валидация ввода
         if (string.IsNullOrWhiteSpace(CurrentPageEntry.Text))
         {
-            await DisplayAlert("Ошибка", "Пожалуйста, введите номер страницы", "OK");
+            await DisplayAlertAsync("Ошибка", "Пожалуйста, введите номер страницы", "OK");
             return;
         }
 
         if (!int.TryParse(CurrentPageEntry.Text, out int currentPage))
         {
-            await DisplayAlert("Ошибка", "Введите корректный номер страницы", "OK");
+            await DisplayAlertAsync("Ошибка", "Введите корректный номер страницы", "OK");
             return;
         }
 
         if (currentPage < 0 || currentPage > _book.TotalPages)
         {
-            await DisplayAlert("Ошибка", $"Номер страницы должен быть от 0 до {_book.TotalPages}", "OK");
+            await DisplayAlertAsync("Ошибка", $"Номер страницы должен быть от 0 до {_book.TotalPages}", "OK");
             return;
         }
 
         try
         {
             // Обновляем прогресс через сервис
-            var selectedDate = ReadingDatePicker.Date;
+            var selectedDate = ReadingDatePicker.Date ?? DateTime.Today;
             await _libraryService.AddOrUpdateReadingProgressAsync(_book.Id, selectedDate, currentPage);
             
-            await DisplayAlert("Успех", "Прогресс обновлен!", "OK");
+            await DisplayAlertAsync("Успех", "Прогресс обновлен!", "OK");
             
             // Вызываем callback для обновления родительской страницы
             _onProgressUpdated?.Invoke();
@@ -69,11 +69,11 @@ public partial class UpdateProgressPage : ContentPage
         }
         catch (InvalidOperationException ex)
         {
-            await DisplayAlert("Ошибка", ex.Message, "OK");
+            await DisplayAlertAsync("Ошибка", ex.Message, "OK");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+            await DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
         }
     }
 

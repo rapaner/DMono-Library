@@ -41,7 +41,7 @@ namespace Library.Views
         {
             if (string.IsNullOrEmpty(BookId) || !int.TryParse(BookId, out int bookId))
             {
-                await DisplayAlert("Ошибка", "Не указан идентификатор книги", "OK");
+                await DisplayAlertAsync("Ошибка", "Не указан идентификатор книги", "OK");
                 await Shell.Current.GoToAsync("..");
                 return;
             }
@@ -54,7 +54,7 @@ namespace Library.Views
                 _book = await _libraryService.GetBookByIdAsync(bookId);
                 if (_book == null)
                 {
-                    await DisplayAlert("Ошибка", "Книга не найдена", "OK");
+                    await DisplayAlertAsync("Ошибка", "Книга не найдена", "OK");
                     await Shell.Current.GoToAsync("..");
                     return;
                 }
@@ -87,7 +87,7 @@ namespace Library.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось загрузить данные: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось загрузить данные: {ex.Message}", "OK");
             }
             finally
             {
@@ -157,15 +157,16 @@ namespace Library.Views
                 // Валидация часов
                 if (startHour < 0 || startHour > 23 || endHour < 0 || endHour > 23 || startHour >= endHour)
                 {
-                    await DisplayAlert("Ошибка", "Некорректные часы чтения. Начало должно быть от 0 до 23, окончание от 0 до 23, и начало должно быть меньше окончания.", "OK");
+                    await DisplayAlertAsync("Ошибка", "Некорректные часы чтения. Начало должно быть от 0 до 23, окончание от 0 до 23, и начало должно быть меньше окончания.", "OK");
                     return;
                 }
 
                 // Сохраняем расписание в БД
+                var finishDateValue = FinishDatePicker.Date ?? DateTime.Today;
                 var scheduleToSave = new BookReadingSchedule
                 {
                     BookId = _book.Id,
-                    TargetFinishDate = FinishDatePicker.Date,
+                    TargetFinishDate = finishDateValue,
                     StartHour = string.IsNullOrWhiteSpace(StartHourEntry.Text) ? null : startHour,
                     EndHour = string.IsNullOrWhiteSpace(EndHourEntry.Text) ? null : endHour
                 };
@@ -175,7 +176,7 @@ namespace Library.Views
                 // Выполняем расчет
                 int pagesRead = _book.CurrentPage;
                 int pagesToRead = _book.TotalPages;
-                DateOnly finishDate = DateOnly.FromDateTime(FinishDatePicker.Date);
+                DateOnly finishDate = DateOnly.FromDateTime(finishDateValue);
 
                 var records = await _pageByHourService.Calculate(pagesRead, pagesToRead, finishDate, startHour, endHour);
                 var recordsList = records.Take(20).ToList();
@@ -196,12 +197,12 @@ namespace Library.Views
                 }
                 else
                 {
-                    await DisplayAlert("Внимание", "Недостаточно времени для расчета графика. Попробуйте выбрать более позднюю дату или расширить часы чтения.", "OK");
+                    await DisplayAlertAsync("Внимание", "Недостаточно времени для расчета графика. Попробуйте выбрать более позднюю дату или расширить часы чтения.", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось выполнить расчет: {ex.Message}", "OK");
+                await DisplayAlertAsync("Ошибка", $"Не удалось выполнить расчет: {ex.Message}", "OK");
             }
             finally
             {
