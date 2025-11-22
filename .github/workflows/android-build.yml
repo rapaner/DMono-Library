@@ -107,12 +107,12 @@ jobs:
           # List all files in the output directory for debugging
           $outputPath = "bin\Release\net10.0-android"
           if (Test-Path $outputPath) {
-            Write-Host "Contents of $outputPath:"
+            Write-Host "Contents of ${outputPath}:"
             Get-ChildItem -Path $outputPath -Recurse | ForEach-Object {
               Write-Host "  $($_.FullName)"
             }
           } else {
-            Write-Host "Output path $outputPath does not exist"
+            Write-Host "Output path ${outputPath} does not exist"
           }
           
           # Check multiple possible locations for APK files
@@ -125,11 +125,11 @@ jobs:
           $apkFiles = @()
           foreach ($path in $possiblePaths) {
             if (Test-Path $path) {
-              Write-Host "Checking path: $path"
+              Write-Host "Checking path: ${path}"
               $found = Get-ChildItem -Path $path -Filter "*.apk" -Recurse -ErrorAction SilentlyContinue
               if ($found) {
                 $apkFiles += $found
-                Write-Host "Found APK files in $path :"
+                Write-Host "Found APK files in ${path}:"
                 $found | ForEach-Object { Write-Host "  $($_.FullName)" }
               }
             }
