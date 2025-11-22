@@ -43,6 +43,8 @@
                                 <Entry Text="{Binding CumulativePages, Mode=TwoWay}"
                                        Keyboard="Numeric"
                                        WidthRequest="100"
+                                       MaxWidthRequest="100"
+                                       HorizontalOptions="Start"
                                        TextColor="{DynamicResource PrimaryTextColor}"
                                        Completed="OnCumulativePagesCompleted"
                                        Unfocused="OnCumulativePagesUnfocused" />
@@ -69,8 +71,9 @@
                                     BackgroundColor="{DynamicResource ErrorColor}"
                                     TextColor="{DynamicResource PrimaryTextColor}"
                                     CornerRadius="5"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
+                                    WidthRequest="50"
+                                    HeightRequest="50"
+                                    Padding="0"
                                     Clicked="OnDeleteItemClicked" />
                         </Grid>
                     </Border>
