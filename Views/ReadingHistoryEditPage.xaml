@@ -43,7 +43,7 @@
                                 <Entry Text="{Binding CumulativePages, Mode=TwoWay}"
                                        Keyboard="Numeric"
                                        WidthRequest="100"
-                                       MaxWidthRequest="100"
+                                       MaximumWidthRequest="100"
                                        HorizontalOptions="Start"
                                        TextColor="{DynamicResource PrimaryTextColor}"
                                        Completed="OnCumulativePagesCompleted"
