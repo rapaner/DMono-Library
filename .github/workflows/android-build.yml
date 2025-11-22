@@ -83,17 +83,80 @@ jobs:
           AndroidKeyPass: ${{ secrets.ANDROID_KEY_PASSWORD }}
           AndroidStorePass: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: |          
+          # Verify keystore exists (relative path as in .csproj)
+          $keystorePath = "library.keystore"
+          if (-not (Test-Path $keystorePath)) {
+            Write-Error "Keystore file not found at: $keystorePath"
+            Write-Host "Current directory: $(Get-Location)"
+            Write-Host "Files in current directory:"
+            Get-ChildItem | Select-Object -First 20 | ForEach-Object { Write-Host "  $($_.Name)" }
+            exit 1
+          }
+          Write-Host "Keystore found at: $((Get-Item $keystorePath).FullName)"
+          
+          Write-Host "Starting dotnet publish..."
+          Write-Host "Current directory: $(Get-Location)"
           dotnet publish Library.csproj `
             -c Release `
             -f net10.0-android `
-            /p:AndroidPackageFormats=apk
+            /p:AndroidPackageFormats=apk `
+            /verbosity:detailed
             
-          # Verify APK was created
-          $apkFiles = Get-ChildItem -Path "bin\Release\net10.0-android" -Filter "*.apk" -Recurse
+          Write-Host "Publish completed. Searching for APK files..."
+          
+          # List all files in the output directory for debugging
+          $outputPath = "bin\Release\net10.0-android"
+          if (Test-Path $outputPath) {
+            Write-Host "Contents of $outputPath:"
+            Get-ChildItem -Path $outputPath -Recurse | ForEach-Object {
+              Write-Host "  $($_.FullName)"
+            }
+          } else {
+            Write-Host "Output path $outputPath does not exist"
+          }
+          
+          # Check multiple possible locations for APK files
+          $possiblePaths = @(
+            "bin\Release\net10.0-android",
+            "bin\Release\net10.0-android\publish",
+            "bin\Release\net10.0-android\ru.rapaner.library"
+          )
+          
+          $apkFiles = @()
+          foreach ($path in $possiblePaths) {
+            if (Test-Path $path) {
+              Write-Host "Checking path: $path"
+              $found = Get-ChildItem -Path $path -Filter "*.apk" -Recurse -ErrorAction SilentlyContinue
+              if ($found) {
+                $apkFiles += $found
+                Write-Host "Found APK files in $path :"
+                $found | ForEach-Object { Write-Host "  $($_.FullName)" }
+              }
+            }
+          }
+          
+          # Also try searching from workspace root
+          if ($apkFiles.Count -eq 0) {
+            Write-Host "Searching from workspace root..."
+            $apkFiles = Get-ChildItem -Path "${{ github.workspace }}" -Filter "*.apk" -Recurse -ErrorAction SilentlyContinue
+            if ($apkFiles) {
+              Write-Host "Found APK files in workspace:"
+              $apkFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
+            }
+          }
+          
           if ($apkFiles.Count -eq 0) {
             Write-Error "No APK files found after publish"
+            Write-Host "Build output directory structure:"
+            if (Test-Path "bin\Release") {
+              Get-ChildItem -Path "bin\Release" -Recurse | Select-Object -First 50 | ForEach-Object {
+                Write-Host "  $($_.FullName)"
+              }
+            }
             exit 1
           }
+          
+          Write-Host "Successfully found $($apkFiles.Count) APK file(s)"
 
       - name: Upload Debug APK
         if: github.ref_type != 'tag' && github.event_name != 'workflow_dispatch'
