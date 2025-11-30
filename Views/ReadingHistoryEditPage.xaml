@@ -20,60 +20,68 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*,*,Auto"
-                              ColumnSpacing="15"
-                              RowSpacing="5">
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="15">
                             
-                            <!-- Дата -->
-                            <Label Grid.Column="0"
-                                   Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{DynamicResource PrimaryTextColor}"
-                                   VerticalOptions="Center" />
-                            
-                            <!-- Сумма страниц на дату (редактируемое поле) -->
-                            <StackLayout Grid.Column="1"
-                                        Orientation="Horizontal"
-                                        Spacing="5">
-                                <Label Text="Сумма:"
-                                       FontSize="14"
-                                       TextColor="{DynamicResource SecondaryTextColor}"
-                                       VerticalOptions="Center" />
-                                <Entry Text="{Binding CumulativePages, Mode=TwoWay}"
-                                       Keyboard="Numeric"
-                                       WidthRequest="100"
-                                       MaximumWidthRequest="100"
-                                       HorizontalOptions="Start"
-                                       TextColor="{DynamicResource PrimaryTextColor}"
-                                       Completed="OnCumulativePagesCompleted"
-                                       Unfocused="OnCumulativePagesUnfocused" />
-                            </StackLayout>
-                            
-                            <!-- Количество страниц за день (только чтение) -->
-                            <StackLayout Grid.Column="2"
-                                        Orientation="Horizontal"
-                                        Spacing="5">
-                                <Label Text="За день:"
-                                       FontSize="14"
-                                       TextColor="{DynamicResource SecondaryTextColor}"
-                                       VerticalOptions="Center" />
-                                <Label Text="{Binding DailyPages}"
-                                       FontSize="14"
+                            <!-- Левая часть: дата и информация о страницах -->
+                            <Grid Grid.Column="0"
+                                  RowDefinitions="Auto,Auto"
+                                  RowSpacing="5">
+                                
+                                <!-- Дата -->
+                                <Label Grid.Row="0"
+                                       Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}"
+                                       FontSize="16"
                                        FontAttributes="Bold"
                                        TextColor="{DynamicResource PrimaryTextColor}"
-                                       VerticalOptions="Center" />
-                            </StackLayout>
+                                       VerticalOptions="Start" />
+                                
+                                <!-- Сумма страниц и количество за день -->
+                                <StackLayout Grid.Row="1"
+                                            Orientation="Horizontal"
+                                            Spacing="15">
+                                    <!-- Сумма страниц на дату (редактируемое поле) -->
+                                    <StackLayout Orientation="Horizontal"
+                                                Spacing="5">
+                                        <Label Text="Сумма:"
+                                               FontSize="14"
+                                               TextColor="{DynamicResource SecondaryTextColor}"
+                                               VerticalOptions="Center" />
+                                        <Entry Text="{Binding CumulativePages, Mode=TwoWay}"
+                                               Keyboard="Numeric"
+                                               WidthRequest="100"
+                                               MaximumWidthRequest="100"
+                                               HorizontalOptions="Start"
+                                               TextColor="{DynamicResource PrimaryTextColor}"
+                                               Completed="OnCumulativePagesCompleted"
+                                               Unfocused="OnCumulativePagesUnfocused" />
+                                    </StackLayout>
+                                    
+                                    <!-- Количество страниц за день (только чтение) -->
+                                    <StackLayout Orientation="Horizontal"
+                                                Spacing="5">
+                                        <Label Text="За день:"
+                                               FontSize="14"
+                                               TextColor="{DynamicResource SecondaryTextColor}"
+                                               VerticalOptions="Center" />
+                                        <Label Text="{Binding DailyPages}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryTextColor}"
+                                               VerticalOptions="Center" />
+                                    </StackLayout>
+                                </StackLayout>
+                            </Grid>
                             
-                            <!-- Кнопка удаления -->
-                            <Button Grid.Column="3"
+                            <!-- Кнопка удаления (во всю высоту) -->
+                            <Button Grid.Column="1"
                                     Text="🗑️"
                                     BackgroundColor="{DynamicResource ErrorColor}"
                                     TextColor="{DynamicResource PrimaryTextColor}"
                                     CornerRadius="5"
                                     WidthRequest="50"
-                                    HeightRequest="50"
                                     Padding="0"
+                                    VerticalOptions="Fill"
                                     Clicked="OnDeleteItemClicked" />
                         </Grid>
                     </Border>
