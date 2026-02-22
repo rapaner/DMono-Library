@@ -118,15 +118,17 @@
                     <ScrollView Orientation="Horizontal" 
                                 HorizontalScrollBarVisibility="Always"
                                 Margin="0,10,0,0">
-                        <GraphicsView x:Name="ReadingChartView"
-                                      HeightRequest="250"
-                                      WidthRequest="{Binding ChartWidth}"
-                                      Drawable="{Binding ChartDrawable}"
-                                      BackgroundColor="Transparent">
-                            <GraphicsView.GestureRecognizers>
+                        <ContentView>
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenReadingHistoryCommand}" />
-                            </GraphicsView.GestureRecognizers>
-                        </GraphicsView>
+                            </ContentView.GestureRecognizers>
+                            <GraphicsView x:Name="ReadingChartView"
+                                          HeightRequest="250"
+                                          WidthRequest="{Binding ChartWidth}"
+                                          Drawable="{Binding ChartDrawable}"
+                                          BackgroundColor="Transparent"
+                                          InputTransparent="True" />
+                        </ContentView>
                     </ScrollView>
                     
                     <Label Text="Нажмите на график, чтобы отредактировать историю чтения по дням (доступно только для книг в статусе &quot;Читаю сейчас&quot;)"
