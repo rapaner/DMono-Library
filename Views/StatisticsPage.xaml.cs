@@ -11,6 +11,7 @@ public partial class StatisticsPage : ContentPage
     private readonly LibraryService _libraryService;
     private readonly ReadingChartDrawable _chartDrawable;
     private string _searchText = string.Empty;
+    private bool _isMonthlyMode = true;
 
     public StatisticsPage(LibraryService libraryService)
     {
@@ -60,6 +61,46 @@ public partial class StatisticsPage : ContentPage
     {
         _searchText = e.NewTextValue ?? string.Empty;
         await LoadStatistics();
+    }
+
+    private async void OnChartTapped(object sender, TappedEventArgs e)
+    {
+        _isMonthlyMode = !_isMonthlyMode;
+
+        DateTime? startDate = null;
+        DateTime? endDate = null;
+
+        switch (DateFilterPicker.SelectedIndex)
+        {
+            case 0:
+                break;
+            case 1:
+                startDate = DateTime.Now.AddDays(-30);
+                endDate = DateTime.Now;
+                break;
+            case 2:
+                startDate = DateTime.Now.AddDays(-60);
+                endDate = DateTime.Now;
+                break;
+            case 3:
+                startDate = DateTime.Now.AddDays(-90);
+                endDate = DateTime.Now;
+                break;
+            case 4:
+                startDate = DateTime.Now.AddDays(-180);
+                endDate = DateTime.Now;
+                break;
+            case 5:
+                startDate = DateTime.Now.AddDays(-365);
+                endDate = DateTime.Now;
+                break;
+            case 6:
+                startDate = StartDatePicker.Date;
+                endDate = EndDatePicker.Date;
+                break;
+        }
+
+        await LoadChartData(startDate, endDate);
     }
 
     private async void OnBookRankingSelected(object sender, SelectionChangedEventArgs e)
@@ -148,39 +189,62 @@ public partial class StatisticsPage : ContentPage
     private async Task LoadChartData(DateTime? startDate, DateTime? endDate)
     {
         var searchText = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText;
-        var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
-        
-        // Обновляем данные графика
-        _chartDrawable.Data = dailyData.Select(d => new Library.Controls.DailyReadingData
+
+        List<Models.DailyReadingData> chartData;
+        if (_isMonthlyMode)
+        {
+            chartData = await _libraryService.GetMonthlyReadingDataAsync(startDate, endDate, searchText);
+        }
+        else
+        {
+            chartData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
+        }
+
+        _chartDrawable.IsMonthlyMode = _isMonthlyMode;
+        _chartDrawable.Data = chartData.Select(d => new Library.Controls.DailyReadingData
         {
             Date = d.Date,
             PagesRead = d.PagesRead
         }).ToList();
         
-        // Устанавливаем цвета темы
         _chartDrawable.PrimaryColor = GetThemeColor("PrimaryColor", Colors.Purple);
         _chartDrawable.TextColor = GetThemeColor("PrimaryTextColor", Colors.Black);
         _chartDrawable.GridColor = GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
         
-        // Вычисляем ширину графика в зависимости от количества дней
-        int daysCount = dailyData.Count;
-        if (daysCount > 0)
+        int dataCount = chartData.Count;
+        if (dataCount > 0)
         {
-            // 30 пикселей на день, минимум 400
-            ReadingChartView.WidthRequest = Math.Max(daysCount * 30, 400);
+            int step = _isMonthlyMode ? 60 : 30;
+            ReadingChartView.WidthRequest = Math.Max(dataCount * step, 400);
         }
         else
         {
             ReadingChartView.WidthRequest = 400;
         }
         
-        // Обновляем описание графика
-        if (daysCount > 0)
+        if (dataCount > 0)
         {
-            var totalPages = dailyData.Sum(d => d.PagesRead);
-            var averagePages = (double)totalPages / daysCount;
-            ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {daysCount} {GetDaysText(daysCount)}";
-            AverageDailyLabel.Text = $"Среднее количество в день - {averagePages:F2}";
+            var totalPages = chartData.Sum(d => d.PagesRead);
+
+            if (_isMonthlyMode)
+            {
+                ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {dataCount} {GetMonthsText(dataCount)}";
+            }
+            else
+            {
+                ChartDescriptionLabel.Text = $"Прочитано {totalPages} страниц за {dataCount} {GetDaysText(dataCount)}";
+            }
+
+            var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
+            if (dailyData.Count > 0)
+            {
+                var averagePages = (double)dailyData.Sum(d => d.PagesRead) / dailyData.Count;
+                AverageDailyLabel.Text = $"Среднее количество в день - {averagePages:F2}";
+            }
+            else
+            {
+                AverageDailyLabel.Text = "Среднее количество в день - 0.00";
+            }
         }
         else
         {
@@ -188,7 +252,6 @@ public partial class StatisticsPage : ContentPage
             AverageDailyLabel.Text = "Среднее количество в день - 0.00";
         }
         
-        // Перерисовываем график
         ReadingChartView.Invalidate();
     }
     
@@ -214,6 +277,22 @@ public partial class StatisticsPage : ContentPage
             1 => "день",
             2 or 3 or 4 => "дня",
             _ => "дней"
+        };
+    }
+
+    private string GetMonthsText(int count)
+    {
+        var lastDigit = count % 10;
+        var lastTwoDigits = count % 100;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14)
+            return "месяцев";
+
+        return lastDigit switch
+        {
+            1 => "месяц",
+            2 or 3 or 4 => "месяца",
+            _ => "месяцев"
         };
     }
 }
