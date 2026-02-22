@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="Library.Views.UpdateProgressPage"
+<base:BasePage x:Class="Library.Views.UpdateProgressPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:base="clr-namespace:Library.Views"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:UpdateProgressViewModel"
              Title="Обновление прогресса"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -9,88 +12,53 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Информация о книге -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
-                    <Label x:Name="BookTitleLabel" 
-                           FontSize="20" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Label x:Name="BookAuthorLabel" 
-                           FontSize="16" 
-                           TextColor="{DynamicResource SecondaryTextColor}" 
-                           Margin="0,5,0,0" />
-                    <Label x:Name="TotalPagesLabel" 
-                           FontSize="14" 
-                           TextColor="{DynamicResource SecondaryTextColor}" 
-                           Margin="0,5,0,0" />
+                    <Label Text="{Binding BookTitleText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label Text="{Binding BookAuthorText}" FontSize="16" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
+                    <Label Text="{Binding TotalPagesText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
                 </StackLayout>
             </Border>
 
-            <!-- Форма ввода прогресса -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <!-- Форма ввода -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout Spacing="15">
                     
-                    <Label Text="📅 Дата чтения" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <!-- Выбор даты -->
-                    <DatePicker x:Name="ReadingDatePicker" 
-                                Format="dd.MM.yyyy"
-                                Date="{x:Static x:DateTime.Now}"
+                    <Label Text="📅 Дата чтения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <DatePicker Format="dd.MM.yyyy"
+                                Date="{Binding ReadingDate}"
                                 TextColor="{DynamicResource PrimaryTextColor}"
                                 BackgroundColor="{DynamicResource CardBackgroundColor}" />
                     
-                    <Label Text="📖 Номер страницы" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" 
-                           Margin="0,15,0,0" />
-                    
-                    <!-- Ввод номера страницы -->
-                    <Entry x:Name="CurrentPageEntry" 
+                    <Label Text="📖 Номер страницы" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" Margin="0,15,0,0" />
+                    <Entry Text="{Binding CurrentPageText}"
                            Placeholder="Введите номер текущей страницы" 
                            Keyboard="Numeric"
                            TextColor="{DynamicResource PrimaryTextColor}"
                            PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     
-                    <!-- Текущий прогресс -->
-                    <Label x:Name="CurrentProgressLabel" 
-                           FontSize="14" 
-                           TextColor="{DynamicResource SecondaryTextColor}" 
-                           Margin="0,5,0,0" />
+                    <Label Text="{Binding CurrentProgressText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
                     
                 </StackLayout>
             </Border>
 
-            <!-- Кнопки действий -->
+            <!-- Кнопки -->
             <StackLayout Orientation="Horizontal" Spacing="10">
                 <Button Text="✅ Обновить" 
                         BackgroundColor="{DynamicResource PrimaryColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
-                        CornerRadius="10" 
-                        HorizontalOptions="Fill" 
-                        Clicked="OnSaveClicked" />
+                        CornerRadius="10" HorizontalOptions="Fill" 
+                        Command="{Binding SaveCommand}" />
                 <Button Text="❌ Отмена" 
                         BackgroundColor="{DynamicResource SecondaryColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
-                        CornerRadius="10" 
-                        HorizontalOptions="Fill" 
-                        Clicked="OnCancelClicked" />
+                        CornerRadius="10" HorizontalOptions="Fill" 
+                        Command="{Binding CancelCommand}" />
             </StackLayout>
 
         </StackLayout>
     </ScrollView>
 
-</ContentPage>
+</base:BasePage>

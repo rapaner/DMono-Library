@@ -44,8 +44,7 @@ public partial class App : Application
         {
             System.Diagnostics.Debug.WriteLine("=== CreateWindow started ===");
 
-            // Показываем страницу загрузки, которая инициализирует БД
-            var loadingPage = new Views.LoadingPage(_serviceProvider);
+            var loadingPage = _serviceProvider.GetRequiredService<Views.LoadingPage>();
             System.Diagnostics.Debug.WriteLine("=== LoadingPage created ===");
 
             var window = new Window(loadingPage);

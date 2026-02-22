@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="Library.Views.SettingsPage"
+<base:BasePage x:Class="Library.Views.SettingsPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:base="clr-namespace:Library.Views"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:SettingsViewModel"
              Title="Настройки"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -27,8 +30,7 @@
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            Margin="0,15,0,5" />
                     
-                    <Label x:Name="VersionLabel"
-                           Text="Версия 1.0" 
+                    <Label Text="{Binding AppVersion}"
                            FontSize="14" 
                            TextColor="{DynamicResource SecondaryTextColor}" />
                     
@@ -77,9 +79,8 @@
                            FontSize="14" 
                            TextColor="{DynamicResource SecondaryTextColor}" />
 
-                    <Picker x:Name="ThemePicker"
-                            Title="Выберите тему"
-                            SelectedIndexChanged="OnThemeChanged"
+                    <Picker Title="Выберите тему"
+                            SelectedIndex="{Binding SelectedThemeIndex}"
                             TextColor="{DynamicResource PrimaryTextColor}"
                             TitleColor="{DynamicResource SecondaryTextColor}">
                         <Picker.Items>
@@ -89,8 +90,7 @@
                         </Picker.Items>
                     </Picker>
 
-                    <Label x:Name="ThemeDescriptionLabel"
-                           Text="Тема будет автоматически переключаться в зависимости от настроек системы"
+                    <Label Text="{Binding ThemeDescription}"
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,5,0,0" />
@@ -119,8 +119,7 @@
                             BackgroundColor="{DynamicResource PrimaryColor}" 
                             TextColor="{DynamicResource SecondaryTextColor}" 
                             CornerRadius="10" 
-                            Margin="0,0,0,0" 
-                            Clicked="OnYandexDiskClicked" />
+                            Command="{Binding GoToYandexDiskCommand}" />
                 </StackLayout>
             </Border>
 
@@ -142,11 +141,11 @@
                             TextColor="{DynamicResource PrimaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,15,0,0" 
-                            Clicked="OnClearDataClicked" />
+                            Command="{Binding ClearDataCommand}" />
                 </StackLayout>
             </Border>
 
         </StackLayout>
     </ScrollView>
 
-</ContentPage>
+</base:BasePage>

@@ -260,6 +260,39 @@ namespace Library.Services
             }
         }
 
+        /// <summary>
+        /// Инициализировать базу данных с использованием миграций
+        /// </summary>
+        public async Task InitializeDatabaseAsync()
+        {
+            if (!await IsMigrationHistoryTableExistsAsync())
+            {
+                System.Diagnostics.Debug.WriteLine("=== Migration history table not found ===");
+
+                if (!string.IsNullOrEmpty(_dbPath) && File.Exists(_dbPath))
+                {
+                    System.Diagnostics.Debug.WriteLine("=== Old database found, creating migration history ===");
+                    await CreateMigrationHistoryTableAsync();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("=== New installation, creating database ===");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("=== Database already uses migrations ===");
+            }
+
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != System.Data.ConnectionState.Closed)
+            {
+                await connection.CloseAsync();
+                System.Diagnostics.Debug.WriteLine("=== Database connection closed before migration ===");
+            }
+
+            await MigrateAsync();
+        }
     }
 }
 

@@ -1,5 +1,142 @@
 # История изменений
 
+## [2.3] - Вынос дублирующегося кода: плюрализация, тема, фильтрация дат
+
+### Добавлено
+- ✅ **`Helpers/RussianPluralization.cs`** — статический хелпер для русского склонения существительных по числительным:
+  - `Pluralize(int count, string one, string few, string many)` — универсальный метод (11-14 → many; lastDigit 1 → one; 2-4 → few; иначе → many)
+  - `Days(int count)` — обёртка для «день/дня/дней»
+  - `Months(int count)` — обёртка для «месяц/месяца/месяцев»
+- ✅ **`Extensions/ApplicationExtensions.cs`** — extension method `GetThemeColor(this Application?, string, Color)` для получения цвета из ресурсов темы
+- ✅ **`Services/IDateFilterService.cs`** — интерфейс сервиса фильтрации дат:
+  - `GetDateRange(int filterIndex, DateTime? customStart, DateTime? customEnd)` — преобразование индекса фильтра (0-6) в пару дат
+  - `FilterByDateRange<T>(IEnumerable<T>, DateTime?, DateTime?, Func<T, DateTime>)` — обобщённая фильтрация коллекций по диапазону дат
+  - `IsBookInDateRange(Book, DateTime?, DateTime?)` — проверка попадания книги в диапазон по `DateFinished` или `PagesReadHistory`
+- ✅ **`Services/DateFilterService.cs`** — реализация `IDateFilterService`
+
+### Изменено
+- 🔄 **`Services/StatisticsService.cs`** — добавлена инжекция `IDateFilterService`; 5 повторяющихся inline-лямбд фильтрации по датам заменены на вызовы `FilterByDateRange` и `IsBookInDateRange`
+- 🔄 **`ViewModels/BookDetailViewModel.cs`** — вызовы `GetThemeColor` → `Application.Current.GetThemeColor(...)`, `GetDaysText` → `RussianPluralization.Days(...)`
+- 🔄 **`ViewModels/StatisticsViewModel.cs`** — добавлена инжекция `IDateFilterService`; вызовы `GetThemeColor` → extension method, `GetDaysText`/`GetMonthsText` → `RussianPluralization`, `GetDateRange()` → `_dateFilterService.GetDateRange(...)`
+- 🔄 **`MauiProgram.cs`** — зарегистрирован `IDateFilterService` / `DateFilterService` как Scoped
+
+### Удалено
+- ❌ `BookDetailViewModel.GetThemeColor` и `BookDetailViewModel.GetDaysText` — заменены хелперами
+- ❌ `StatisticsViewModel.GetThemeColor`, `GetDaysText`, `GetMonthsText`, `GetDateRange` — заменены сервисом и хелперами
+- ❌ 5 inline-лямбд фильтрации по датам в `StatisticsService` — заменены вызовами `DateFilterService`
+
+---
+
+## [2.2] - SafeExecute: безопасная обработка async void
+
+### Добавлено
+- ✅ **`Views/BasePage.cs`** — базовый класс `BasePage : ContentPage` с методом `SafeExecute(Func<Task>)`, оборачивающим асинхронные вызовы в `try/catch` с показом `DisplayAlertAsync` при ошибке
+
+### Изменено
+- 🔄 **13 XAML-файлов** — корневой элемент `<ContentPage>` заменён на `<base:BasePage>` с добавлением `xmlns:base="clr-namespace:Library.Views"`:
+  - `MainPage.xaml`, `LibraryPage.xaml`, `BookDetailPage.xaml`, `StatisticsPage.xaml`, `YandexDiskPage.xaml`, `LoadingPage.xaml`, `AddEditBookPage.xaml`, `SettingsPage.xaml`, `BookChoosePage.xaml`, `UpdateProgressPage.xaml`, `ReadingHistoryEditPage.xaml`, `ReadingSchedulePage.xaml`, `AlternativePageCalculationPage.xaml`
+- 🔄 **13 code-behind файлов** — наследование изменено с `ContentPage` на `BasePage`
+- 🔄 **12 методов `async void` в 6 файлах обёрнуты в `SafeExecute`** — метод теряет `async` в сигнатуре, тело передаётся как лямбда:
+  - `MainPage.xaml.cs` — `OnAppearing`
+  - `LibraryPage.xaml.cs` — `OnAppearing`, `OnBookSelected`
+  - `BookDetailPage.xaml.cs` — `OnAppearing`
+  - `StatisticsPage.xaml.cs` — `OnAppearing`, `OnDateFilterChanged`, `OnCustomDateChanged`, `OnSearchTextChanged`, `OnBookRankingSelected`
+  - `YandexDiskPage.xaml.cs` — `OnAppearing`, `OnBackupSelectionChanged`
+  - `LoadingPage.xaml.cs` — `OnAppearing`
+
+---
+
+## [2.1] - Разбиение LibraryService на доменные сервисы
+
+### Добавлено
+- ✅ **5 доменных сервисов с интерфейсами** вместо монолитного `LibraryService`:
+  - `IBookService` / `BookService` — CRUD книг (`GetAllBooksAsync`, `GetBookByIdAsync`, `AddBookAsync`, `UpdateBookAsync`, `DeleteBookAsync`, `SetCurrentBookAsync`, `GetCurrentBookAsync`, `GetBooksByStatusAsync`)
+  - `IAuthorService` / `AuthorService` — CRUD авторов (`GetAllAuthorsAsync`, `GetAuthorByIdAsync`, `AddAuthorAsync`, `GetOrCreateAuthorAsync`)
+  - `IReadingProgressService` / `ReadingProgressService` — прогресс чтения и история (`AddOrUpdateReadingProgressAsync`, `RemoveReadingProgressAsync`, `GetReadingHistoryAsync`)
+  - `IStatisticsService` / `StatisticsService` — агрегация статистики и графиков (`GetStatisticsAsync`, `GetBookRankingsAsync`, `GetDailyReadingDataAsync`, `GetMonthlyReadingDataAsync`, `GetDailyReadingDataForBookAsync`)
+  - `IReadingScheduleService` / `ReadingScheduleService` — расписание чтения (`GetBookReadingScheduleAsync`, `UpdateBookReadingScheduleAsync`, `GetEffectiveReadingHoursAsync`)
+- ✅ **10 новых файлов** в папке `Services/`: 5 интерфейсов + 5 реализаций
+
+### Изменено
+- 🔄 **`DatabaseMigrationService.cs`**: перенесён метод `InitializeDatabaseAsync()` из `LibraryService` — инфраструктурная логика инициализации БД теперь в профильном сервисе
+- 🔄 **`MauiProgram.cs`**: заменена регистрация `AddScoped<LibraryService>()` на 5 интерфейсных привязок (`AddScoped<IBookService, BookService>()` и т.д.)
+- 🔄 **`AddEditBookViewModel`**: зависимость `LibraryService` → `IBookService` + `IAuthorService`
+- 🔄 **`AlternativePageCalculationViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`BookDetailViewModel`**: зависимость `LibraryService` → `IBookService` + `IStatisticsService`
+- 🔄 **`LibraryViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`MainPageViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`ReadingHistoryEditViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
+- 🔄 **`ReadingScheduleViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingScheduleService`
+- 🔄 **`SettingsViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`StatisticsViewModel`**: зависимость `LibraryService` → `IStatisticsService`
+- 🔄 **`UpdateProgressViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
+- 🔄 **`LoadingViewModel`**: зависимость `LibraryService` → `DatabaseMigrationService`
+
+### Удалено
+- ❌ **`Services/LibraryService.cs`** (738 строк) — God Object разделён на 5 доменных сервисов с чёткой ответственностью
+
+---
+
+## [2.0] - Внедрение MVVM-архитектуры
+
+### Добавлено
+- ✅ **Папка `ViewModels/` с 15 ViewModel-классами**:
+  - `MainPageViewModel` — отображение текущей книги, навигация по разделам
+  - `LibraryViewModel` — загрузка списка книг, фильтрация, сортировка
+  - `BookItemViewModel` — вынесен из code-behind `LibraryPage.xaml.cs`
+  - `BookDetailViewModel` — данные книги, прогресс, график чтения, навигация к дочерним страницам
+  - `SettingsViewModel` — смена темы, очистка данных, навигация на Яндекс Диск
+  - `BookChooseViewModel` — настройки выбора книг, вызов сервиса расчёта
+  - `LoadingViewModel` — инициализация БД, переход на AppShell
+  - `StatisticsViewModel` — статистика, фильтрация по датам, графики, рейтинг книг
+  - `AddEditBookViewModel` — форма добавления/редактирования книги с валидацией
+  - `UpdateProgressViewModel` — обновление прогресса чтения
+  - `YandexDiskViewModel` — OAuth, бэкапы, управление резервными копиями
+  - `ReadingScheduleViewModel` — расчёт почасового графика чтения
+  - `ReadingHistoryEditViewModel` — редактирование истории чтения по дням
+  - `ReadingHistoryItemViewModel` — вынесен из code-behind `ReadingHistoryEditPage.xaml.cs`
+  - `AlternativePageCalculationViewModel` — конвертация страниц между изданиями
+
+- ✅ **Shell-навигация для всех страниц**:
+  - Все 11 страниц зарегистрированы как Shell-маршруты в `AppShell.xaml.cs`
+  - Навигация `Navigation.PushAsync(new Page(...))` заменена на `Shell.Current.GoToAsync`
+  - Передача параметров через query-строку (`?bookId=...`) вместо конструкторов
+
+- ✅ **DI-регистрация всех компонентов**:
+  - 13 ViewModel и 13 Page зарегистрированы как `Transient` в `MauiProgram.cs`
+  - Shell автоматически резолвит страницы из DI при навигации
+
+### Изменено
+- 🔄 **AppShell.xaml.cs**: зарегистрированы маршруты для `LibraryPage`, `BookDetailPage`, `AddEditBookPage`, `StatisticsPage`, `SettingsPage`, `BookChoosePage`, `UpdateProgressPage`, `ReadingHistoryEditPage`, `AlternativePageCalculationPage`
+- 🔄 **MauiProgram.cs**: добавлен `using Library.ViewModels`, зарегистрированы все ViewModel и Page
+- 🔄 **App.xaml.cs**: `LoadingPage` теперь резолвится из DI вместо ручного создания через `new`
+- 🔄 **MainPage.xaml / MainPage.xaml.cs**: навигация через команды ViewModel, TapGestureRecognizer в XAML вместо code-behind
+- 🔄 **Views/SettingsPage.xaml / .cs**: привязки `{Binding}` для темы и версии, команды для кнопок
+- 🔄 **Views/BookChoosePage.xaml / .cs**: привязки для полей ввода, `Command` для кнопки расчёта
+- 🔄 **Views/LoadingPage.xaml.cs**: вызов `InitializeCommand` из ViewModel в `OnAppearing`
+- 🔄 **Views/LibraryPage.xaml / .cs**: `ItemsSource="{Binding Books}"`, команды для фильтрации и сортировки
+- 🔄 **Views/BookDetailPage.xaml / .cs**: все данные через привязки, `Drawable="{Binding ChartDrawable}"`, `IQueryAttributable` для приёма `bookId`
+- 🔄 **Views/StatisticsPage.xaml / .cs**: привязки для статистики и графиков, команды для фильтров
+- 🔄 **Views/AddEditBookPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для режима редактирования
+- 🔄 **Views/UpdateProgressPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для `bookId`
+- 🔄 **Views/YandexDiskPage.xaml / .cs**: все состояния через привязки, команды для OAuth и бэкапов
+- 🔄 **Views/ReadingSchedulePage.xaml / .cs**: привязки, `IQueryAttributable`, убран `[QueryProperty]`
+- 🔄 **Views/ReadingHistoryEditPage.xaml / .cs**: `ItemsSource="{Binding Items}"`, команда удаления через `RelativeSource`
+- 🔄 **Views/AlternativePageCalculationPage.xaml / .cs**: форма через привязки, `IQueryAttributable`
+
+### Удалено
+- ❌ **Pseudo-ViewModel `BookViewModel`** из `LibraryPage.xaml.cs` — вынесен в `ViewModels/BookItemViewModel.cs`
+- ❌ **Pseudo-ViewModel `ReadingHistoryItemViewModel`** из `ReadingHistoryEditPage.xaml.cs` — вынесен в `ViewModels/ReadingHistoryItemViewModel.cs`
+- ❌ **Вся бизнес-логика из code-behind** всех 14 страниц — перенесена в соответствующие ViewModel
+- ❌ **Ручное создание страниц** (`new Page(service)`) — заменено на Shell-навигацию с DI
+
+### Технические детали
+- 📐 **CommunityToolkit.Mvvm 8.4.0**: задействованы `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`
+- 📐 **IQueryAttributable**: используется в `BookDetailViewModel`, `AddEditBookViewModel`, `UpdateProgressViewModel`, `ReadingScheduleViewModel`, `ReadingHistoryEditViewModel`, `AlternativePageCalculationViewModel` для приёма параметров навигации
+- 📐 **DisplayAlertAsync**: все вызовы диалогов используют `DisplayAlertAsync` (вместо устаревшего `DisplayAlert`)
+- 📐 **Code-behind**: сведён к минимуму — конструктор с `BindingContext = viewModel` и `OnAppearing` для загрузки данных
+- 📐 **Сборка**: 0 ошибок, 0 предупреждений
+
 ## [1.26] - Переключение графика статистики по дням и по месяцам
 
 ### Добавлено

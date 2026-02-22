@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="Library.Views.LibraryPage"
+<base:BasePage x:Class="Library.Views.LibraryPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:Library.Views"
+             xmlns:base="clr-namespace:Library.Views"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:LibraryViewModel"
              Title="Вся библиотека"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -11,34 +13,34 @@
         <!-- Фильтры -->
         <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
             <StackLayout Orientation="Horizontal" Padding="15" Spacing="10">
-                <Button x:Name="AllBooksButton" 
-                        Text="Все" 
+                <Button Text="Все" 
                         BackgroundColor="{DynamicResource PrimaryColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="20" 
                         Padding="15,8" 
-                        Clicked="OnFilterChanged" />
-                <Button x:Name="CurrentBooksButton" 
-                        Text="Читаю сейчас" 
+                        Command="{Binding FilterCommand}"
+                        CommandParameter="All" />
+                <Button Text="Читаю сейчас" 
                         BackgroundColor="{DynamicResource CardBackgroundColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="20" 
                         Padding="15,8" 
-                        Clicked="OnFilterChanged" />
-                <Button x:Name="PlannedBooksButton" 
-                        Text="В планах" 
+                        Command="{Binding FilterCommand}"
+                        CommandParameter="Current" />
+                <Button Text="В планах" 
                         BackgroundColor="{DynamicResource CardBackgroundColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="20" 
                         Padding="15,8" 
-                        Clicked="OnFilterChanged" />
-                <Button x:Name="FinishedBooksButton" 
-                        Text="Прочитано" 
+                        Command="{Binding FilterCommand}"
+                        CommandParameter="Planned" />
+                <Button Text="Прочитано" 
                         BackgroundColor="{DynamicResource CardBackgroundColor}" 
                         TextColor="{DynamicResource SecondaryTextColor}" 
                         CornerRadius="20" 
                         Padding="15,8" 
-                        Clicked="OnFilterChanged" />
+                        Command="{Binding FilterCommand}"
+                        CommandParameter="Finished" />
             </StackLayout>
         </ScrollView>
 
@@ -51,8 +53,7 @@
                    FontSize="14" 
                    VerticalOptions="Center" 
                    TextColor="{DynamicResource PrimaryTextColor}" />
-            <Picker x:Name="SortPicker" 
-                    SelectedIndexChanged="OnSortChanged"
+            <Picker SelectedIndex="{Binding SelectedSortIndex}"
                     WidthRequest="200">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -65,12 +66,12 @@
         </StackLayout>
 
         <!-- Список книг -->
-        <CollectionView x:Name="BooksCollectionView" 
-                         Grid.Row="2"
+        <CollectionView Grid.Row="2"
+                         ItemsSource="{Binding Books}"
                          SelectionMode="Single"
                          SelectionChanged="OnBookSelected">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="views:BookViewModel">
+                <DataTemplate x:DataType="vm:BookItemViewModel">
                     <Grid Padding="15" ColumnDefinitions="Auto,*,Auto">
                         
                         <!-- Иконка статуса -->
@@ -122,8 +123,8 @@
                 CornerRadius="25" 
                 Margin="20" 
                 Padding="20" 
-                Clicked="OnAddBookClicked" />
+                Command="{Binding AddBookCommand}" />
 
     </Grid>
 
-</ContentPage>
+</base:BasePage>

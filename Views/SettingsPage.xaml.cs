@@ -1,123 +1,21 @@
-using Library.Services;
+using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : BasePage
 {
-    private readonly LibraryService _libraryService;
-    private readonly SettingsService _settingsService;
+    private readonly SettingsViewModel _viewModel;
 
-    public SettingsPage(LibraryService libraryService, SettingsService settingsService)
+    public SettingsPage(SettingsViewModel viewModel)
     {
         InitializeComponent();
-        _libraryService = libraryService;
-        _settingsService = settingsService;
-        
-        LoadThemePreference();
-        LoadAppVersion();
+        _viewModel = viewModel;
+        BindingContext = viewModel;
     }
-    
+
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        LoadThemePreference();
-    }
-    
-    private void LoadAppVersion()
-    {
-        // Получаем и устанавливаем версию приложения
-        var version = _settingsService.GetAppVersion();
-        VersionLabel.Text = $"Версия {version}";
-    }
-    
-    private void LoadThemePreference()
-    {
-        // Загружаем сохраненные настройки темы
-        var savedTheme = _settingsService.GetThemePreference();
-        
-        // Устанавливаем выбранный элемент в Picker
-        ThemePicker.SelectedIndex = savedTheme switch
-        {
-            "Auto" => 0,
-            "Light" => 1,
-            "Dark" => 2,
-            _ => 0 // По умолчанию Автоматически
-        };
-        
-        UpdateThemeDescription(ThemePicker.SelectedIndex);
-    }
-    
-    private void OnThemeChanged(object sender, EventArgs e)
-    {
-        if (ThemePicker.SelectedIndex == -1)
-            return;
-            
-        var selectedTheme = ThemePicker.SelectedIndex switch
-        {
-            0 => AppTheme.Unspecified, // Автоматически
-            1 => AppTheme.Light,        // Светлая
-            2 => AppTheme.Dark,         // Темная
-            _ => AppTheme.Unspecified
-        };
-        
-        // Сохраняем выбор пользователя
-        var themeKey = ThemePicker.SelectedIndex switch
-        {
-            0 => "Auto",
-            1 => "Light",
-            2 => "Dark",
-            _ => "Auto"
-        };
-        _settingsService.SaveThemePreference(themeKey);
-        
-        // Применяем тему
-        if (Application.Current != null)
-        {
-            Application.Current.UserAppTheme = selectedTheme;
-        }
-        
-        // Обновляем описание
-        UpdateThemeDescription(ThemePicker.SelectedIndex);
-    }
-    
-    private void UpdateThemeDescription(int selectedIndex)
-    {
-        ThemeDescriptionLabel.Text = selectedIndex switch
-        {
-            0 => "Тема будет автоматически переключаться в зависимости от настроек системы",
-            1 => "Всегда использовать светлую тему независимо от настроек системы",
-            2 => "Всегда использовать темную тему независимо от настроек системы",
-            _ => "Тема будет автоматически переключаться в зависимости от настроек системы"
-        };
-    }
-
-    private async void OnClearDataClicked(object sender, EventArgs e)
-    {
-        bool result = await DisplayAlertAsync("Подтверждение", 
-            "Вы уверены, что хотите удалить все данные? Это действие нельзя отменить!\n\nРекомендуется создать резервную копию на Яндекс Диске перед удалением.", 
-            "Да, удалить", "Отмена");
-            
-        if (result)
-        {
-            try
-            {
-                var allBooks = await _libraryService.GetAllBooksAsync();
-                foreach (var book in allBooks)
-                {
-                    await _libraryService.DeleteBookAsync(book);
-                }
-                
-                await DisplayAlertAsync("Успех", "Все данные удалены!", "OK");
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
-            }
-        }
-    }
-
-    private async void OnYandexDiskClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(YandexDiskPage));
+        _viewModel.LoadThemePreference();
     }
 }
