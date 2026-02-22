@@ -21,8 +21,8 @@ public partial class LoadingViewModel : ObservableObject
             System.Diagnostics.Debug.WriteLine("=== LoadingVM: Starting database initialization ===");
 
             using var scope = _serviceProvider.CreateScope();
-            var libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
-            await libraryService.InitializeDatabaseAsync();
+            var migrationService = scope.ServiceProvider.GetRequiredService<DatabaseMigrationService>();
+            await migrationService.InitializeDatabaseAsync();
 
             System.Diagnostics.Debug.WriteLine("=== LoadingVM: Database initialized successfully ===");
 

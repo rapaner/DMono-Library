@@ -8,7 +8,8 @@ namespace Library.ViewModels;
 
 public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
+    private readonly IAuthorService _authorService;
     private Book? _book;
     private bool _isEditMode;
     private List<Author> _allAuthors = new();
@@ -40,9 +41,10 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     [ObservableProperty]
     private ObservableCollection<Author> _selectedAuthors = new();
 
-    public AddEditBookViewModel(LibraryService libraryService)
+    public AddEditBookViewModel(IBookService bookService, IAuthorService authorService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
+        _authorService = authorService;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -66,14 +68,14 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 
     private async Task LoadBookForEditAsync(int bookId)
     {
-        _book = await _libraryService.GetBookByIdAsync(bookId);
+        _book = await _bookService.GetBookByIdAsync(bookId);
         await LoadDataAsync();
     }
 
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        _allAuthors = await _libraryService.GetAllAuthorsAsync();
+        _allAuthors = await _authorService.GetAllAuthorsAsync();
         AuthorNames = new ObservableCollection<string>(_allAuthors.Select(a => a.Name));
 
         if (_isEditMode && _book != null)
@@ -132,7 +134,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                 return;
             }
 
-            var newAuthor = await _libraryService.AddAuthorAsync(new Author { Name = result });
+            var newAuthor = await _authorService.AddAuthorAsync(new Author { Name = result });
             _allAuthors.Add(newAuthor);
             SelectedAuthors.Add(newAuthor);
 
@@ -207,12 +209,12 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             }
 
             if (book.IsCurrentlyReading)
-                await _libraryService.SetCurrentBookAsync(book);
+                await _bookService.SetCurrentBookAsync(book);
 
             if (_isEditMode)
-                await _libraryService.UpdateBookAsync(book);
+                await _bookService.UpdateBookAsync(book);
             else
-                await _libraryService.AddBookAsync(book);
+                await _bookService.AddBookAsync(book);
 
             await Shell.Current.DisplayAlertAsync("Успех",
                 _isEditMode ? "Книга обновлена!" : "Книга добавлена!",

@@ -7,7 +7,8 @@ namespace Library.ViewModels;
 
 public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
+    private readonly IReadingProgressService _readingProgressService;
     private Book? _book;
 
     [ObservableProperty]
@@ -28,9 +29,10 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     private DateTime _readingDate = DateTime.Today;
 
-    public UpdateProgressViewModel(LibraryService libraryService)
+    public UpdateProgressViewModel(IBookService bookService, IReadingProgressService readingProgressService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
+        _readingProgressService = readingProgressService;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -48,7 +50,7 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
 
     private async Task LoadBookAsync(int bookId)
     {
-        _book = await _libraryService.GetBookByIdAsync(bookId);
+        _book = await _bookService.GetBookByIdAsync(bookId);
         if (_book == null) return;
 
         BookTitleText = _book.Title;
@@ -85,7 +87,7 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
 
         try
         {
-            await _libraryService.AddOrUpdateReadingProgressAsync(_book.Id, ReadingDate, currentPage);
+            await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, ReadingDate, currentPage);
             await Shell.Current.DisplayAlertAsync("Успех", "Прогресс обновлен!", "OK");
             await Shell.Current.GoToAsync("..");
         }

@@ -7,7 +7,7 @@ namespace Library.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
 
     [ObservableProperty]
     private string _currentBookTitle = "Нет активной книги";
@@ -29,15 +29,15 @@ public partial class MainPageViewModel : ObservableObject
 
     private int? _currentBookId;
 
-    public MainPageViewModel(LibraryService libraryService)
+    public MainPageViewModel(IBookService bookService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
     }
 
     [RelayCommand]
     private async Task LoadCurrentBookAsync()
     {
-        var currentBook = await _libraryService.GetCurrentBookAsync();
+        var currentBook = await _bookService.GetCurrentBookAsync();
 
         if (currentBook != null)
         {

@@ -10,7 +10,7 @@ namespace Library.ViewModels;
 
 public partial class StatisticsViewModel : ObservableObject
 {
-    private readonly LibraryService _libraryService;
+    private readonly IStatisticsService _statisticsService;
 
     [ObservableProperty]
     private string _totalBooks = "0";
@@ -62,9 +62,9 @@ public partial class StatisticsViewModel : ObservableObject
 
     private bool _isMonthlyMode = true;
 
-    public StatisticsViewModel(LibraryService libraryService)
+    public StatisticsViewModel(IStatisticsService statisticsService)
     {
-        _libraryService = libraryService;
+        _statisticsService = statisticsService;
         _chartDrawable = new ReadingChartDrawable();
     }
 
@@ -76,7 +76,7 @@ public partial class StatisticsViewModel : ObservableObject
             return;
 
         var searchText = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
-        var statistics = await _libraryService.GetStatisticsAsync(startDate, endDate, searchText);
+        var statistics = await _statisticsService.GetStatisticsAsync(startDate, endDate, searchText);
 
         TotalBooks = statistics.TotalBooks.ToString();
         ReadBooks = statistics.ReadBooks.ToString();
@@ -86,7 +86,7 @@ public partial class StatisticsViewModel : ObservableObject
 
         PopularAuthors = new ObservableCollection<AuthorStatistic>(statistics.PopularAuthors);
 
-        var bookRankings = await _libraryService.GetBookRankingsAsync(startDate, endDate, searchText);
+        var bookRankings = await _statisticsService.GetBookRankingsAsync(startDate, endDate, searchText);
         BookRankings = new ObservableCollection<BookRanking>(bookRankings);
 
         await LoadChartDataAsync(startDate, endDate);
@@ -141,9 +141,9 @@ public partial class StatisticsViewModel : ObservableObject
 
         List<Models.DailyReadingData> chartData;
         if (_isMonthlyMode)
-            chartData = await _libraryService.GetMonthlyReadingDataAsync(startDate, endDate, searchText);
+            chartData = await _statisticsService.GetMonthlyReadingDataAsync(startDate, endDate, searchText);
         else
-            chartData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
+            chartData = await _statisticsService.GetDailyReadingDataAsync(startDate, endDate, searchText);
 
         ChartDrawable.IsMonthlyMode = _isMonthlyMode;
         ChartDrawable.Data = chartData.Select(d => new Library.Controls.DailyReadingData
@@ -176,7 +176,7 @@ public partial class StatisticsViewModel : ObservableObject
             else
                 ChartDescription = $"Прочитано {totalPages} страниц за {dataCount} {GetDaysText(dataCount)}";
 
-            var dailyData = await _libraryService.GetDailyReadingDataAsync(startDate, endDate, searchText);
+            var dailyData = await _statisticsService.GetDailyReadingDataAsync(startDate, endDate, searchText);
             if (dailyData.Count > 0)
             {
                 var averagePages = (double)dailyData.Sum(d => d.PagesRead) / dailyData.Count;

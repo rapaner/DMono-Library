@@ -7,7 +7,7 @@ namespace Library.ViewModels;
 
 public partial class AlternativePageCalculationViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
     private Book? _book;
     private double _mainToAlternativeCoefficient = 1.0;
     private double _alternativeToMainCoefficient = 1.0;
@@ -42,9 +42,9 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
     [ObservableProperty]
     private string _mainPageResult = "—";
 
-    public AlternativePageCalculationViewModel(LibraryService libraryService)
+    public AlternativePageCalculationViewModel(IBookService bookService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -62,7 +62,7 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
 
     private async Task LoadBookAsync(int bookId)
     {
-        _book = await _libraryService.GetBookByIdAsync(bookId);
+        _book = await _bookService.GetBookByIdAsync(bookId);
         if (_book == null) return;
 
         BookTitleText = _book.Title;
@@ -173,7 +173,7 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
             _book.AlternativeFirstPage = altFirst;
             _book.AlternativeLastPage = altLast;
 
-            await _libraryService.UpdateBookAsync(_book);
+            await _bookService.UpdateBookAsync(_book);
 
             await Shell.Current.DisplayAlertAsync("Успех", "Настройки сохранены!", "OK");
             await Shell.Current.GoToAsync("..");

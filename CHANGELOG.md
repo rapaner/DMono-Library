@@ -1,5 +1,36 @@
 # История изменений
 
+## [2.1] - Разбиение LibraryService на доменные сервисы
+
+### Добавлено
+- ✅ **5 доменных сервисов с интерфейсами** вместо монолитного `LibraryService`:
+  - `IBookService` / `BookService` — CRUD книг (`GetAllBooksAsync`, `GetBookByIdAsync`, `AddBookAsync`, `UpdateBookAsync`, `DeleteBookAsync`, `SetCurrentBookAsync`, `GetCurrentBookAsync`, `GetBooksByStatusAsync`)
+  - `IAuthorService` / `AuthorService` — CRUD авторов (`GetAllAuthorsAsync`, `GetAuthorByIdAsync`, `AddAuthorAsync`, `GetOrCreateAuthorAsync`)
+  - `IReadingProgressService` / `ReadingProgressService` — прогресс чтения и история (`AddOrUpdateReadingProgressAsync`, `RemoveReadingProgressAsync`, `GetReadingHistoryAsync`)
+  - `IStatisticsService` / `StatisticsService` — агрегация статистики и графиков (`GetStatisticsAsync`, `GetBookRankingsAsync`, `GetDailyReadingDataAsync`, `GetMonthlyReadingDataAsync`, `GetDailyReadingDataForBookAsync`)
+  - `IReadingScheduleService` / `ReadingScheduleService` — расписание чтения (`GetBookReadingScheduleAsync`, `UpdateBookReadingScheduleAsync`, `GetEffectiveReadingHoursAsync`)
+- ✅ **10 новых файлов** в папке `Services/`: 5 интерфейсов + 5 реализаций
+
+### Изменено
+- 🔄 **`DatabaseMigrationService.cs`**: перенесён метод `InitializeDatabaseAsync()` из `LibraryService` — инфраструктурная логика инициализации БД теперь в профильном сервисе
+- 🔄 **`MauiProgram.cs`**: заменена регистрация `AddScoped<LibraryService>()` на 5 интерфейсных привязок (`AddScoped<IBookService, BookService>()` и т.д.)
+- 🔄 **`AddEditBookViewModel`**: зависимость `LibraryService` → `IBookService` + `IAuthorService`
+- 🔄 **`AlternativePageCalculationViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`BookDetailViewModel`**: зависимость `LibraryService` → `IBookService` + `IStatisticsService`
+- 🔄 **`LibraryViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`MainPageViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`ReadingHistoryEditViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
+- 🔄 **`ReadingScheduleViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingScheduleService`
+- 🔄 **`SettingsViewModel`**: зависимость `LibraryService` → `IBookService`
+- 🔄 **`StatisticsViewModel`**: зависимость `LibraryService` → `IStatisticsService`
+- 🔄 **`UpdateProgressViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
+- 🔄 **`LoadingViewModel`**: зависимость `LibraryService` → `DatabaseMigrationService`
+
+### Удалено
+- ❌ **`Services/LibraryService.cs`** (738 строк) — God Object разделён на 5 доменных сервисов с чёткой ответственностью
+
+---
+
 ## [2.0] - Внедрение MVVM-архитектуры
 
 ### Добавлено

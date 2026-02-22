@@ -8,14 +8,16 @@ namespace Library.ViewModels;
 
 public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
+    private readonly IReadingProgressService _readingProgressService;
     private Book? _book;
 
     public ObservableCollection<ReadingHistoryItemViewModel> Items { get; } = new();
 
-    public ReadingHistoryEditViewModel(LibraryService libraryService)
+    public ReadingHistoryEditViewModel(IBookService bookService, IReadingProgressService readingProgressService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
+        _readingProgressService = readingProgressService;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -33,7 +35,7 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
 
     private async Task LoadBookAsync(int bookId)
     {
-        _book = await _libraryService.GetBookByIdAsync(bookId);
+        _book = await _bookService.GetBookByIdAsync(bookId);
         if (_book != null)
             await LoadHistoryDataAsync();
     }
@@ -43,7 +45,7 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
         if (_book == null) return;
 
         Items.Clear();
-        var history = await _libraryService.GetReadingHistoryAsync(_book.Id);
+        var history = await _readingProgressService.GetReadingHistoryAsync(_book.Id);
         var sortedHistory = history.OrderBy(h => h.Date).ToList();
         int runningTotal = 0;
 
@@ -123,12 +125,12 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
                 if (!confirm) return;
             }
 
-            var existingHistory = await _libraryService.GetReadingHistoryAsync(_book.Id);
+            var existingHistory = await _readingProgressService.GetReadingHistoryAsync(_book.Id);
             foreach (var entry in existingHistory)
-                await _libraryService.RemoveReadingProgressAsync(_book.Id, entry.Date);
+                await _readingProgressService.RemoveReadingProgressAsync(_book.Id, entry.Date);
 
             foreach (var item in sortedItems)
-                await _libraryService.AddOrUpdateReadingProgressAsync(_book.Id, item.Date, item.CumulativePages);
+                await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, item.Date, item.CumulativePages);
 
             await Shell.Current.DisplayAlertAsync("Успех", "История чтения обновлена", "OK");
             await Shell.Current.GoToAsync("..");

@@ -9,7 +9,7 @@ namespace Library.ViewModels;
 
 public partial class LibraryViewModel : ObservableObject
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
 
     [ObservableProperty]
     private string _currentFilter = "All";
@@ -19,9 +19,9 @@ public partial class LibraryViewModel : ObservableObject
 
     public ObservableCollection<BookItemViewModel> Books { get; } = new();
 
-    public LibraryViewModel(LibraryService libraryService)
+    public LibraryViewModel(IBookService bookService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
     }
 
     [RelayCommand]
@@ -29,7 +29,7 @@ public partial class LibraryViewModel : ObservableObject
     {
         Books.Clear();
 
-        var allBooks = await _libraryService.GetAllBooksAsync();
+        var allBooks = await _bookService.GetAllBooksAsync();
 
         List<Book> books = CurrentFilter switch
         {

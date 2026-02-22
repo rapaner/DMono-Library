@@ -7,7 +7,7 @@ namespace Library.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
     private readonly SettingsService _settingsService;
 
     [ObservableProperty]
@@ -19,9 +19,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _appVersion = "Версия 1.0";
 
-    public SettingsViewModel(LibraryService libraryService, SettingsService settingsService)
+    public SettingsViewModel(IBookService bookService, SettingsService settingsService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
         _settingsService = settingsService;
 
         _appVersion = $"Версия {_settingsService.GetAppVersion()}";
@@ -94,10 +94,10 @@ public partial class SettingsViewModel : ObservableObject
         {
             try
             {
-                var allBooks = await _libraryService.GetAllBooksAsync();
+                var allBooks = await _bookService.GetAllBooksAsync();
                 foreach (var book in allBooks)
                 {
-                    await _libraryService.DeleteBookAsync(book);
+                    await _bookService.DeleteBookAsync(book);
                 }
 
                 await Shell.Current.DisplayAlertAsync("Успех", "Все данные удалены!", "OK");

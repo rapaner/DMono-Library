@@ -9,7 +9,8 @@ namespace Library.ViewModels;
 
 public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
+    private readonly IReadingScheduleService _readingScheduleService;
     private readonly PageByHourService _pageByHourService;
     private readonly AppConfiguration _appConfig;
 
@@ -52,9 +53,10 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
     [ObservableProperty]
     private ObservableCollection<ReadByHourRecord> _scheduleRecords = new();
 
-    public ReadingScheduleViewModel(LibraryService libraryService, PageByHourService pageByHourService, AppConfiguration appConfig)
+    public ReadingScheduleViewModel(IBookService bookService, IReadingScheduleService readingScheduleService, PageByHourService pageByHourService, AppConfiguration appConfig)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
+        _readingScheduleService = readingScheduleService;
         _pageByHourService = pageByHourService;
         _appConfig = appConfig;
     }
@@ -78,7 +80,7 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
         {
             IsLoading = true;
 
-            _book = await _libraryService.GetBookByIdAsync(bookId);
+            _book = await _bookService.GetBookByIdAsync(bookId);
             if (_book == null)
             {
                 await Shell.Current.DisplayAlertAsync("Ошибка", "Книга не найдена", "OK");
@@ -86,7 +88,7 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
                 return;
             }
 
-            _schedule = await _libraryService.GetBookReadingScheduleAsync(bookId);
+            _schedule = await _readingScheduleService.GetBookReadingScheduleAsync(bookId);
 
             BookTitleText = _book.Title;
             BookAuthorText = _book.AuthorsText;
@@ -138,7 +140,7 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
                 StartHour = string.IsNullOrWhiteSpace(StartHourText) ? null : startHour,
                 EndHour = string.IsNullOrWhiteSpace(EndHourText) ? null : endHour
             };
-            await _libraryService.UpdateBookReadingScheduleAsync(scheduleToSave);
+            await _readingScheduleService.UpdateBookReadingScheduleAsync(scheduleToSave);
 
             int pagesRead = _book.CurrentPage;
             int pagesToRead = _book.TotalPages;

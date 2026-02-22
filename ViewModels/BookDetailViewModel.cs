@@ -9,7 +9,8 @@ namespace Library.ViewModels;
 
 public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly LibraryService _libraryService;
+    private readonly IBookService _bookService;
+    private readonly IStatisticsService _statisticsService;
     private Book? _book;
 
     [ObservableProperty]
@@ -89,9 +90,10 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
     private int _bookId;
 
-    public BookDetailViewModel(LibraryService libraryService)
+    public BookDetailViewModel(IBookService bookService, IStatisticsService statisticsService)
     {
-        _libraryService = libraryService;
+        _bookService = bookService;
+        _statisticsService = statisticsService;
         _chartDrawable = new ReadingChartDrawable();
     }
 
@@ -109,7 +111,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        _book = await _libraryService.GetBookByIdAsync(_bookId);
+        _book = await _bookService.GetBookByIdAsync(_bookId);
         if (_book == null) return;
 
         LoadBookData();
@@ -153,7 +155,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     {
         if (_book == null) return;
 
-        var dailyData = await _libraryService.GetDailyReadingDataForBookAsync(_book.Id);
+        var dailyData = await _statisticsService.GetDailyReadingDataForBookAsync(_book.Id);
 
         ChartDrawable.Data = dailyData.Select(d => new Library.Controls.DailyReadingData
         {
@@ -232,7 +234,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
         if (result)
         {
-            await _libraryService.DeleteBookAsync(_book);
+            await _bookService.DeleteBookAsync(_book);
             await Shell.Current.DisplayAlertAsync("Успех", "Книга удалена!", "OK");
             await Shell.Current.GoToAsync("..");
         }
