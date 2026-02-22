@@ -8,10 +8,12 @@ namespace Library.Services
     public class StatisticsService : IStatisticsService
     {
         private readonly LibraryDbContext _context;
+        private readonly IDateFilterService _dateFilter;
 
-        public StatisticsService(LibraryDbContext context)
+        public StatisticsService(LibraryDbContext context, IDateFilterService dateFilter)
         {
             _context = context;
+            _dateFilter = dateFilter;
         }
 
         public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
@@ -32,24 +34,7 @@ namespace Library.Services
             var filteredBooks = books;
             if (startDate.HasValue || endDate.HasValue)
             {
-                filteredBooks = books.Where(b =>
-                {
-                    if (b.DateFinished.HasValue)
-                    {
-                        var dateToCheck = b.DateFinished.Value.Date;
-                        return (!startDate.HasValue || dateToCheck >= startDate.Value.Date) &&
-                               (!endDate.HasValue || dateToCheck <= endDate.Value.Date);
-                    }
-
-                    if (b.PagesReadHistory.Any())
-                    {
-                        return b.PagesReadHistory.Any(p =>
-                            (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                            (!endDate.HasValue || p.Date <= endDate.Value.Date));
-                    }
-
-                    return false;
-                }).ToList();
+                filteredBooks = books.Where(b => _dateFilter.IsBookInDateRange(b, startDate, endDate)).ToList();
             }
 
             var authorStats = filteredBooks
@@ -65,9 +50,8 @@ namespace Library.Services
             {
                 if (startDate.HasValue || endDate.HasValue)
                 {
-                    totalPagesRead += book.PagesReadHistory
-                        .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                                   (!endDate.HasValue || p.Date <= endDate.Value.Date))
+                    totalPagesRead += _dateFilter
+                        .FilterByDateRange(book.PagesReadHistory, startDate, endDate, p => p.Date)
                         .Sum(p => p.PagesRead);
                 }
                 else
@@ -108,13 +92,7 @@ namespace Library.Services
                 .OrderBy(p => p.Date)
                 .ToListAsync();
 
-            if (startDate.HasValue || endDate.HasValue)
-            {
-                allReadingHistory = allReadingHistory
-                    .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                               (!endDate.HasValue || p.Date <= endDate.Value.Date))
-                    .ToList();
-            }
+            allReadingHistory = _dateFilter.FilterByDateRange(allReadingHistory, startDate, endDate, p => p.Date);
 
             var monthlyData = allReadingHistory
                 .GroupBy(p => new { p.Date.Year, p.Date.Month })
@@ -150,13 +128,7 @@ namespace Library.Services
                 .OrderBy(p => p.Date)
                 .ToListAsync();
 
-            if (startDate.HasValue || endDate.HasValue)
-            {
-                allReadingHistory = allReadingHistory
-                    .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                               (!endDate.HasValue || p.Date <= endDate.Value.Date))
-                    .ToList();
-            }
+            allReadingHistory = _dateFilter.FilterByDateRange(allReadingHistory, startDate, endDate, p => p.Date);
 
             var dailyData = allReadingHistory
                 .GroupBy(p => p.Date.Date)
@@ -178,13 +150,7 @@ namespace Library.Services
                 .OrderBy(p => p.Date)
                 .ToListAsync();
 
-            if (startDate.HasValue || endDate.HasValue)
-            {
-                bookReadingHistory = bookReadingHistory
-                    .Where(p => (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                               (!endDate.HasValue || p.Date <= endDate.Value.Date))
-                    .ToList();
-            }
+            bookReadingHistory = _dateFilter.FilterByDateRange(bookReadingHistory, startDate, endDate, p => p.Date);
 
             var dailyData = bookReadingHistory
                 .GroupBy(p => p.Date.Date)
@@ -218,11 +184,9 @@ namespace Library.Services
 
             if (startDate.HasValue || endDate.HasValue)
             {
-                booksWithHistory = booksWithHistory.Where(b =>
-                    b.PagesReadHistory.Any(p =>
-                        (!startDate.HasValue || p.Date >= startDate.Value.Date) &&
-                        (!endDate.HasValue || p.Date <= endDate.Value.Date))
-                ).ToList();
+                booksWithHistory = booksWithHistory
+                    .Where(b => _dateFilter.IsBookInDateRange(b, startDate, endDate))
+                    .ToList();
             }
 
             var rankings = booksWithHistory.Select(b =>

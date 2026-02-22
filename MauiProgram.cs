@@ -154,6 +154,7 @@ public static class MauiProgram
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+            builder.Services.AddScoped<IDateFilterService, DateFilterService>();
             builder.Services.AddScoped<IReadingScheduleService, ReadingScheduleService>();
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();

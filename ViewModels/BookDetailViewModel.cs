@@ -2,6 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Library.Controls;
 using Library.Core.Models;
+using Library.Extensions;
+using Library.Helpers;
 using Library.Services;
 using Library.Views;
 
@@ -163,9 +165,9 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
             PagesRead = d.PagesRead
         }).ToList();
 
-        ChartDrawable.PrimaryColor = GetThemeColor("PrimaryColor", Colors.Purple);
-        ChartDrawable.TextColor = GetThemeColor("PrimaryTextColor", Colors.Black);
-        ChartDrawable.GridColor = GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
+        ChartDrawable.PrimaryColor = Application.Current.GetThemeColor("PrimaryColor", Colors.Purple);
+        ChartDrawable.TextColor = Application.Current.GetThemeColor("PrimaryTextColor", Colors.Black);
+        ChartDrawable.GridColor = Application.Current.GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
 
         int daysCount = dailyData.Count;
         ChartWidth = daysCount > 0 ? Math.Max(daysCount * 30, 400) : 400;
@@ -174,7 +176,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         {
             var totalPagesRead = dailyData.Sum(d => d.PagesRead);
             var averagePages = (double)totalPagesRead / daysCount;
-            ChartDescription = $"Прочитано {totalPagesRead} страниц за {daysCount} {GetDaysText(daysCount)}";
+            ChartDescription = $"Прочитано {totalPagesRead} страниц за {daysCount} {RussianPluralization.Days(daysCount)}";
             AverageDailyText = $"Среднее количество в день - {averagePages:F2}";
 
             if (_book.Status == BookStatus.Reading && averagePages > 0)
@@ -261,26 +263,4 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         await Shell.Current.GoToAsync($"{nameof(ReadingHistoryEditPage)}?bookId={_book.Id}");
     }
 
-    private static Color GetThemeColor(string resourceKey, Color defaultColor)
-    {
-        if (Application.Current?.Resources.TryGetValue(resourceKey, out var color) == true && color is Color themeColor)
-            return themeColor;
-        return defaultColor;
-    }
-
-    private static string GetDaysText(int count)
-    {
-        var lastDigit = count % 10;
-        var lastTwoDigits = count % 100;
-
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 14)
-            return "дней";
-
-        return lastDigit switch
-        {
-            1 => "день",
-            2 or 3 or 4 => "дня",
-            _ => "дней"
-        };
-    }
 }

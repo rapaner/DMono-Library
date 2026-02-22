@@ -1,5 +1,32 @@
 # История изменений
 
+## [2.3] - Вынос дублирующегося кода: плюрализация, тема, фильтрация дат
+
+### Добавлено
+- ✅ **`Helpers/RussianPluralization.cs`** — статический хелпер для русского склонения существительных по числительным:
+  - `Pluralize(int count, string one, string few, string many)` — универсальный метод (11-14 → many; lastDigit 1 → one; 2-4 → few; иначе → many)
+  - `Days(int count)` — обёртка для «день/дня/дней»
+  - `Months(int count)` — обёртка для «месяц/месяца/месяцев»
+- ✅ **`Extensions/ApplicationExtensions.cs`** — extension method `GetThemeColor(this Application?, string, Color)` для получения цвета из ресурсов темы
+- ✅ **`Services/IDateFilterService.cs`** — интерфейс сервиса фильтрации дат:
+  - `GetDateRange(int filterIndex, DateTime? customStart, DateTime? customEnd)` — преобразование индекса фильтра (0-6) в пару дат
+  - `FilterByDateRange<T>(IEnumerable<T>, DateTime?, DateTime?, Func<T, DateTime>)` — обобщённая фильтрация коллекций по диапазону дат
+  - `IsBookInDateRange(Book, DateTime?, DateTime?)` — проверка попадания книги в диапазон по `DateFinished` или `PagesReadHistory`
+- ✅ **`Services/DateFilterService.cs`** — реализация `IDateFilterService`
+
+### Изменено
+- 🔄 **`Services/StatisticsService.cs`** — добавлена инжекция `IDateFilterService`; 5 повторяющихся inline-лямбд фильтрации по датам заменены на вызовы `FilterByDateRange` и `IsBookInDateRange`
+- 🔄 **`ViewModels/BookDetailViewModel.cs`** — вызовы `GetThemeColor` → `Application.Current.GetThemeColor(...)`, `GetDaysText` → `RussianPluralization.Days(...)`
+- 🔄 **`ViewModels/StatisticsViewModel.cs`** — добавлена инжекция `IDateFilterService`; вызовы `GetThemeColor` → extension method, `GetDaysText`/`GetMonthsText` → `RussianPluralization`, `GetDateRange()` → `_dateFilterService.GetDateRange(...)`
+- 🔄 **`MauiProgram.cs`** — зарегистрирован `IDateFilterService` / `DateFilterService` как Scoped
+
+### Удалено
+- ❌ `BookDetailViewModel.GetThemeColor` и `BookDetailViewModel.GetDaysText` — заменены хелперами
+- ❌ `StatisticsViewModel.GetThemeColor`, `GetDaysText`, `GetMonthsText`, `GetDateRange` — заменены сервисом и хелперами
+- ❌ 5 inline-лямбд фильтрации по датам в `StatisticsService` — заменены вызовами `DateFilterService`
+
+---
+
 ## [2.2] - SafeExecute: безопасная обработка async void
 
 ### Добавлено

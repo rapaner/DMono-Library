@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Library.Controls;
+using Library.Extensions;
+using Library.Helpers;
 using Library.Models;
 using Library.Services;
 using Library.Views;
@@ -11,6 +13,7 @@ namespace Library.ViewModels;
 public partial class StatisticsViewModel : ObservableObject
 {
     private readonly IStatisticsService _statisticsService;
+    private readonly IDateFilterService _dateFilterService;
 
     [ObservableProperty]
     private string _totalBooks = "0";
@@ -62,16 +65,17 @@ public partial class StatisticsViewModel : ObservableObject
 
     private bool _isMonthlyMode = true;
 
-    public StatisticsViewModel(IStatisticsService statisticsService)
+    public StatisticsViewModel(IStatisticsService statisticsService, IDateFilterService dateFilterService)
     {
         _statisticsService = statisticsService;
+        _dateFilterService = dateFilterService;
         _chartDrawable = new ReadingChartDrawable();
     }
 
     [RelayCommand]
     private async Task LoadStatisticsAsync()
     {
-        var (startDate, endDate) = GetDateRange();
+        var (startDate, endDate) = _dateFilterService.GetDateRange(SelectedDateFilterIndex, StartDate, EndDate);
         if (startDate == null && endDate == null && SelectedDateFilterIndex == 6)
             return;
 
@@ -124,7 +128,7 @@ public partial class StatisticsViewModel : ObservableObject
     private async Task ToggleChartModeAsync()
     {
         _isMonthlyMode = !_isMonthlyMode;
-        var (startDate, endDate) = GetDateRange();
+        var (startDate, endDate) = _dateFilterService.GetDateRange(SelectedDateFilterIndex, StartDate, EndDate);
         await LoadChartDataAsync(startDate, endDate);
     }
 
@@ -152,9 +156,9 @@ public partial class StatisticsViewModel : ObservableObject
             PagesRead = d.PagesRead
         }).ToList();
 
-        ChartDrawable.PrimaryColor = GetThemeColor("PrimaryColor", Colors.Purple);
-        ChartDrawable.TextColor = GetThemeColor("PrimaryTextColor", Colors.Black);
-        ChartDrawable.GridColor = GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
+        ChartDrawable.PrimaryColor = Application.Current.GetThemeColor("PrimaryColor", Colors.Purple);
+        ChartDrawable.TextColor = Application.Current.GetThemeColor("PrimaryTextColor", Colors.Black);
+        ChartDrawable.GridColor = Application.Current.GetThemeColor("SecondaryTextColor", Colors.Gray).WithAlpha(0.3f);
 
         int dataCount = chartData.Count;
         if (dataCount > 0)
@@ -172,9 +176,9 @@ public partial class StatisticsViewModel : ObservableObject
             var totalPages = chartData.Sum(d => d.PagesRead);
 
             if (_isMonthlyMode)
-                ChartDescription = $"Прочитано {totalPages} страниц за {dataCount} {GetMonthsText(dataCount)}";
+                ChartDescription = $"Прочитано {totalPages} страниц за {dataCount} {RussianPluralization.Months(dataCount)}";
             else
-                ChartDescription = $"Прочитано {totalPages} страниц за {dataCount} {GetDaysText(dataCount)}";
+                ChartDescription = $"Прочитано {totalPages} страниц за {dataCount} {RussianPluralization.Days(dataCount)}";
 
             var dailyData = await _statisticsService.GetDailyReadingDataAsync(startDate, endDate, searchText);
             if (dailyData.Count > 0)
@@ -196,41 +200,4 @@ public partial class StatisticsViewModel : ObservableObject
         OnPropertyChanged(nameof(ChartDrawable));
     }
 
-    private (DateTime? start, DateTime? end) GetDateRange()
-    {
-        return SelectedDateFilterIndex switch
-        {
-            0 => (null, null),
-            1 => (DateTime.Now.AddDays(-30), DateTime.Now),
-            2 => (DateTime.Now.AddDays(-60), DateTime.Now),
-            3 => (DateTime.Now.AddDays(-90), DateTime.Now),
-            4 => (DateTime.Now.AddDays(-180), DateTime.Now),
-            5 => (DateTime.Now.AddDays(-365), DateTime.Now),
-            6 => (StartDate, EndDate),
-            _ => (null, null)
-        };
-    }
-
-    private static Color GetThemeColor(string resourceKey, Color defaultColor)
-    {
-        if (Application.Current?.Resources.TryGetValue(resourceKey, out var color) == true && color is Color themeColor)
-            return themeColor;
-        return defaultColor;
-    }
-
-    private static string GetDaysText(int count)
-    {
-        var lastDigit = count % 10;
-        var lastTwoDigits = count % 100;
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return "дней";
-        return lastDigit switch { 1 => "день", 2 or 3 or 4 => "дня", _ => "дней" };
-    }
-
-    private static string GetMonthsText(int count)
-    {
-        var lastDigit = count % 10;
-        var lastTwoDigits = count % 100;
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return "месяцев";
-        return lastDigit switch { 1 => "месяц", 2 or 3 or 4 => "месяца", _ => "месяцев" };
-    }
 }
