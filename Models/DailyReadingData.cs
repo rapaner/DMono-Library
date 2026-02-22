@@ -5,7 +5,14 @@ namespace Library.Models
     /// </summary>
     public class DailyReadingData
     {
+        /// <summary>
+        /// Дата
+        /// </summary>
         public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Количество прочитанных страниц
+        /// </summary>
         public int PagesRead { get; set; }
     }
 }

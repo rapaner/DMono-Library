@@ -6,6 +6,7 @@ namespace Library.Controls
     public class ReadingChartDrawable : IDrawable
     {
         public List<DailyReadingData> Data { get; set; } = new List<DailyReadingData>();
+        public bool IsMonthlyMode { get; set; }
         public Color PrimaryColor { get; set; } = Colors.Purple;
         public Color TextColor { get; set; } = Colors.Black;
         public Color GridColor { get; set; } = Colors.LightGray;
@@ -71,8 +72,8 @@ namespace Library.Controls
 
         private float GetChartWidth(float left)
         {
-            // Ширина графика зависит от количества дней
-            return Math.Min(Data.Count * 30f, 800f);
+            float step = IsMonthlyMode ? 60f : 30f;
+            return Math.Min(Data.Count * step, 800f);
         }
 
         private void DrawBars(ICanvas canvas, float left, float top, float width, float height, int maxPages)
@@ -130,17 +131,32 @@ namespace Library.Controls
                 float x = left + spacing * i + spacing / 2;
                 float y = top + height + 10;
 
-                // Отображаем дату
-                string dateText = item.Date.Day.ToString();
-                canvas.DrawString(dateText, x, y, HorizontalAlignment.Center);
-
-                // Отображаем месяц для первого дня месяца или первой записи
-                if (item.Date.Day == 1 || i == 0 || item.Date.Month != Data[Math.Max(0, i - 1)].Date.Month)
+                if (IsMonthlyMode)
                 {
                     string monthText = GetMonthName(item.Date.Month);
                     canvas.FontSize = 9;
-                    canvas.DrawString(monthText, x, y + 12, HorizontalAlignment.Center);
+                    canvas.DrawString(monthText, x, y, HorizontalAlignment.Center);
+
+                    if (i == 0 || item.Date.Year != Data[i - 1].Date.Year)
+                    {
+                        canvas.FontSize = 8;
+                        canvas.DrawString(item.Date.Year.ToString(), x, y + 12, HorizontalAlignment.Center);
+                    }
+
                     canvas.FontSize = 8;
+                }
+                else
+                {
+                    string dateText = item.Date.Day.ToString();
+                    canvas.DrawString(dateText, x, y, HorizontalAlignment.Center);
+
+                    if (item.Date.Day == 1 || i == 0 || item.Date.Month != Data[Math.Max(0, i - 1)].Date.Month)
+                    {
+                        string monthText = GetMonthName(item.Date.Month);
+                        canvas.FontSize = 9;
+                        canvas.DrawString(monthText, x, y + 12, HorizontalAlignment.Center);
+                        canvas.FontSize = 8;
+                    }
                 }
             }
         }

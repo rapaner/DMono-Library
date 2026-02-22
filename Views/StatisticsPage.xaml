@@ -240,8 +240,17 @@
                         <GraphicsView x:Name="ReadingChartView"
                                       HeightRequest="250"
                                       WidthRequest="400"
-                                      BackgroundColor="Transparent" />
+                                      BackgroundColor="Transparent">
+                            <GraphicsView.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnChartTapped" />
+                            </GraphicsView.GestureRecognizers>
+                        </GraphicsView>
                     </ScrollView>
+                    
+                    <Label Text="Нажмите на график для переключения между режимами отображения по дням и по месяцам" 
+                           FontSize="12" 
+                           TextColor="{DynamicResource SecondaryTextColor}" 
+                           Margin="0,5,0,0" />
                 </StackLayout>
             </Border>
 
