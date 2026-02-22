@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class LoadingPage : ContentPage
+public partial class LoadingPage : BasePage
 {
     private readonly LoadingViewModel _viewModel;
 
@@ -13,9 +13,9 @@ public partial class LoadingPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.InitializeCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.InitializeCommand.ExecuteAsync(null));
     }
 }

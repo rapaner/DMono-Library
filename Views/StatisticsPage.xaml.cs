@@ -3,7 +3,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class StatisticsPage : ContentPage
+public partial class StatisticsPage : BasePage
 {
     private readonly StatisticsViewModel _viewModel;
 
@@ -14,37 +14,40 @@ public partial class StatisticsPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadStatisticsCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.LoadStatisticsCommand.ExecuteAsync(null));
     }
 
-    private async void OnDateFilterChanged(object sender, EventArgs e)
+    private void OnDateFilterChanged(object sender, EventArgs e)
     {
-        await _viewModel.DateFilterChangedCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.DateFilterChangedCommand.ExecuteAsync(null));
     }
 
-    private async void OnCustomDateChanged(object sender, DateChangedEventArgs e)
+    private void OnCustomDateChanged(object sender, DateChangedEventArgs e)
     {
-        await _viewModel.CustomDateChangedCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.CustomDateChangedCommand.ExecuteAsync(null));
     }
 
-    private async void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
-        await _viewModel.SearchChangedCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.SearchChangedCommand.ExecuteAsync(null));
     }
 
-    private async void OnBookRankingSelected(object sender, SelectionChangedEventArgs e)
+    private void OnBookRankingSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.CurrentSelection.FirstOrDefault() is BookRanking selectedRanking)
+        SafeExecute(async () =>
         {
-            await _viewModel.SelectBookRankingCommand.ExecuteAsync(selectedRanking);
-        }
+            if (e.CurrentSelection.FirstOrDefault() is BookRanking selectedRanking)
+            {
+                await _viewModel.SelectBookRankingCommand.ExecuteAsync(selectedRanking);
+            }
 
-        if (sender is CollectionView collectionView)
-        {
-            collectionView.SelectedItem = null;
-        }
+            if (sender is CollectionView collectionView)
+            {
+                collectionView.SelectedItem = null;
+            }
+        });
     }
 }

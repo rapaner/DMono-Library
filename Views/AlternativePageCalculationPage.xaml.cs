@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class AlternativePageCalculationPage : ContentPage
+public partial class AlternativePageCalculationPage : BasePage
 {
     public AlternativePageCalculationPage(AlternativePageCalculationViewModel viewModel)
     {

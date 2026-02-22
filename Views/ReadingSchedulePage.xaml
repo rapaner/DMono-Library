@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="Library.Views.ReadingSchedulePage"
+<base:BasePage x:Class="Library.Views.ReadingSchedulePage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:base="clr-namespace:Library.Views"
              xmlns:vm="clr-namespace:Library.ViewModels"
              xmlns:models="clr-namespace:Library.Models"
              x:DataType="vm:ReadingScheduleViewModel"
@@ -85,4 +86,4 @@
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{DynamicResource PrimaryColor}" HeightRequest="50" />
         </StackLayout>
     </ScrollView>
-</ContentPage>
+</base:BasePage>

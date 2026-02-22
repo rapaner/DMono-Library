@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class BookChoosePage : ContentPage
+public partial class BookChoosePage : BasePage
 {
     public BookChoosePage(BookChooseViewModel viewModel)
     {

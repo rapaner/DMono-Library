@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class YandexDiskPage : ContentPage
+public partial class YandexDiskPage : BasePage
 {
     private readonly YandexDiskViewModel _viewModel;
 
@@ -13,10 +13,10 @@ public partial class YandexDiskPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadSettingsCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.LoadSettingsCommand.ExecuteAsync(null));
     }
 
     private void OnAutoBackupToggled(object sender, ToggledEventArgs e)
@@ -24,14 +24,17 @@ public partial class YandexDiskPage : ContentPage
         _viewModel.AutoBackupToggledCommand.Execute(e.Value);
     }
 
-    private async void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
+        SafeExecute(async () =>
         {
-            _viewModel.OnBackupSelected(backup);
-            await Shell.Current.DisplayAlert("Резервная копия выбрана",
-                $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.",
-                "OK");
-        }
+            if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
+            {
+                _viewModel.OnBackupSelected(backup);
+                await Shell.Current.DisplayAlert("Резервная копия выбрана",
+                    $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.",
+                    "OK");
+            }
+        });
     }
 }

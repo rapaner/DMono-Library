@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class ReadingSchedulePage : ContentPage
+public partial class ReadingSchedulePage : BasePage
 {
     public ReadingSchedulePage(ReadingScheduleViewModel viewModel)
     {

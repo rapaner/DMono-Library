@@ -1,8 +1,9 @@
 using Library.ViewModels;
+using Library.Views;
 
 namespace Library;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : BasePage
 {
     private readonly MainPageViewModel _viewModel;
 
@@ -13,9 +14,9 @@ public partial class MainPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadCurrentBookCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.LoadCurrentBookCommand.ExecuteAsync(null));
     }
 }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="Library.Views.StatisticsPage"
+<base:BasePage x:Class="Library.Views.StatisticsPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:base="clr-namespace:Library.Views"
              xmlns:vm="clr-namespace:Library.ViewModels"
              xmlns:models="clr-namespace:Library.Models"
              xmlns:system="clr-namespace:System;assembly=netstandard"
@@ -178,4 +179,4 @@
         </StackLayout>
     </ScrollView>
 
-</ContentPage>
+</base:BasePage>

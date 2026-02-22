@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class AddEditBookPage : ContentPage
+public partial class AddEditBookPage : BasePage
 {
     public AddEditBookPage(AddEditBookViewModel viewModel)
     {

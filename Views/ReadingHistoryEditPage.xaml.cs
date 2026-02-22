@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class ReadingHistoryEditPage : ContentPage
+public partial class ReadingHistoryEditPage : BasePage
 {
     private readonly ReadingHistoryEditViewModel _viewModel;
 

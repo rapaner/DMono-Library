@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class LibraryPage : ContentPage
+public partial class LibraryPage : BasePage
 {
     private readonly LibraryViewModel _viewModel;
 
@@ -13,22 +13,25 @@ public partial class LibraryPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadBooksCommand.ExecuteAsync(null);
+        SafeExecute(async () => await _viewModel.LoadBooksCommand.ExecuteAsync(null));
     }
 
-    private async void OnBookSelected(object sender, SelectionChangedEventArgs e)
+    private void OnBookSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.CurrentSelection.FirstOrDefault() is BookItemViewModel selectedBook)
+        SafeExecute(async () =>
         {
-            await _viewModel.SelectBookCommand.ExecuteAsync(selectedBook);
-        }
+            if (e.CurrentSelection.FirstOrDefault() is BookItemViewModel selectedBook)
+            {
+                await _viewModel.SelectBookCommand.ExecuteAsync(selectedBook);
+            }
 
-        if (sender is CollectionView collectionView)
-        {
-            collectionView.SelectedItem = null;
-        }
+            if (sender is CollectionView collectionView)
+            {
+                collectionView.SelectedItem = null;
+            }
+        });
     }
 }

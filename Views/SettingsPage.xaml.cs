@@ -2,7 +2,7 @@ using Library.ViewModels;
 
 namespace Library.Views;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : BasePage
 {
     private readonly SettingsViewModel _viewModel;
 

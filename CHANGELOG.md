@@ -1,5 +1,24 @@
 # История изменений
 
+## [2.2] - SafeExecute: безопасная обработка async void
+
+### Добавлено
+- ✅ **`Views/BasePage.cs`** — базовый класс `BasePage : ContentPage` с методом `SafeExecute(Func<Task>)`, оборачивающим асинхронные вызовы в `try/catch` с показом `DisplayAlertAsync` при ошибке
+
+### Изменено
+- 🔄 **13 XAML-файлов** — корневой элемент `<ContentPage>` заменён на `<base:BasePage>` с добавлением `xmlns:base="clr-namespace:Library.Views"`:
+  - `MainPage.xaml`, `LibraryPage.xaml`, `BookDetailPage.xaml`, `StatisticsPage.xaml`, `YandexDiskPage.xaml`, `LoadingPage.xaml`, `AddEditBookPage.xaml`, `SettingsPage.xaml`, `BookChoosePage.xaml`, `UpdateProgressPage.xaml`, `ReadingHistoryEditPage.xaml`, `ReadingSchedulePage.xaml`, `AlternativePageCalculationPage.xaml`
+- 🔄 **13 code-behind файлов** — наследование изменено с `ContentPage` на `BasePage`
+- 🔄 **12 методов `async void` в 6 файлах обёрнуты в `SafeExecute`** — метод теряет `async` в сигнатуре, тело передаётся как лямбда:
+  - `MainPage.xaml.cs` — `OnAppearing`
+  - `LibraryPage.xaml.cs` — `OnAppearing`, `OnBookSelected`
+  - `BookDetailPage.xaml.cs` — `OnAppearing`
+  - `StatisticsPage.xaml.cs` — `OnAppearing`, `OnDateFilterChanged`, `OnCustomDateChanged`, `OnSearchTextChanged`, `OnBookRankingSelected`
+  - `YandexDiskPage.xaml.cs` — `OnAppearing`, `OnBackupSelectionChanged`
+  - `LoadingPage.xaml.cs` — `OnAppearing`
+
+---
+
 ## [2.1] - Разбиение LibraryService на доменные сервисы
 
 ### Добавлено
