@@ -1,5 +1,49 @@
 # История изменений
 
+## [2.4] - Внедрение INavigationService и IDialogService, замена record на class в моделях
+
+### Добавлено
+- ✅ **`Services/IDialogService.cs`** — интерфейс сервиса диалогов:
+  - `ShowAlertAsync(title, message, cancel)` — показ информационного алерта
+  - `ShowConfirmAsync(title, message, accept, cancel)` — показ диалога подтверждения
+  - `ShowPromptAsync(title, message, accept, cancel)` — показ диалога с текстовым вводом
+- ✅ **`Services/MauiDialogService.cs`** — реализация `IDialogService` через `Shell.Current` / `Application.Current`
+- ✅ **`Services/INavigationService.cs`** — интерфейс сервиса навигации:
+  - `GoToAsync(route)` — навигация по маршруту
+  - `GoToAsync(route, parameters)` — навигация с параметрами
+  - `GoBackAsync()` — возврат назад
+- ✅ **`Services/ShellNavigationService.cs`** — реализация `INavigationService` через `Shell.Current.GoToAsync`
+
+### Изменено
+- 🔄 **`MauiProgram.cs`** — зарегистрированы `INavigationService` / `ShellNavigationService` и `IDialogService` / `MauiDialogService` как Singleton
+- 🔄 **12 ViewModel-классов** — добавлены зависимости `INavigationService` и/или `IDialogService` через конструктор; все прямые вызовы `Shell.Current.GoToAsync`, `Shell.Current.DisplayAlertAsync`, `Shell.Current.DisplayPromptAsync` заменены на вызовы через интерфейсы:
+  - `AddEditBookViewModel` — `INavigationService` + `IDialogService`
+  - `AlternativePageCalculationViewModel` — `INavigationService` + `IDialogService`
+  - `BookDetailViewModel` — `INavigationService` + `IDialogService`
+  - `LibraryViewModel` — `INavigationService`
+  - `LoadingViewModel` — `IDialogService`
+  - `MainPageViewModel` — `INavigationService`
+  - `ReadingHistoryEditViewModel` — `IDialogService`
+  - `ReadingScheduleViewModel` — `IDialogService`
+  - `SettingsViewModel` — `INavigationService` + `IDialogService`
+  - `StatisticsViewModel` — `INavigationService`
+  - `UpdateProgressViewModel` — `INavigationService` + `IDialogService`
+  - `YandexDiskViewModel` — `IDialogService`
+- 🔄 **5 моделей в Library.Core** — `record` заменён на `class` для совместимости с EF Core и предсказуемости поведения:
+  - `Author` (`record` → `class`)
+  - `Book` (`partial record` → `partial class`)
+  - `Book.Computed` (`partial record` → `partial class`)
+  - `BookReadingSchedule` (`record` → `class`)
+  - `PagesReadInDate` (`record` → `class`)
+- 🔄 **`Services/BookService.cs`** — метод `SetCurrentBookAsync` оптимизирован: вместо загрузки всех книг в память используется `ExecuteUpdateAsync` для массового обновления `IsCurrentlyReading` на уровне БД
+- 🔄 **`Views/YandexDiskPage.xaml.cs`** — вызов `DisplayAlertAsync` заменён на `_viewModel.ShowInstructionsCommand`
+- 🔄 **`Library.csproj`** — версия обновлена: `2.3` → `2.4`, `ApplicationVersion`: `30` → `31`
+
+### Удалено
+- ❌ Прямые зависимости ViewModel от `Shell.Current` — заменены абстракциями `INavigationService` / `IDialogService`
+
+---
+
 ## [2.3] - Вынос дублирующегося кода: плюрализация, тема, фильтрация дат
 
 ### Добавлено
