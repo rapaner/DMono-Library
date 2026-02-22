@@ -2,9 +2,10 @@
 <ContentPage x:Class="Library.Views.StatisticsPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Library.ViewModels"
              xmlns:models="clr-namespace:Library.Models"
-             xmlns:services="clr-namespace:Library.Services"
              xmlns:system="clr-namespace:System;assembly=netstandard"
+             x:DataType="vm:StatisticsViewModel"
              Title="Статистика"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -12,20 +13,12 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Фильтр по датам -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout Spacing="15">
-                    <Label Text="📅 Период" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <Picker x:Name="DateFilterPicker"
-                            Title="Выберите период"
+                    <Label Text="📅 Период" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Picker Title="Выберите период"
+                            SelectedIndex="{Binding SelectedDateFilterIndex}"
                             SelectedIndexChanged="OnDateFilterChanged"
                             TextColor="{DynamicResource PrimaryTextColor}"
                             TitleColor="{DynamicResource SecondaryTextColor}">
@@ -39,44 +32,25 @@
                             <x:String>Произвольно</x:String>
                         </Picker.Items>
                     </Picker>
-                    
-                    <!-- Произвольный период -->
-                    <StackLayout x:Name="CustomDateRangeLayout" 
-                                 IsVisible="False"
-                                 Spacing="10">
-                        <Label Text="От:" 
-                               FontSize="14" 
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <DatePicker x:Name="StartDatePicker"
-                                    Date="{x:Static system:DateTime.Now}"
+                    <StackLayout IsVisible="{Binding IsCustomDateRangeVisible}" Spacing="10">
+                        <Label Text="От:" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" />
+                        <DatePicker Date="{Binding StartDate}"
                                     DateSelected="OnCustomDateChanged"
                                     TextColor="{DynamicResource PrimaryTextColor}" />
-                        
-                        <Label Text="До:" 
-                               FontSize="14" 
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <DatePicker x:Name="EndDatePicker"
-                                    Date="{x:Static system:DateTime.Now}"
+                        <Label Text="До:" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" />
+                        <DatePicker Date="{Binding EndDate}"
                                     DateSelected="OnCustomDateChanged"
                                     TextColor="{DynamicResource PrimaryTextColor}" />
                     </StackLayout>
                 </StackLayout>
             </Border>
             
-            <!-- Поиск по названию или автору -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <!-- Поиск -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout Spacing="15">
-                    <Label Text="🔍 Поиск" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <Entry x:Name="SearchEntry"
+                    <Label Text="🔍 Поиск" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Entry Text="{Binding SearchText}"
                            Placeholder="Поиск по названию или автору"
                            TextChanged="OnSearchTextChanged"
                            TextColor="{DynamicResource PrimaryTextColor}"
@@ -85,256 +59,96 @@
             </Border>
             
             <!-- Общая статистика -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
-                    <Label Text="📊 Общая статистика" 
-                           FontSize="20" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" 
-                          ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
-
-                        <Border Grid.Row="0" Grid.Column="0" 
-                               BackgroundColor="{DynamicResource PrimaryColor}" 
-                               Padding="15"
-                               StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
+                    <Label Text="📊 Общая статистика" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
-                                <Label x:Name="TotalBooksLabel" 
-                                       Text="0" 
-                                       FontSize="24" 
-                                       FontAttributes="Bold" 
-                                       TextColor="{DynamicResource SecondaryTextColor}" 
-                                       HorizontalOptions="Center" />
-                                <Label Text="Всего книг" 
-                                       FontSize="12" 
-                                       TextColor="{DynamicResource SecondaryTextColor}" 
-                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Всего книг" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-
-                        <Border Grid.Row="0" Grid.Column="1" 
-                               BackgroundColor="{DynamicResource SecondaryColor}" 
-                               Padding="15"
-                               StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{DynamicResource SecondaryColor}" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
-                                <Label x:Name="ReadBooksLabel" 
-                                       Text="0" 
-                                       FontSize="24" 
-                                       FontAttributes="Bold" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
-                                <Label Text="Прочитано" 
-                                       FontSize="12" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding ReadBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Прочитано" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-
-                        <Border Grid.Row="1" Grid.Column="0" 
-                               BackgroundColor="{DynamicResource TertiaryColor}" 
-                               Padding="15"
-                               StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{DynamicResource TertiaryColor}" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
-                                <Label x:Name="CurrentBooksLabel" 
-                                       Text="0" 
-                                       FontSize="24" 
-                                       FontAttributes="Bold" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
-                                <Label Text="Читаю сейчас" 
-                                       FontSize="12" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding CurrentBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Читаю сейчас" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-
-                        <Border Grid.Row="1" Grid.Column="1" 
-                               BackgroundColor="{DynamicResource AccentColor}" 
-                               Padding="15"
-                               StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{DynamicResource AccentColor}" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
-                                <Label x:Name="PlannedBooksLabel" 
-                                       Text="0" 
-                                       FontSize="24" 
-                                       FontAttributes="Bold" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
-                                <Label Text="В планах" 
-                                       FontSize="12" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding PlannedBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="В планах" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-
-                        <Border Grid.Row="2" Grid.ColumnSpan="2" 
-                               BackgroundColor="{DynamicResource SuccessColor}" 
-                               Padding="15"
-                               StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource SuccessColor}" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
-                                <Label x:Name="TotalPagesLabel" 
-                                       Text="0" 
-                                       FontSize="24" 
-                                       FontAttributes="Bold" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
-                                <Label Text="Всего страниц прочитано" 
-                                       FontSize="12" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalPagesRead}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Всего страниц прочитано" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-
                     </Grid>
                 </StackLayout>
             </Border>
 
-            <!-- График чтения по дням -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <!-- График -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
-                    <Label Text="📈 График чтения" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <Label x:Name="ChartDescriptionLabel"
-                           Text="Страниц прочитано по дням"
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           Margin="0,5,0,5" />
-                    
-                    <Label x:Name="AverageDailyLabel"
-                           Text="Среднее количество в день - 0.00"
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           Margin="0,0,0,10" />
-                    
-                    <ScrollView Orientation="Horizontal" 
-                                HorizontalScrollBarVisibility="Always"
-                                Margin="0,10,0,0">
+                    <Label Text="📈 График чтения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label Text="{Binding ChartDescription}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,5" />
+                    <Label Text="{Binding AverageDailyText}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,0,0,10" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Always" Margin="0,10,0,0">
                         <GraphicsView x:Name="ReadingChartView"
                                       HeightRequest="250"
-                                      WidthRequest="400"
+                                      WidthRequest="{Binding ChartWidth}"
+                                      Drawable="{Binding ChartDrawable}"
                                       BackgroundColor="Transparent">
                             <GraphicsView.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnChartTapped" />
+                                <TapGestureRecognizer Command="{Binding ToggleChartModeCommand}" />
                             </GraphicsView.GestureRecognizers>
                         </GraphicsView>
                     </ScrollView>
-                    
                     <Label Text="Нажмите на график для переключения между режимами отображения по дням и по месяцам" 
-                           FontSize="12" 
-                           TextColor="{DynamicResource SecondaryTextColor}" 
-                           Margin="0,5,0,0" />
+                           FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
                 </StackLayout>
             </Border>
 
             <!-- Рейтинг книг -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
-                    <Label Text="📚 Рейтинг книг" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <Label Text="По среднему количеству страниц в день"
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           Margin="0,5,0,10" />
-                    
-                    <CollectionView x:Name="BookRankingsCollectionView" 
+                    <Label Text="📚 Рейтинг книг" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label Text="По среднему количеству страниц в день" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,10" />
+                    <CollectionView ItemsSource="{Binding BookRankings}" 
                                      Margin="0,5,0,0"
                                      SelectionMode="Single"
                                      SelectionChanged="OnBookRankingSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:BookRanking">
-                                <Border BackgroundColor="{DynamicResource PageBackgroundColor}"
-                                        Padding="15"
-                                        Margin="0,5"
-                                        StrokeThickness="0">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10"/>
-                                    </Border.StrokeShape>
+                                <Border BackgroundColor="{DynamicResource PageBackgroundColor}" Padding="15" Margin="0,5" StrokeThickness="0">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                                     <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-                                        <!-- Название книги -->
-                                        <Label Grid.Column="0" Grid.Row="0"
-                                               Text="{Binding Title}" 
-                                               FontSize="16" 
-                                               FontAttributes="Bold"
-                                               TextColor="{DynamicResource PrimaryTextColor}"
-                                               LineBreakMode="WordWrap"
-                                               MaxLines="2"
-                                               VerticalOptions="Start" />
-                                        
-                                        <!-- Авторы -->
-                                        <Label Grid.Column="0" Grid.Row="1"
-                                               Text="{Binding AuthorsText}" 
-                                               FontSize="13" 
-                                               TextColor="{DynamicResource SecondaryTextColor}"
-                                               LineBreakMode="WordWrap"
-                                               MaxLines="2"
-                                               VerticalOptions="Start"
-                                               Margin="0,5,0,0" />
-                                        
-                                        <!-- Статистика чтения -->
-                                        <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                                                     VerticalOptions="Center"
-                                                     HorizontalOptions="End"
-                                                     Spacing="2">
-                                            <Label Text="{Binding AveragePagesPerDay, StringFormat='{0:F2}'}" 
-                                                   FontSize="20" 
-                                                   FontAttributes="Bold"
-                                                   TextColor="{DynamicResource PrimaryColor}"
-                                                   HorizontalOptions="End" />
-                                            <Label Text="стр/день" 
-                                                   FontSize="12" 
-                                                   TextColor="{DynamicResource SecondaryTextColor}"
-                                                   HorizontalOptions="End" />
+                                        <Label Grid.Column="0" Grid.Row="0" Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" />
+                                        <Label Grid.Column="0" Grid.Row="1" Text="{Binding AuthorsText}" FontSize="13" TextColor="{DynamicResource SecondaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" Margin="0,5,0,0" />
+                                        <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
+                                            <Label Text="{Binding AveragePagesPerDay, StringFormat='{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryColor}" HorizontalOptions="End" />
+                                            <Label Text="стр/день" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="End" />
                                         </StackLayout>
-                                        
-                                        <!-- Дополнительная информация -->
-                                        <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                                               Text="{Binding TotalPagesRead, StringFormat='Всего прочитано: {0} страниц'}" 
-                                               FontSize="11" 
-                                               TextColor="{DynamicResource SecondaryTextColor}"
-                                               VerticalOptions="Start"
-                                               Margin="0,8,0,0" />
-                                        <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                                               Text="{Binding UniqueDaysCount, StringFormat='Читалось: {0} дней'}" 
-                                               FontSize="11" 
-                                               TextColor="{DynamicResource SecondaryTextColor}"
-                                               VerticalOptions="Start"
-                                               Margin="0,2,0,0" />
+                                        <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding TotalPagesRead, StringFormat='Всего прочитано: {0} страниц'}" FontSize="11" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,8,0,0" />
+                                        <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding UniqueDaysCount, StringFormat='Читалось: {0} дней'}" FontSize="11" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,2,0,0" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -344,31 +158,16 @@
             </Border>
 
             <!-- Топ авторов -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
-                    <Label Text="👨‍💼 Любимые авторы" 
-                           FontSize="18" 
-                           FontAttributes="Bold" 
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                    
-                    <CollectionView x:Name="AuthorsCollectionView" 
-                                     Margin="0,15,0,0">
+                    <Label Text="👨‍💼 Любимые авторы" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    <CollectionView ItemsSource="{Binding PopularAuthors}" Margin="0,15,0,0">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:AuthorStatistic">
                                 <Grid ColumnDefinitions="*,Auto" Padding="10">
-                                    <Label Grid.Column="0" 
-                                           Text="{Binding Author}" 
-                                           FontSize="14" 
-                                           TextColor="{DynamicResource PrimaryTextColor}" />
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding Count, StringFormat='{0} книг'}" 
-                                           FontSize="14" 
-                                           TextColor="{DynamicResource SecondaryTextColor}" />
+                                    <Label Grid.Column="0" Text="{Binding Author}" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" />
+                                    <Label Grid.Column="1" Text="{Binding Count, StringFormat='{0} книг'}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

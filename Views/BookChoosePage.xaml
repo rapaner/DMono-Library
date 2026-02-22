@@ -2,6 +2,8 @@
 <ContentPage x:Class="Library.Views.BookChoosePage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:BookChooseViewModel"
              Title="Выбор книги"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -19,30 +21,32 @@
                     <Label Text="Предыдущий выбор"
                            Grid.Row="0" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Entry x:Name="LastChosenBookNumberEntry"
+                    <Entry Text="{Binding LastChosenBookNumberText}"
                            IsReadOnly="True"
                            Grid.Row="0" Grid.Column="1" />
 
                     <Label Text="Кол-во книг для расчёта"
                            Grid.Row="1" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Entry x:Name="BooksAmountEntry"
+                    <Entry Text="{Binding BooksAmountText}"
                            Keyboard="Numeric"
                            Grid.Row="1" Grid.Column="1" />
 
                     <Label Text="Вариант расчёта"
                            Grid.Row="2" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Picker x:Name="BookChooseServicePicker"
-                            Title="Выберите метод"
+                    <Picker Title="Выберите метод"
+                            ItemsSource="{Binding ServiceKeys}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedIndex="{Binding SelectedServiceIndex}"
                             Grid.Row="2" Grid.Column="1" />
 
-                    <Button x:Name="CalculateButton"
-                            Text="Рассчитать"
+                    <Button Text="Рассчитать"
                             Grid.Row="3" Grid.ColumnSpan="2"
                             BackgroundColor="{DynamicResource PrimaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"
-                            CornerRadius="10" />
+                            CornerRadius="10"
+                            Command="{Binding CalculateCommand}" />
                 </Grid>
             </Border>
 
@@ -56,7 +60,7 @@
                     <Label Text="Выбранный номер"
                            FontSize="18" FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Label x:Name="ChosenBookNumberLabel"
+                    <Label Text="{Binding ChosenBookNumberText}"
                            FontSize="40" FontAttributes="Bold"
                            HorizontalOptions="Center"
                            HorizontalTextAlignment="Center"
@@ -67,5 +71,3 @@
         </StackLayout>
     </ScrollView>
 </ContentPage>
-
-

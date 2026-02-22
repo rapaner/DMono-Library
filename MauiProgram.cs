@@ -2,6 +2,7 @@ using Library.Converters;
 using Library.Core.Data;
 using Library.Models;
 using Library.Services;
+using Library.ViewModels;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -158,12 +159,35 @@ public static class MauiProgram
             // Регистрация конвертеров
             builder.Services.AddSingleton<PercentageConverter>();
 
-            // Регистрация страниц и Shell
+            // Регистрация ViewModels
+            builder.Services.AddTransient<LoadingViewModel>();
+            builder.Services.AddTransient<MainPageViewModel>();
+            builder.Services.AddTransient<SettingsViewModel>();
+            builder.Services.AddTransient<BookChooseViewModel>();
+            builder.Services.AddTransient<LibraryViewModel>();
+            builder.Services.AddTransient<BookDetailViewModel>();
+            builder.Services.AddTransient<StatisticsViewModel>();
+            builder.Services.AddTransient<AddEditBookViewModel>();
+            builder.Services.AddTransient<UpdateProgressViewModel>();
+            builder.Services.AddTransient<YandexDiskViewModel>();
+            builder.Services.AddTransient<ReadingScheduleViewModel>();
+            builder.Services.AddTransient<ReadingHistoryEditViewModel>();
+            builder.Services.AddTransient<AlternativePageCalculationViewModel>();
+
+            // Регистрация страниц
             builder.Services.AddTransient<Views.LoadingPage>();
             builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<Views.SettingsPage>();
+            builder.Services.AddTransient<Views.BookChoosePage>();
+            builder.Services.AddTransient<Views.LibraryPage>();
+            builder.Services.AddTransient<Views.BookDetailPage>();
+            builder.Services.AddTransient<Views.StatisticsPage>();
+            builder.Services.AddTransient<Views.AddEditBookPage>();
+            builder.Services.AddTransient<Views.UpdateProgressPage>();
             builder.Services.AddTransient<Views.YandexDiskPage>();
             builder.Services.AddTransient<Views.ReadingSchedulePage>();
-            builder.Services.AddTransient<Views.BookChoosePage>();
+            builder.Services.AddTransient<Views.ReadingHistoryEditPage>();
+            builder.Services.AddTransient<Views.AlternativePageCalculationPage>();
 
             // Сервисы выбора книги (keyed)
             builder.Services.AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(Models.BookChooseServiceKey.PrioritizedRandomId);

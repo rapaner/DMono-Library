@@ -2,6 +2,8 @@
 <ContentPage x:Class="Library.Views.BookDetailPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:BookDetailViewModel"
              Title="Детали книги"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -16,11 +18,11 @@
                     <RoundRectangle CornerRadius="15"/>
                 </Border.StrokeShape>
                 <StackLayout>
-                    <Label x:Name="BookTitle" 
+                    <Label Text="{Binding BookTitle}" 
                            FontSize="24" 
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Label x:Name="BookAuthor" 
+                    <Label Text="{Binding BookAuthor}" 
                            FontSize="18" 
                            TextColor="{DynamicResource SecondaryTextColor}" 
                            Margin="0,5,0,0" />
@@ -40,67 +42,60 @@
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     
-                    <ProgressBar x:Name="ProgressBar" 
-                                 Progress="0" 
+                    <ProgressBar Progress="{Binding Progress}" 
                                  Margin="0,15,0,10"
                                  ProgressColor="{DynamicResource TertiaryColor}" />
                     
-                    <Label x:Name="ProgressText" 
+                    <Label Text="{Binding ProgressText}" 
                            FontSize="16" 
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            HorizontalOptions="Center" />
                     
-                    <Label x:Name="ProgressPercentage" 
-                           Text="" 
+                    <Label Text="{Binding ProgressPercentage}" 
                            FontSize="20" 
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            HorizontalOptions="Center"
                            Margin="0,10,0,0" />
                     
-                    <Label x:Name="EstimatedFinishDateLabel"
-                           Text=""
+                    <Label Text="{Binding EstimatedFinishDate}"
                            FontSize="14"
                            TextColor="{DynamicResource PrimaryTextColor}"
                            HorizontalOptions="Center"
                            Margin="0,10,0,0"
-                           IsVisible="False" />
+                           IsVisible="{Binding IsEstimatedFinishDateVisible}" />
                     
-                    <!-- Кнопка обновления прогресса -->
-                    <Button x:Name="UpdateProgressButton"
-                            Text="📝 Обновить прогресс" 
+                    <Button Text="📝 Обновить прогресс" 
                             BackgroundColor="{DynamicResource PrimaryColor}" 
                             TextColor="{DynamicResource SecondaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,15,0,0" 
-                            Clicked="OnUpdateProgressClicked" />
+                            IsVisible="{Binding IsUpdateProgressVisible}"
+                            Command="{Binding UpdateProgressCommand}" />
                     
-                    <!-- Кнопка графика чтения по часам -->
-                    <Button x:Name="ReadingScheduleButton"
-                            Text="⏰ График чтения по часам" 
+                    <Button Text="⏰ График чтения по часам" 
                             BackgroundColor="{DynamicResource TertiaryColor}" 
                             TextColor="{DynamicResource PrimaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,10,0,0" 
-                            Clicked="OnReadingScheduleClicked" />
+                            IsVisible="{Binding IsReadingScheduleVisible}"
+                            Command="{Binding GoToReadingScheduleCommand}" />
                     
-                    <!-- Кнопка альтернативного расчета страниц -->
-                    <Button x:Name="AlternativeCalculationButton"
-                            Text="🔄 Альтернативный расчет страниц" 
+                    <Button Text="🔄 Альтернативный расчет страниц" 
                             BackgroundColor="{DynamicResource SecondaryColor}" 
                             TextColor="{DynamicResource PrimaryTextColor}" 
                             CornerRadius="10" 
                             Margin="0,10,0,0" 
-                            Clicked="OnAlternativePageCalculationClicked" />
+                            IsVisible="{Binding IsAlternativeCalculationVisible}"
+                            Command="{Binding GoToAlternativeCalculationCommand}" />
                 </StackLayout>
             </Border>
 
             <!-- График чтения по дням -->
-            <Border x:Name="ChartBorder"
-                   BackgroundColor="{DynamicResource CardBackgroundColor}" 
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
                    Padding="20" 
                    StrokeThickness="0"
-                   IsVisible="True">
+                   IsVisible="{Binding IsChartVisible}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="15"/>
                 </Border.StrokeShape>
@@ -110,14 +105,12 @@
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     
-                    <Label x:Name="ChartDescriptionLabel"
-                           Text="Страниц прочитано по дням"
+                    <Label Text="{Binding ChartDescription}"
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,5,0,5" />
                     
-                    <Label x:Name="AverageDailyLabel"
-                           Text="Среднее количество в день - 0.00"
+                    <Label Text="{Binding AverageDailyText}"
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,0,0,10" />
@@ -127,20 +120,20 @@
                                 Margin="0,10,0,0">
                         <GraphicsView x:Name="ReadingChartView"
                                       HeightRequest="250"
-                                      WidthRequest="400"
+                                      WidthRequest="{Binding ChartWidth}"
+                                      Drawable="{Binding ChartDrawable}"
                                       BackgroundColor="Transparent">
                             <GraphicsView.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnReadingChartTapped" />
+                                <TapGestureRecognizer Command="{Binding OpenReadingHistoryCommand}" />
                             </GraphicsView.GestureRecognizers>
                         </GraphicsView>
                     </ScrollView>
                     
-                    <Label x:Name="ChartHintLabel"
-                           Text="Нажмите на график, чтобы отредактировать историю чтения по дням (доступно только для книг в статусе &quot;Читаю сейчас&quot;)"
+                    <Label Text="Нажмите на график, чтобы отредактировать историю чтения по дням (доступно только для книг в статусе &quot;Читаю сейчас&quot;)"
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,10,0,0"
-                           IsVisible="False" />
+                           IsVisible="{Binding IsChartHintVisible}" />
                 </StackLayout>
             </Border>
 
@@ -161,72 +154,56 @@
                           ColumnSpacing="10" RowSpacing="10" Margin="0,15,0,0">
                         
                         <Label Grid.Row="0" Grid.Column="0" 
-                               Text="Всего страниц:" 
-                               FontSize="14" 
+                               Text="Всего страниц:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="TotalPagesLabel" 
-                               Grid.Row="0" Grid.Column="1" 
-                               FontSize="14" 
+                        <Label Grid.Row="0" Grid.Column="1" 
+                               Text="{Binding TotalPages}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
                         <Label Grid.Row="1" Grid.Column="0" 
-                               Text="Статус:" 
-                               FontSize="14" 
+                               Text="Статус:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="StatusLabel" 
-                               Grid.Row="1" Grid.Column="1" 
-                               FontSize="14" 
+                        <Label Grid.Row="1" Grid.Column="1" 
+                               Text="{Binding StatusText}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
                         <Label Grid.Row="2" Grid.Column="0" 
-                               Text="Дата добавления:" 
-                               FontSize="14" 
+                               Text="Дата добавления:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="DateAddedLabel" 
-                               Grid.Row="2" Grid.Column="1" 
-                               FontSize="14" 
+                        <Label Grid.Row="2" Grid.Column="1" 
+                               Text="{Binding DateAdded}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
-                        <Label x:Name="DateStartedCaptionLabel"
-                               Grid.Row="3" Grid.Column="0"
-                               Text="Дата начала чтения:"
-                               FontSize="14"
+                        <Label Grid.Row="3" Grid.Column="0"
+                               Text="Дата начала чтения:" FontSize="14"
                                TextColor="{DynamicResource SecondaryTextColor}"
-                               IsVisible="False" />
-                        <Label x:Name="DateStartedLabel"
-                               Grid.Row="3" Grid.Column="1"
-                               FontSize="14"
+                               IsVisible="{Binding IsDateStartedVisible}" />
+                        <Label Grid.Row="3" Grid.Column="1"
+                               Text="{Binding DateStarted}" FontSize="14"
                                TextColor="{DynamicResource PrimaryTextColor}"
-                               IsVisible="False" />
+                               IsVisible="{Binding IsDateStartedVisible}" />
 
-                        <Label x:Name="DateFinishedCaptionLabel"
-                               Grid.Row="4" Grid.Column="0" 
-                               Text="Дата завершения:" 
-                               FontSize="14" 
+                        <Label Grid.Row="4" Grid.Column="0" 
+                               Text="Дата завершения:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}"
-                               IsVisible="False" />
-                        <Label x:Name="DateFinishedLabel"
-                               Grid.Row="4" Grid.Column="1"
-                               FontSize="14"
+                               IsVisible="{Binding IsDateFinishedVisible}" />
+                        <Label Grid.Row="4" Grid.Column="1"
+                               Text="{Binding DateFinished}" FontSize="14"
                                TextColor="{DynamicResource PrimaryTextColor}"
-                               IsVisible="False" />
+                               IsVisible="{Binding IsDateFinishedVisible}" />
                         
                         <Label Grid.Row="5" Grid.Column="0" 
-                               Text="Цикл:" 
-                               FontSize="14" 
+                               Text="Цикл:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="SeriesTitleLabel" 
-                               Grid.Row="5" Grid.Column="1" 
-                               FontSize="14" 
+                        <Label Grid.Row="5" Grid.Column="1" 
+                               Text="{Binding SeriesTitle}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                         
                         <Label Grid.Row="6" Grid.Column="0" 
-                               Text="Номер в цикле:" 
-                               FontSize="14" 
+                               Text="Номер в цикле:" FontSize="14" 
                                TextColor="{DynamicResource SecondaryTextColor}" />
-                        <Label x:Name="SeriesNumberLabel" 
-                               Grid.Row="6" Grid.Column="1" 
-                               FontSize="14" 
+                        <Label Grid.Row="6" Grid.Column="1" 
+                               Text="{Binding SeriesNumber}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>
                 </StackLayout>
@@ -239,13 +216,13 @@
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="Fill" 
-                        Clicked="OnEditBookClicked" />
+                        Command="{Binding EditBookCommand}" />
                 <Button Text="🗑️ Удалить" 
                         BackgroundColor="{DynamicResource ErrorColor}" 
                         TextColor="{DynamicResource PrimaryTextColor}" 
                         CornerRadius="10" 
                         HorizontalOptions="Fill" 
-                        Clicked="OnDeleteBookClicked" />
+                        Command="{Binding DeleteBookCommand}" />
             </StackLayout>
 
         </StackLayout>

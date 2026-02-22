@@ -2,183 +2,78 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:yd="clr-namespace:YandexDisk.Client.Protocol;assembly=YandexDisk.Client"
+             xmlns:vm="clr-namespace:Library.ViewModels"
              x:Class="Library.Views.YandexDiskPage"
+             x:DataType="vm:YandexDiskViewModel"
              Title="Яндекс Диск"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
     
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             
-            <!-- Статус авторизации -->
+            <!-- Статус -->
             <Border BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
+                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Статус подключения" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource SecondaryTextColor}"/>
-                    <Label x:Name="StatusLabel" 
-                           Text="Не подключено" 
-                           FontSize="14"
-                           TextColor="{DynamicResource SecondaryTextColor}"/>
-                    <Label x:Name="DiskInfoLabel" 
-                           Text="" 
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           IsVisible="False"/>
+                    <Label Text="Статус подключения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Label Text="{Binding StatusText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Label Text="{Binding DiskInfoText}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" IsVisible="{Binding IsDiskInfoVisible}"/>
                 </VerticalStackLayout>
             </Border>
 
             <!-- Авторизация -->
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
+                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Авторизация" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}"/>
-                    
-                    <Label Text="Выберите способ авторизации:" 
-                           FontSize="14"
-                           TextColor="{DynamicResource SecondaryTextColor}"/>
-                    
-                    <!-- Автоматическая авторизация через браузер -->
+                    <Label Text="Авторизация" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
+                    <Label Text="Выберите способ авторизации:" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
                     <Button Text="🌐 Открыть браузер для авторизации" 
-                            Clicked="OnGetTokenClicked"
-                            BackgroundColor="{DynamicResource PrimaryColor}"
-                            TextColor="{DynamicResource SecondaryTextColor}"
-                            FontSize="16"
-                            FontAttributes="Bold"
-                            HeightRequest="50"/>
-                    
-                    <Label Text="После авторизации скопируйте токен из адресной строки браузера:" 
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           HorizontalOptions="Center"
-                           Margin="0,10,0,0"/>
-                    
-                    <Entry x:Name="TokenEntry" 
-                           Placeholder="Вставьте OAuth токен здесь"
-                           IsPassword="True"
-                           TextColor="{DynamicResource PrimaryTextColor}"
-                           PlaceholderColor="{DynamicResource SecondaryTextColor}"/>
-                    
+                            Command="{Binding GetTokenCommand}"
+                            BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource SecondaryTextColor}" FontSize="16" FontAttributes="Bold" HeightRequest="50"/>
+                    <Label Text="После авторизации скопируйте токен из адресной строки браузера:" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    <Entry Text="{Binding TokenText}" Placeholder="Вставьте OAuth токен здесь" IsPassword="True" TextColor="{DynamicResource PrimaryTextColor}" PlaceholderColor="{DynamicResource SecondaryTextColor}"/>
                     <HorizontalStackLayout Spacing="10">
-                        <Button Text="Сохранить токен" 
-                                Clicked="OnSaveTokenClicked"
-                                BackgroundColor="{DynamicResource PrimaryColor}"
-                                TextColor="{DynamicResource SecondaryTextColor}"
-                                HorizontalOptions="Fill"/>
-                        <Button Text="Отключить" 
-                                Clicked="OnDisconnectClicked"
-                                BackgroundColor="{DynamicResource Gray400}"
-                                TextColor="{DynamicResource PrimaryTextColor}"
-                                HorizontalOptions="Fill"/>
+                        <Button Text="Сохранить токен" Command="{Binding SaveTokenCommand}" BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Fill"/>
+                        <Button Text="Отключить" Command="{Binding DisconnectCommand}" BackgroundColor="{DynamicResource Gray400}" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Fill"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
             <!-- Резервное копирование -->
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
+                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Резервное копирование" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}"/>
-                    
-                    <Label x:Name="LastBackupLabel" 
-                           Text="Последняя резервная копия: никогда" 
-                           FontSize="14"
-                           TextColor="{DynamicResource SecondaryTextColor}"/>
-                    
-                    <Button Text="Создать резервную копию" 
-                            Clicked="OnBackupClicked"
-                            BackgroundColor="{DynamicResource PrimaryColor}"
-                            TextColor="{DynamicResource SecondaryTextColor}"/>
-                    
-                    <Button Text="Восстановить из резервной копии" 
-                            Clicked="OnRestoreClicked"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
-                            TextColor="{DynamicResource SecondaryTextColor}"/>
-                    
-                    <Button Text="Удалить резервную копию" 
-                            Clicked="OnDeleteBackupClicked"
-                            BackgroundColor="{DynamicResource ErrorColor}"
-                            TextColor="{DynamicResource PrimaryTextColor}"/>
-                    
-                    <!-- Автоматическое резервное копирование -->
+                    <Label Text="Резервное копирование" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
+                    <Label Text="{Binding LastBackupText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Button Text="Создать резервную копию" Command="{Binding BackupCommand}" BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Button Text="Восстановить из резервной копии" Command="{Binding RestoreCommand}" BackgroundColor="{DynamicResource SecondaryColor}" TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Button Text="Удалить резервную копию" Command="{Binding DeleteBackupCommand}" BackgroundColor="{DynamicResource ErrorColor}" TextColor="{DynamicResource PrimaryTextColor}"/>
                     <HorizontalStackLayout Spacing="10">
-                        <Label Text="Автоматическое резервное копирование" 
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               TextColor="{DynamicResource PrimaryTextColor}"/>
-                        <Switch x:Name="AutoBackupSwitch" 
-                                Toggled="OnAutoBackupToggled"/>
+                        <Label Text="Автоматическое резервное копирование" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
+                        <Switch IsToggled="{Binding IsAutoBackupEnabled}" Toggled="OnAutoBackupToggled"/>
                     </HorizontalStackLayout>
-                    
-                    <HorizontalStackLayout Spacing="10" x:Name="FrequencyLayout" IsVisible="False">
-                        <Label Text="Частота (дней):" 
-                               VerticalOptions="Center"
-                               TextColor="{DynamicResource PrimaryTextColor}"/>
-                        <Entry x:Name="FrequencyEntry" 
-                               Text="7" 
-                               Keyboard="Numeric"
-                               WidthRequest="60"
-                               HorizontalTextAlignment="Center"
-                               TextColor="{DynamicResource PrimaryTextColor}"
-                               PlaceholderColor="{DynamicResource SecondaryTextColor}"/>
-                        <Button Text="Сохранить" 
-                                Clicked="OnSaveFrequencyClicked"
-                                Padding="10,5"/>
+                    <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsFrequencyVisible}">
+                        <Label Text="Частота (дней):" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
+                        <Entry Text="{Binding FrequencyText}" Keyboard="Numeric" WidthRequest="60" HorizontalTextAlignment="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
+                        <Button Text="Сохранить" Command="{Binding SaveFrequencyCommand}" Padding="10,5"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
             <!-- Список резервных копий -->
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
+                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="10">
-                        <Label Text="Резервные копии" 
-                               FontSize="18" 
-                               FontAttributes="Bold"
-                               HorizontalOptions="Start"
-                               VerticalOptions="Center"
-                               TextColor="{DynamicResource PrimaryTextColor}"/>
-                        <Button Text="Обновить" 
-                                Clicked="OnRefreshBackupsClicked"
-                                BackgroundColor="{DynamicResource PrimaryColor}"
-                                TextColor="{DynamicResource SecondaryTextColor}"
-                                Padding="10,5"/>
+                        <Label Text="Резервные копии" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
+                        <Button Text="Обновить" Command="{Binding RefreshBackupsCommand}" BackgroundColor="{DynamicResource PrimaryColor}" TextColor="{DynamicResource SecondaryTextColor}" Padding="10,5"/>
                     </HorizontalStackLayout>
-                    
-                    <ActivityIndicator x:Name="LoadingIndicator" 
-                                     IsRunning="False" 
-                                     IsVisible="False"
-                                     Color="{DynamicResource PrimaryColor}"/>
-                    
-                    <CollectionView x:Name="BackupsCollectionView" 
-                                  SelectionMode="Single"
-                                  SelectionChanged="OnBackupSelectionChanged">
+                    <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{DynamicResource PrimaryColor}"/>
+                    <CollectionView ItemsSource="{Binding Backups}" SelectionMode="Single" SelectionChanged="OnBackupSelectionChanged">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="yd:Resource">
-                                <Border Padding="10" 
-                                       Margin="0,5" 
-                                       BackgroundColor="{DynamicResource Gray100}" 
-                                       StrokeThickness="2"
-                                       Stroke="Transparent">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="5"/>
-                                    </Border.StrokeShape>
+                                <Border Padding="10" Margin="0,5" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="2" Stroke="Transparent">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="5"/></Border.StrokeShape>
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup Name="CommonStates">
                                             <VisualState Name="Normal">
@@ -196,89 +91,23 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                     <VerticalStackLayout Spacing="5">
-                                        <Label x:Name="BackupNameLabel"
-                                               Text="{Binding Name}" 
-                                               FontSize="14" 
-                                               FontAttributes="Bold"
-                                               TextColor="{DynamicResource PrimaryTextColor}">
-                                            <VisualStateManager.VisualStateGroups>
-                                                <VisualStateGroup Name="CommonStates">
-                                                    <VisualState Name="Normal">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                    <VisualState Name="Selected">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                </VisualStateGroup>
-                                            </VisualStateManager.VisualStateGroups>
-                                        </Label>
-                                        <Label x:Name="BackupCreatedLabel"
-                                               Text="{Binding Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" 
-                                               FontSize="12"
-                                               TextColor="{DynamicResource SecondaryTextColor}">
-                                            <VisualStateManager.VisualStateGroups>
-                                                <VisualStateGroup Name="CommonStates">
-                                                    <VisualState Name="Normal">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                    <VisualState Name="Selected">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                </VisualStateGroup>
-                                            </VisualStateManager.VisualStateGroups>
-                                        </Label>
-                                        <Label x:Name="BackupSizeLabel"
-                                               Text="{Binding Size, StringFormat='Размер: {0:N0} байт'}" 
-                                               FontSize="12"
-                                               TextColor="{DynamicResource SecondaryTextColor}">
-                                            <VisualStateManager.VisualStateGroups>
-                                                <VisualStateGroup Name="CommonStates">
-                                                    <VisualState Name="Normal">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                    <VisualState Name="Selected">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                </VisualStateGroup>
-                                            </VisualStateManager.VisualStateGroups>
-                                        </Label>
+                                        <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
+                                        <Label Text="{Binding Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}"/>
+                                        <Label Text="{Binding Size, StringFormat='Размер: {0:N0} байт'}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}"/>
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    
-                    <Label x:Name="NoBackupsLabel" 
-                           Text="Резервные копии не найдены" 
-                           FontSize="14"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           HorizontalOptions="Center"
-                           IsVisible="False"/>
+                    <Label Text="Резервные копии не найдены" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" IsVisible="{Binding IsNoBackupsVisible}"/>
                 </VerticalStackLayout>
             </Border>
 
             <!-- Инструкция -->
             <Border Padding="15" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
+                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="💡 Как подключить Яндекс Диск?" 
-                           FontSize="16" 
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}"/>
+                    <Label Text="💡 Как подключить Яндекс Диск?" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
                     <Label FontSize="14" TextColor="{DynamicResource SecondaryTextColor}">
                         <Label.FormattedText>
                             <FormattedString>

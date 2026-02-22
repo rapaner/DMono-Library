@@ -1,84 +1,12 @@
-using Library.Core.Models;
-using Library.Services;
+using Library.ViewModels;
 
 namespace Library.Views;
 
 public partial class UpdateProgressPage : ContentPage
 {
-    private readonly LibraryService _libraryService;
-    private readonly Book _book;
-    private readonly Action _onProgressUpdated;
-
-    public UpdateProgressPage(Book book, LibraryService libraryService, Action onProgressUpdated)
+    public UpdateProgressPage(UpdateProgressViewModel viewModel)
     {
         InitializeComponent();
-        _libraryService = libraryService;
-        _book = book;
-        _onProgressUpdated = onProgressUpdated;
-        
-        LoadBookInfo();
-    }
-
-    private void LoadBookInfo()
-    {
-        BookTitleLabel.Text = _book.Title;
-        BookAuthorLabel.Text = $"Автор: {_book.AuthorsText}";
-        TotalPagesLabel.Text = $"Всего страниц: {_book.TotalPages}";
-        CurrentProgressLabel.Text = $"Текущий прогресс: {_book.CurrentPage} / {_book.TotalPages} страниц ({_book.ProgressPercentage:F1}%)";
-        
-        // Устанавливаем текущую страницу как подсказку
-        if (_book.CurrentPage > 0)
-        {
-            CurrentPageEntry.Text = _book.CurrentPage.ToString();
-        }
-    }
-
-    private async void OnSaveClicked(object sender, EventArgs e)
-    {
-        // Валидация ввода
-        if (string.IsNullOrWhiteSpace(CurrentPageEntry.Text))
-        {
-            await DisplayAlertAsync("Ошибка", "Пожалуйста, введите номер страницы", "OK");
-            return;
-        }
-
-        if (!int.TryParse(CurrentPageEntry.Text, out int currentPage))
-        {
-            await DisplayAlertAsync("Ошибка", "Введите корректный номер страницы", "OK");
-            return;
-        }
-
-        if (currentPage < 0 || currentPage > _book.TotalPages)
-        {
-            await DisplayAlertAsync("Ошибка", $"Номер страницы должен быть от 0 до {_book.TotalPages}", "OK");
-            return;
-        }
-
-        try
-        {
-            // Обновляем прогресс через сервис
-            var selectedDate = ReadingDatePicker.Date ?? DateTime.Today;
-            await _libraryService.AddOrUpdateReadingProgressAsync(_book.Id, selectedDate, currentPage);
-            
-            await DisplayAlertAsync("Успех", "Прогресс обновлен!", "OK");
-            
-            // Вызываем callback для обновления родительской страницы
-            _onProgressUpdated?.Invoke();
-            
-            await Navigation.PopAsync();
-        }
-        catch (InvalidOperationException ex)
-        {
-            await DisplayAlertAsync("Ошибка", ex.Message, "OK");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
-        }
-    }
-
-    private async void OnCancelClicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
+        BindingContext = viewModel;
     }
 }

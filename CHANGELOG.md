@@ -1,5 +1,65 @@
 # История изменений
 
+## [2.0] - Внедрение MVVM-архитектуры
+
+### Добавлено
+- ✅ **Папка `ViewModels/` с 15 ViewModel-классами**:
+  - `MainPageViewModel` — отображение текущей книги, навигация по разделам
+  - `LibraryViewModel` — загрузка списка книг, фильтрация, сортировка
+  - `BookItemViewModel` — вынесен из code-behind `LibraryPage.xaml.cs`
+  - `BookDetailViewModel` — данные книги, прогресс, график чтения, навигация к дочерним страницам
+  - `SettingsViewModel` — смена темы, очистка данных, навигация на Яндекс Диск
+  - `BookChooseViewModel` — настройки выбора книг, вызов сервиса расчёта
+  - `LoadingViewModel` — инициализация БД, переход на AppShell
+  - `StatisticsViewModel` — статистика, фильтрация по датам, графики, рейтинг книг
+  - `AddEditBookViewModel` — форма добавления/редактирования книги с валидацией
+  - `UpdateProgressViewModel` — обновление прогресса чтения
+  - `YandexDiskViewModel` — OAuth, бэкапы, управление резервными копиями
+  - `ReadingScheduleViewModel` — расчёт почасового графика чтения
+  - `ReadingHistoryEditViewModel` — редактирование истории чтения по дням
+  - `ReadingHistoryItemViewModel` — вынесен из code-behind `ReadingHistoryEditPage.xaml.cs`
+  - `AlternativePageCalculationViewModel` — конвертация страниц между изданиями
+
+- ✅ **Shell-навигация для всех страниц**:
+  - Все 11 страниц зарегистрированы как Shell-маршруты в `AppShell.xaml.cs`
+  - Навигация `Navigation.PushAsync(new Page(...))` заменена на `Shell.Current.GoToAsync`
+  - Передача параметров через query-строку (`?bookId=...`) вместо конструкторов
+
+- ✅ **DI-регистрация всех компонентов**:
+  - 13 ViewModel и 13 Page зарегистрированы как `Transient` в `MauiProgram.cs`
+  - Shell автоматически резолвит страницы из DI при навигации
+
+### Изменено
+- 🔄 **AppShell.xaml.cs**: зарегистрированы маршруты для `LibraryPage`, `BookDetailPage`, `AddEditBookPage`, `StatisticsPage`, `SettingsPage`, `BookChoosePage`, `UpdateProgressPage`, `ReadingHistoryEditPage`, `AlternativePageCalculationPage`
+- 🔄 **MauiProgram.cs**: добавлен `using Library.ViewModels`, зарегистрированы все ViewModel и Page
+- 🔄 **App.xaml.cs**: `LoadingPage` теперь резолвится из DI вместо ручного создания через `new`
+- 🔄 **MainPage.xaml / MainPage.xaml.cs**: навигация через команды ViewModel, TapGestureRecognizer в XAML вместо code-behind
+- 🔄 **Views/SettingsPage.xaml / .cs**: привязки `{Binding}` для темы и версии, команды для кнопок
+- 🔄 **Views/BookChoosePage.xaml / .cs**: привязки для полей ввода, `Command` для кнопки расчёта
+- 🔄 **Views/LoadingPage.xaml.cs**: вызов `InitializeCommand` из ViewModel в `OnAppearing`
+- 🔄 **Views/LibraryPage.xaml / .cs**: `ItemsSource="{Binding Books}"`, команды для фильтрации и сортировки
+- 🔄 **Views/BookDetailPage.xaml / .cs**: все данные через привязки, `Drawable="{Binding ChartDrawable}"`, `IQueryAttributable` для приёма `bookId`
+- 🔄 **Views/StatisticsPage.xaml / .cs**: привязки для статистики и графиков, команды для фильтров
+- 🔄 **Views/AddEditBookPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для режима редактирования
+- 🔄 **Views/UpdateProgressPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для `bookId`
+- 🔄 **Views/YandexDiskPage.xaml / .cs**: все состояния через привязки, команды для OAuth и бэкапов
+- 🔄 **Views/ReadingSchedulePage.xaml / .cs**: привязки, `IQueryAttributable`, убран `[QueryProperty]`
+- 🔄 **Views/ReadingHistoryEditPage.xaml / .cs**: `ItemsSource="{Binding Items}"`, команда удаления через `RelativeSource`
+- 🔄 **Views/AlternativePageCalculationPage.xaml / .cs**: форма через привязки, `IQueryAttributable`
+
+### Удалено
+- ❌ **Pseudo-ViewModel `BookViewModel`** из `LibraryPage.xaml.cs` — вынесен в `ViewModels/BookItemViewModel.cs`
+- ❌ **Pseudo-ViewModel `ReadingHistoryItemViewModel`** из `ReadingHistoryEditPage.xaml.cs` — вынесен в `ViewModels/ReadingHistoryItemViewModel.cs`
+- ❌ **Вся бизнес-логика из code-behind** всех 14 страниц — перенесена в соответствующие ViewModel
+- ❌ **Ручное создание страниц** (`new Page(service)`) — заменено на Shell-навигацию с DI
+
+### Технические детали
+- 📐 **CommunityToolkit.Mvvm 8.4.0**: задействованы `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`
+- 📐 **IQueryAttributable**: используется в `BookDetailViewModel`, `AddEditBookViewModel`, `UpdateProgressViewModel`, `ReadingScheduleViewModel`, `ReadingHistoryEditViewModel`, `AlternativePageCalculationViewModel` для приёма параметров навигации
+- 📐 **DisplayAlertAsync**: все вызовы диалогов используют `DisplayAlertAsync` (вместо устаревшего `DisplayAlert`)
+- 📐 **Code-behind**: сведён к минимуму — конструктор с `BindingContext = viewModel` и `OnAppearing` для загрузки данных
+- 📐 **Сборка**: 0 ошибок, 0 предупреждений
+
 ## [1.26] - Переключение графика статистики по дням и по месяцам
 
 ### Добавлено

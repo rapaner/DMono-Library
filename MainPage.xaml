@@ -2,6 +2,8 @@
 <ContentPage x:Class="Library.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:MainPageViewModel"
              Title="Моя Библиотека"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -29,57 +31,55 @@
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryTextColor}" />
 
-                    <Label x:Name="CurrentBookTitle"
-                           Text="Нет активной книги"
+                    <Label Text="{Binding CurrentBookTitle}"
                            FontSize="16"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,10,0,0" />
 
-                    <Label x:Name="CurrentBookAuthor"
-                           Text=""
+                    <Label Text="{Binding CurrentBookAuthor}"
                            FontSize="14"
                            TextColor="{DynamicResource SecondaryTextColor}" />
 
-                    <ProgressBar x:Name="CurrentBookProgress"
-                                 Progress="0"
+                    <ProgressBar Progress="{Binding CurrentBookProgress}"
                                  Margin="0,10,0,0"
                                  ProgressColor="{DynamicResource TertiaryColor}" />
 
-                    <Label x:Name="CurrentBookProgressText"
-                           Text=""
+                    <Label Text="{Binding CurrentBookProgressText}"
                            FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            HorizontalOptions="Center" />
 
-                    <Label x:Name="CurrentBookPercentage"
-                           Text=""
+                    <Label Text="{Binding CurrentBookPercentage}"
                            FontSize="16"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryColor}"
                            HorizontalOptions="Center"
                            Margin="0,5,0,0" />
 
-                    <Button x:Name="ViewCurrentBookButton"
-                            Text="Просмотр"
+                    <Button Text="Просмотр"
                             BackgroundColor="{DynamicResource PrimaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"
                             CornerRadius="10"
                             Margin="0,15,0,0"
-                            Clicked="OnViewCurrentBookClicked" />
+                            IsVisible="{Binding IsViewCurrentBookVisible}"
+                            Command="{Binding ViewCurrentBookCommand}" />
                 </StackLayout>
             </Border>
 
             <!-- Меню действий -->
-            <Grid x:Name="menuGrid" ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="15" RowSpacing="15">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="15" RowSpacing="15">
 
                 <!-- Просмотр библиотеки -->
-                <Border x:Name="libraryFrame" Grid.Row="0" Grid.Column="0"
+                <Border Grid.Row="0" Grid.Column="0"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToLibraryCommand}" />
+                    </Border.GestureRecognizers>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="📚" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Вся библиотека"
@@ -95,13 +95,16 @@
                 </Border>
 
                 <!-- Добавить книгу -->
-                <Border x:Name="addBookFrame" Grid.Row="0" Grid.Column="1"
+                <Border Grid.Row="0" Grid.Column="1"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToAddBookCommand}" />
+                    </Border.GestureRecognizers>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="➕" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Добавить книгу"
@@ -117,13 +120,16 @@
                 </Border>
 
                 <!-- Статистика -->
-                <Border x:Name="statsFrame" Grid.Row="1" Grid.Column="0"
+                <Border Grid.Row="1" Grid.Column="0"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToStatisticsCommand}" />
+                    </Border.GestureRecognizers>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="📊" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Статистика"
@@ -139,13 +145,16 @@
                 </Border>
 
                 <!-- Выбор книги -->
-                <Border x:Name="bookChooseFrame" Grid.Row="1" Grid.Column="1"
+                <Border Grid.Row="1" Grid.Column="1"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToBookChooseCommand}" />
+                    </Border.GestureRecognizers>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="🎲" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Выбор книги"
@@ -161,13 +170,16 @@
                 </Border>
 
                 <!-- Настройки -->
-                <Border x:Name="settingsFrame" Grid.Row="2" Grid.Column="0"
+                <Border Grid.Row="2" Grid.Column="0"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSettingsCommand}" />
+                    </Border.GestureRecognizers>
                     <StackLayout HorizontalOptions="Center">
                         <Label Text="⚙️" FontSize="40" HorizontalOptions="Center" />
                         <Label Text="Настройки"
