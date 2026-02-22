@@ -7,7 +7,7 @@ namespace Library.Core.Models
     /// Модель для хранения параметров расписания чтения книги
     /// </summary>
     [Table("BookReadingSchedules")]
-    public record BookReadingSchedule
+    public class BookReadingSchedule
     {
         /// <summary>
         /// Уникальный идентификатор расписания

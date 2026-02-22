@@ -6,7 +6,7 @@ namespace Library.Core.Models
     /// <summary>
     /// Вычисляемые свойства модели Book
     /// </summary>
-    public partial record Book
+    public partial class Book
     {
         /// <summary>
         /// Текущая страница, на которой остановился читатель (вычисляемое свойство)

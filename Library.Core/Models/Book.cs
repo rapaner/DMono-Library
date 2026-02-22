@@ -7,7 +7,7 @@ namespace Library.Core.Models
     /// Модель книги для хранения в базе данных
     /// </summary>
     [Table("Books")]
-    public partial record Book
+    public partial class Book
     {
         /// <summary>
         /// Уникальный идентификатор книги в базе данных
