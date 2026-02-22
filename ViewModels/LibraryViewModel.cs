@@ -10,6 +10,7 @@ namespace Library.ViewModels;
 public partial class LibraryViewModel : ObservableObject
 {
     private readonly IBookService _bookService;
+    private readonly INavigationService _navigation;
 
     [ObservableProperty]
     private string _currentFilter = "All";
@@ -19,9 +20,10 @@ public partial class LibraryViewModel : ObservableObject
 
     public ObservableCollection<BookItemViewModel> Books { get; } = new();
 
-    public LibraryViewModel(IBookService bookService)
+    public LibraryViewModel(IBookService bookService, INavigationService navigation)
     {
         _bookService = bookService;
+        _navigation = navigation;
     }
 
     [RelayCommand]
@@ -75,12 +77,12 @@ public partial class LibraryViewModel : ObservableObject
     private async Task SelectBookAsync(BookItemViewModel? bookItem)
     {
         if (bookItem == null) return;
-        await Shell.Current.GoToAsync($"{nameof(BookDetailPage)}?bookId={bookItem.Id}");
+        await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={bookItem.Id}");
     }
 
     [RelayCommand]
     private async Task AddBookAsync()
     {
-        await Shell.Current.GoToAsync(nameof(AddEditBookPage));
+        await _navigation.GoToAsync(nameof(AddEditBookPage));
     }
 }

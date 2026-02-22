@@ -7,10 +7,12 @@ namespace Library.ViewModels;
 public partial class LoadingViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDialogService _dialog;
 
-    public LoadingViewModel(IServiceProvider serviceProvider)
+    public LoadingViewModel(IServiceProvider serviceProvider, IDialogService dialog)
     {
         _serviceProvider = serviceProvider;
+        _dialog = dialog;
     }
 
     [RelayCommand]
@@ -40,16 +42,16 @@ public partial class LoadingViewModel : ObservableObject
             System.Diagnostics.Debug.WriteLine($"=== LoadingVM: Error initializing database: {ex.Message} ===");
             System.Diagnostics.Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
 
-            if (Application.Current?.Windows.Count > 0)
+            try
             {
-                var page = Application.Current.Windows[0].Page;
-                if (page != null)
-                {
-                    await page.DisplayAlertAsync(
-                        "Ошибка инициализации",
-                        $"Не удалось инициализировать базу данных:\n{ex.Message}",
-                        "OK");
-                }
+                await _dialog.ShowAlertAsync(
+                    "Ошибка инициализации",
+                    $"Не удалось инициализировать базу данных:\n{ex.Message}",
+                    "OK");
+            }
+            catch
+            {
+                // Fallback if dialog service can't show (no page available yet)
             }
 
             Application.Current?.Quit();

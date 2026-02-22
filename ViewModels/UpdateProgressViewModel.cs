@@ -9,6 +9,8 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
 {
     private readonly IBookService _bookService;
     private readonly IReadingProgressService _readingProgressService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
     private Book? _book;
 
     [ObservableProperty]
@@ -29,10 +31,12 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     private DateTime _readingDate = DateTime.Today;
 
-    public UpdateProgressViewModel(IBookService bookService, IReadingProgressService readingProgressService)
+    public UpdateProgressViewModel(IBookService bookService, IReadingProgressService readingProgressService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _readingProgressService = readingProgressService;
+        _navigation = navigation;
+        _dialog = dialog;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -69,41 +73,41 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
 
         if (string.IsNullOrWhiteSpace(CurrentPageText))
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Пожалуйста, введите номер страницы", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Пожалуйста, введите номер страницы", "OK");
             return;
         }
 
         if (!int.TryParse(CurrentPageText, out int currentPage))
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Введите корректный номер страницы", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Введите корректный номер страницы", "OK");
             return;
         }
 
         if (currentPage < 0 || currentPage > _book.TotalPages)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Номер страницы должен быть от 0 до {_book.TotalPages}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Номер страницы должен быть от 0 до {_book.TotalPages}", "OK");
             return;
         }
 
         try
         {
             await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, ReadingDate, currentPage);
-            await Shell.Current.DisplayAlertAsync("Успех", "Прогресс обновлен!", "OK");
-            await Shell.Current.GoToAsync("..");
+            await _dialog.ShowAlertAsync("Успех", "Прогресс обновлен!", "OK");
+            await _navigation.GoBackAsync();
         }
         catch (InvalidOperationException ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", ex.Message, "OK");
+            await _dialog.ShowAlertAsync("Ошибка", ex.Message, "OK");
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await _navigation.GoBackAsync();
     }
 }

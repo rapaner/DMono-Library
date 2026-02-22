@@ -13,6 +13,8 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IBookService _bookService;
     private readonly IStatisticsService _statisticsService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
     private Book? _book;
 
     [ObservableProperty]
@@ -92,10 +94,12 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
     private int _bookId;
 
-    public BookDetailViewModel(IBookService bookService, IStatisticsService statisticsService)
+    public BookDetailViewModel(IBookService bookService, IStatisticsService statisticsService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _statisticsService = statisticsService;
+        _navigation = navigation;
+        _dialog = dialog;
         _chartDrawable = new ReadingChartDrawable();
     }
 
@@ -215,14 +219,14 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private async Task UpdateProgressAsync()
     {
         if (_book == null) return;
-        await Shell.Current.GoToAsync($"{nameof(UpdateProgressPage)}?bookId={_book.Id}");
+        await _navigation.GoToAsync($"{nameof(UpdateProgressPage)}?bookId={_book.Id}");
     }
 
     [RelayCommand]
     private async Task EditBookAsync()
     {
         if (_book == null) return;
-        await Shell.Current.GoToAsync($"{nameof(AddEditBookPage)}?bookId={_book.Id}");
+        await _navigation.GoToAsync($"{nameof(AddEditBookPage)}?bookId={_book.Id}");
     }
 
     [RelayCommand]
@@ -230,15 +234,15 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     {
         if (_book == null) return;
 
-        bool result = await Shell.Current.DisplayAlertAsync("Подтверждение",
+        bool result = await _dialog.ShowConfirmAsync("Подтверждение",
             $"Вы уверены, что хотите удалить книгу \"{_book.Title}\"?",
             "Да", "Нет");
 
         if (result)
         {
             await _bookService.DeleteBookAsync(_book);
-            await Shell.Current.DisplayAlertAsync("Успех", "Книга удалена!", "OK");
-            await Shell.Current.GoToAsync("..");
+            await _dialog.ShowAlertAsync("Успех", "Книга удалена!", "OK");
+            await _navigation.GoBackAsync();
         }
     }
 
@@ -246,21 +250,20 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private async Task GoToReadingScheduleAsync()
     {
         if (_book == null) return;
-        await Shell.Current.GoToAsync($"{nameof(ReadingSchedulePage)}?bookId={_book.Id}");
+        await _navigation.GoToAsync($"{nameof(ReadingSchedulePage)}?bookId={_book.Id}");
     }
 
     [RelayCommand]
     private async Task GoToAlternativeCalculationAsync()
     {
         if (_book == null) return;
-        await Shell.Current.GoToAsync($"{nameof(AlternativePageCalculationPage)}?bookId={_book.Id}");
+        await _navigation.GoToAsync($"{nameof(AlternativePageCalculationPage)}?bookId={_book.Id}");
     }
 
     [RelayCommand]
     private async Task OpenReadingHistoryAsync()
     {
         if (_book == null || _book.Status != BookStatus.Reading) return;
-        await Shell.Current.GoToAsync($"{nameof(ReadingHistoryEditPage)}?bookId={_book.Id}");
+        await _navigation.GoToAsync($"{nameof(ReadingHistoryEditPage)}?bookId={_book.Id}");
     }
-
 }

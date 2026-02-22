@@ -8,6 +8,7 @@ namespace Library.ViewModels;
 public partial class MainPageViewModel : ObservableObject
 {
     private readonly IBookService _bookService;
+    private readonly INavigationService _navigation;
 
     [ObservableProperty]
     private string _currentBookTitle = "Нет активной книги";
@@ -29,9 +30,10 @@ public partial class MainPageViewModel : ObservableObject
 
     private int? _currentBookId;
 
-    public MainPageViewModel(IBookService bookService)
+    public MainPageViewModel(IBookService bookService, INavigationService navigation)
     {
         _bookService = bookService;
+        _navigation = navigation;
     }
 
     [RelayCommand]
@@ -66,37 +68,37 @@ public partial class MainPageViewModel : ObservableObject
     {
         if (_currentBookId.HasValue)
         {
-            await Shell.Current.GoToAsync($"{nameof(BookDetailPage)}?bookId={_currentBookId.Value}");
+            await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={_currentBookId.Value}");
         }
     }
 
     [RelayCommand]
     private async Task GoToLibraryAsync()
     {
-        await Shell.Current.GoToAsync(nameof(LibraryPage));
+        await _navigation.GoToAsync(nameof(LibraryPage));
     }
 
     [RelayCommand]
     private async Task GoToAddBookAsync()
     {
-        await Shell.Current.GoToAsync(nameof(AddEditBookPage));
+        await _navigation.GoToAsync(nameof(AddEditBookPage));
     }
 
     [RelayCommand]
     private async Task GoToStatisticsAsync()
     {
-        await Shell.Current.GoToAsync(nameof(StatisticsPage));
+        await _navigation.GoToAsync(nameof(StatisticsPage));
     }
 
     [RelayCommand]
     private async Task GoToSettingsAsync()
     {
-        await Shell.Current.GoToAsync(nameof(SettingsPage));
+        await _navigation.GoToAsync(nameof(SettingsPage));
     }
 
     [RelayCommand]
     private async Task GoToBookChooseAsync()
     {
-        await Shell.Current.GoToAsync(nameof(BookChoosePage));
+        await _navigation.GoToAsync(nameof(BookChoosePage));
     }
 }

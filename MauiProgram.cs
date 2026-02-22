@@ -160,6 +160,8 @@ public static class MauiProgram
             builder.Services.AddSingleton<YandexOAuthService>();
             builder.Services.AddSingleton<SettingsService>();
             builder.Services.AddSingleton<PageByHourService>();
+            builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
+            builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
             // Регистрация конвертеров
             builder.Services.AddSingleton<PercentageConverter>();

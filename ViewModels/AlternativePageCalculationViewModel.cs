@@ -8,6 +8,8 @@ namespace Library.ViewModels;
 public partial class AlternativePageCalculationViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IBookService _bookService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
     private Book? _book;
     private double _mainToAlternativeCoefficient = 1.0;
     private double _alternativeToMainCoefficient = 1.0;
@@ -42,9 +44,11 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
     [ObservableProperty]
     private string _mainPageResult = "—";
 
-    public AlternativePageCalculationViewModel(IBookService bookService)
+    public AlternativePageCalculationViewModel(IBookService bookService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
+        _navigation = navigation;
+        _dialog = dialog;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -145,25 +149,25 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
 
         if (!int.TryParse(MainFirstPageText, out int mainFirst) || mainFirst < 1)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Введите корректную первую страницу основного издания", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Введите корректную первую страницу основного издания", "OK");
             return;
         }
 
         if (mainFirst > _book.TotalPages)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Первая страница основного издания не может быть больше {_book.TotalPages}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Первая страница основного издания не может быть больше {_book.TotalPages}", "OK");
             return;
         }
 
         if (!int.TryParse(AlternativeFirstPageText, out int altFirst) || altFirst < 1)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Введите корректную первую страницу альтернативного издания", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Введите корректную первую страницу альтернативного издания", "OK");
             return;
         }
 
         if (!int.TryParse(AlternativeLastPageText, out int altLast) || altLast < altFirst)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Последняя страница альтернативного издания должна быть больше или равна первой", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Последняя страница альтернативного издания должна быть больше или равна первой", "OK");
             return;
         }
 
@@ -175,18 +179,18 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
 
             await _bookService.UpdateBookAsync(_book);
 
-            await Shell.Current.DisplayAlertAsync("Успех", "Настройки сохранены!", "OK");
-            await Shell.Current.GoToAsync("..");
+            await _dialog.ShowAlertAsync("Успех", "Настройки сохранены!", "OK");
+            await _navigation.GoBackAsync();
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Произошла ошибка при сохранении: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Произошла ошибка при сохранении: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await _navigation.GoBackAsync();
     }
 }

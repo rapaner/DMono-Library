@@ -10,14 +10,18 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
 {
     private readonly IBookService _bookService;
     private readonly IReadingProgressService _readingProgressService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
     private Book? _book;
 
     public ObservableCollection<ReadingHistoryItemViewModel> Items { get; } = new();
 
-    public ReadingHistoryEditViewModel(IBookService bookService, IReadingProgressService readingProgressService)
+    public ReadingHistoryEditViewModel(IBookService bookService, IReadingProgressService readingProgressService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _readingProgressService = readingProgressService;
+        _navigation = navigation;
+        _dialog = dialog;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -102,7 +106,7 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
             var invalidItems = sortedItems.Where(i => i.DailyPages <= 0).ToList();
             if (invalidItems.Any())
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка валидации",
+                await _dialog.ShowAlertAsync("Ошибка валидации",
                     "Нельзя сохранить данные: есть записи с нулевым или отрицательным количеством страниц за день.", "OK");
                 return;
             }
@@ -112,7 +116,7 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
                 var maxCumulative = sortedItems.Max(i => i.CumulativePages);
                 if (maxCumulative > _book.TotalPages)
                 {
-                    await Shell.Current.DisplayAlertAsync("Ошибка валидации",
+                    await _dialog.ShowAlertAsync("Ошибка валидации",
                         $"Сумма прочитанных страниц ({maxCumulative}) не может превышать общее количество страниц в книге ({_book.TotalPages}).", "OK");
                     return;
                 }
@@ -120,7 +124,7 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
 
             if (!sortedItems.Any())
             {
-                bool confirm = await Shell.Current.DisplayAlertAsync("Подтверждение",
+                bool confirm = await _dialog.ShowConfirmAsync("Подтверждение",
                     "Вы собираетесь удалить всю историю чтения. Продолжить?", "Да", "Нет");
                 if (!confirm) return;
             }
@@ -132,12 +136,12 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
             foreach (var item in sortedItems)
                 await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, item.Date, item.CumulativePages);
 
-            await Shell.Current.DisplayAlertAsync("Успех", "История чтения обновлена", "OK");
-            await Shell.Current.GoToAsync("..");
+            await _dialog.ShowAlertAsync("Успех", "История чтения обновлена", "OK");
+            await _navigation.GoBackAsync();
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось сохранить изменения: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось сохранить изменения: {ex.Message}", "OK");
         }
     }
 }
