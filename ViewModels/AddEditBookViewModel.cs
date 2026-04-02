@@ -35,12 +35,6 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     private int _statusPickerIndex;
 
     [ObservableProperty]
-    private int _authorPickerIndex = -1;
-
-    [ObservableProperty]
-    private ObservableCollection<string> _authorNames = new();
-
-    [ObservableProperty]
     private ObservableCollection<Author> _selectedAuthors = new();
 
     public AddEditBookViewModel(IBookService bookService, IAuthorService authorService, INavigationService navigation, IDialogService dialog)
@@ -80,7 +74,6 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     private async Task LoadDataAsync()
     {
         _allAuthors = await _authorService.GetAllAuthorsAsync();
-        AuthorNames = new ObservableCollection<string>(_allAuthors.Select(a => a.Name));
 
         if (_isEditMode && _book != null)
         {
@@ -109,16 +102,24 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     [RelayCommand]
     private async Task AddAuthorAsync()
     {
-        if (AuthorPickerIndex < 0)
+        var availableAuthors = _allAuthors
+            .Where(a => !SelectedAuthors.Any(s => s.Id == a.Id))
+            .ToList();
+
+        if (availableAuthors.Count == 0)
         {
             await _dialog.ShowAlertAsync("Ошибка", "Выберите автора из списка", "OK");
             return;
         }
 
-        var selectedAuthorName = AuthorNames.ElementAtOrDefault(AuthorPickerIndex);
-        var author = _allAuthors.FirstOrDefault(a => a.Name == selectedAuthorName);
+        var authorNames = availableAuthors.Select(a => a.Name).ToArray();
+        var result = await _dialog.ShowActionSheetAsync("Выберите автора", "Отмена", null, authorNames);
 
-        if (author != null && !SelectedAuthors.Any(a => a.Id == author.Id))
+        if (result == null || result == "Отмена")
+            return;
+
+        var author = availableAuthors.FirstOrDefault(a => a.Name == result);
+        if (author != null)
         {
             SelectedAuthors.Add(author);
         }
@@ -141,8 +142,6 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             var newAuthor = await _authorService.AddAuthorAsync(new Author { Name = result });
             _allAuthors.Add(newAuthor);
             SelectedAuthors.Add(newAuthor);
-
-            AuthorNames = new ObservableCollection<string>(_allAuthors.Select(a => a.Name));
 
             await _dialog.ShowAlertAsync("Успех", "Автор добавлен!", "OK");
         }

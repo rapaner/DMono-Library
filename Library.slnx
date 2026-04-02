@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Github/">
+    <File Path=".github/BADGES.md" />
+    <File Path=".github/DEPLOYMENT_GUIDE.md" />
+    <File Path=".github/GITHUB_ACTIONS_SUMMARY.md" />
+    <File Path=".github/INDEX.md" />
+    <File Path=".github/PIPELINE_OVERVIEW.md" />
+    <File Path=".github/SETUP_SECRETS.md" />
+    <File Path=".github/workflows/android-build.yml" />
+    <File Path=".github/workflows/pr-check.yml" />
+  </Folder>
+  <Project Path="Library.Core/Library.Core.csproj" />
+  <Project Path="Library.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

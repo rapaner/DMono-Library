@@ -30,19 +30,13 @@
                     <!-- Авторы -->
                     <StackLayout>
                         <Label Text="Авторы *" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="5">
-                            <Picker Grid.Column="0"
-                                    Title="Выберите автора"
-                                    ItemsSource="{Binding AuthorNames}"
-                                    SelectedIndex="{Binding AuthorPickerIndex}"
-                                    TextColor="{DynamicResource PrimaryTextColor}"
-                                    TitleColor="{DynamicResource SecondaryTextColor}" />
-                            <Button Text="+" Grid.Column="1"
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                            <Button Text="+" Grid.Column="0"
                                     BackgroundColor="{DynamicResource PrimaryColor}" 
                                     TextColor="{DynamicResource SecondaryTextColor}" 
-                                    WidthRequest="50"
+                                    HorizontalOptions="Fill"
                                     Command="{Binding AddAuthorCommand}" />
-                            <Button Text="Новый" Grid.Column="2"
+                            <Button Text="Новый" Grid.Column="1"
                                     BackgroundColor="{DynamicResource SecondaryColor}" 
                                     TextColor="{DynamicResource SecondaryTextColor}" 
                                     WidthRequest="80"
