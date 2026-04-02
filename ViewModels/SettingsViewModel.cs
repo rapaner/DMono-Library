@@ -9,6 +9,8 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IBookService _bookService;
     private readonly SettingsService _settingsService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
 
     [ObservableProperty]
     private int _selectedThemeIndex;
@@ -19,10 +21,12 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _appVersion = "Версия 1.0";
 
-    public SettingsViewModel(IBookService bookService, SettingsService settingsService)
+    public SettingsViewModel(IBookService bookService, SettingsService settingsService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _settingsService = settingsService;
+        _navigation = navigation;
+        _dialog = dialog;
 
         _appVersion = $"Версия {_settingsService.GetAppVersion()}";
         LoadThemePreference();
@@ -86,7 +90,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task ClearDataAsync()
     {
-        bool result = await Shell.Current.DisplayAlertAsync("Подтверждение",
+        bool result = await _dialog.ShowConfirmAsync("Подтверждение",
             "Вы уверены, что хотите удалить все данные? Это действие нельзя отменить!\n\nРекомендуется создать резервную копию на Яндекс Диске перед удалением.",
             "Да, удалить", "Отмена");
 
@@ -100,11 +104,11 @@ public partial class SettingsViewModel : ObservableObject
                     await _bookService.DeleteBookAsync(book);
                 }
 
-                await Shell.Current.DisplayAlertAsync("Успех", "Все данные удалены!", "OK");
+                await _dialog.ShowAlertAsync("Успех", "Все данные удалены!", "OK");
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+                await _dialog.ShowAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
             }
         }
     }
@@ -112,6 +116,6 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task GoToYandexDiskAsync()
     {
-        await Shell.Current.GoToAsync(nameof(YandexDiskPage));
+        await _navigation.GoToAsync(nameof(YandexDiskPage));
     }
 }

@@ -7,7 +7,7 @@ namespace Library.Core.Models
     /// Модель записи о количестве прочитанных страниц за день
     /// </summary>
     [Table("PagesReadInDate")]
-    public record PagesReadInDate
+    public class PagesReadInDate
     {
         /// <summary>
         /// Уникальный идентификатор записи в базе данных

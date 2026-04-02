@@ -10,6 +10,8 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IBookService _bookService;
     private readonly IAuthorService _authorService;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
     private Book? _book;
     private bool _isEditMode;
     private List<Author> _allAuthors = new();
@@ -35,10 +37,12 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     [ObservableProperty]
     private ObservableCollection<Author> _selectedAuthors = new();
 
-    public AddEditBookViewModel(IBookService bookService, IAuthorService authorService)
+    public AddEditBookViewModel(IBookService bookService, IAuthorService authorService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _authorService = authorService;
+        _navigation = navigation;
+        _dialog = dialog;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -104,12 +108,12 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 
         if (availableAuthors.Count == 0)
         {
-            await Shell.Current.DisplayAlertAsync("Информация", "Нет доступных авторов для добавления", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Выберите автора из списка", "OK");
             return;
         }
 
         var authorNames = availableAuthors.Select(a => a.Name).ToArray();
-        var result = await Shell.Current.DisplayActionSheetAsync("Выберите автора", "Отмена", null, authorNames);
+        var result = await _dialog.ShowActionSheetAsync("Выберите автора", "Отмена", null, authorNames);
 
         if (result == null || result == "Отмена")
             return;
@@ -124,14 +128,14 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     [RelayCommand]
     private async Task NewAuthorAsync()
     {
-        var result = await Shell.Current.DisplayPromptAsync("Новый автор", "Введите имя автора:", "Добавить", "Отмена");
+        var result = await _dialog.ShowPromptAsync("Новый автор", "Введите имя автора:", "Добавить", "Отмена");
 
         if (!string.IsNullOrWhiteSpace(result))
         {
             var existingAuthor = _allAuthors.FirstOrDefault(a => a.Name == result);
             if (existingAuthor != null)
             {
-                await Shell.Current.DisplayAlertAsync("Информация", "Такой автор уже существует", "OK");
+                await _dialog.ShowAlertAsync("Информация", "Такой автор уже существует", "OK");
                 return;
             }
 
@@ -139,7 +143,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             _allAuthors.Add(newAuthor);
             SelectedAuthors.Add(newAuthor);
 
-            await Shell.Current.DisplayAlertAsync("Успех", "Автор добавлен!", "OK");
+            await _dialog.ShowAlertAsync("Успех", "Автор добавлен!", "OK");
         }
     }
 
@@ -157,19 +161,19 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     {
         if (string.IsNullOrWhiteSpace(Title))
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Пожалуйста, введите название книги", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Пожалуйста, введите название книги", "OK");
             return;
         }
 
         if (SelectedAuthors.Count == 0)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Пожалуйста, выберите хотя бы одного автора", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Пожалуйста, выберите хотя бы одного автора", "OK");
             return;
         }
 
         if (!int.TryParse(TotalPagesText, out int totalPages) || totalPages <= 0)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Пожалуйста, введите корректное количество страниц", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Пожалуйста, введите корректное количество страниц", "OK");
             return;
         }
 
@@ -215,21 +219,21 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             else
                 await _bookService.AddBookAsync(book);
 
-            await Shell.Current.DisplayAlertAsync("Успех",
+            await _dialog.ShowAlertAsync("Успех",
                 _isEditMode ? "Книга обновлена!" : "Книга добавлена!",
                 "OK");
 
-            await Shell.Current.GoToAsync("..");
+            await _navigation.GoBackAsync();
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await _navigation.GoBackAsync();
     }
 }

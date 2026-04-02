@@ -12,6 +12,7 @@ public partial class YandexDiskViewModel : ObservableObject
     private readonly YandexOAuthService _oauthService;
     private readonly SettingsService _settingsService;
     private readonly AppConfiguration _appConfig;
+    private readonly IDialogService _dialog;
 
     [ObservableProperty]
     private string _statusText = "Не подключено";
@@ -48,12 +49,13 @@ public partial class YandexDiskViewModel : ObservableObject
 
     private YandexDisk.Client.Protocol.Resource? _selectedBackup;
 
-    public YandexDiskViewModel(YandexDiskService yandexDiskService, YandexOAuthService oauthService, SettingsService settingsService, AppConfiguration appConfig)
+    public YandexDiskViewModel(YandexDiskService yandexDiskService, YandexOAuthService oauthService, SettingsService settingsService, AppConfiguration appConfig, IDialogService dialog)
     {
         _yandexDiskService = yandexDiskService;
         _oauthService = oauthService;
         _settingsService = settingsService;
         _appConfig = appConfig;
+        _dialog = dialog;
     }
 
     [RelayCommand]
@@ -112,14 +114,14 @@ public partial class YandexDiskViewModel : ObservableObject
         {
             IsLoading = true;
             await _oauthService.AuthenticateAsync();
-            await Shell.Current.DisplayAlertAsync(
+            await _dialog.ShowAlertAsync(
                 "Инструкции по получению токена",
                 "В открывшемся окне браузера:\n\n1. Войдите в свой аккаунт Яндекс\n2. Разрешите доступ приложению\n3. Скопируйте токен из адресной строки (после #access_token=)\n4. Вставьте токен в поле ниже и нажмите 'Сохранить токен'",
                 "Понятно");
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось открыть браузер для авторизации: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось открыть браузер для авторизации: {ex.Message}", "OK");
         }
         finally
         {
@@ -133,7 +135,7 @@ public partial class YandexDiskViewModel : ObservableObject
         var token = TokenText?.Trim();
         if (string.IsNullOrEmpty(token))
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Введите OAuth токен", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Введите OAuth токен", "OK");
             return;
         }
 
@@ -149,19 +151,19 @@ public partial class YandexDiskViewModel : ObservableObject
             await UpdateStatusAsync();
             await LoadBackupsAsync();
 
-            await Shell.Current.DisplayAlertAsync("Успех", "OAuth токен сохранен и проверен", "OK");
+            await _dialog.ShowAlertAsync("Успех", "OAuth токен сохранен и проверен", "OK");
             TokenText = string.Empty;
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось подключиться к Яндекс Диску: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось подключиться к Яндекс Диску: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
     private async Task DisconnectAsync()
     {
-        var confirm = await Shell.Current.DisplayAlertAsync("Подтверждение", "Вы уверены, что хотите отключить Яндекс Диск?", "Да", "Нет");
+        var confirm = await _dialog.ShowConfirmAsync("Подтверждение", "Вы уверены, что хотите отключить Яндекс Диск?", "Да", "Нет");
         if (confirm)
         {
             _settingsService.ClearYandexDiskSettings();
@@ -169,7 +171,7 @@ public partial class YandexDiskViewModel : ObservableObject
             IsDiskInfoVisible = false;
             Backups.Clear();
             IsNoBackupsVisible = false;
-            await Shell.Current.DisplayAlertAsync("Успех", "Яндекс Диск отключен", "OK");
+            await _dialog.ShowAlertAsync("Успех", "Яндекс Диск отключен", "OK");
         }
     }
 
@@ -178,7 +180,7 @@ public partial class YandexDiskViewModel : ObservableObject
     {
         if (!_yandexDiskService.IsAuthorized)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
             return;
         }
 
@@ -188,7 +190,7 @@ public partial class YandexDiskViewModel : ObservableObject
 
             if (!File.Exists(_appConfig.DatabasePath))
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", $"Файл базы данных не найден:\n{_appConfig.DatabasePath}", "OK");
+                await _dialog.ShowAlertAsync("Ошибка", $"Файл базы данных не найден:\n{_appConfig.DatabasePath}", "OK");
                 return;
             }
 
@@ -200,17 +202,17 @@ public partial class YandexDiskViewModel : ObservableObject
                 _settingsService.SaveYandexDiskSettings(settings);
 
                 LastBackupText = $"Последняя резервная копия: {DateTime.Now:dd.MM.yyyy HH:mm}";
-                await Shell.Current.DisplayAlertAsync("Успех", "Резервная копия создана", "OK");
+                await _dialog.ShowAlertAsync("Успех", "Резервная копия создана", "OK");
                 await LoadBackupsAsync();
             }
             else
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", "Не удалось создать резервную копию", "OK");
+                await _dialog.ShowAlertAsync("Ошибка", "Не удалось создать резервную копию", "OK");
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось создать резервную копию: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось создать резервную копию: {ex.Message}", "OK");
         }
         finally
         {
@@ -223,17 +225,17 @@ public partial class YandexDiskViewModel : ObservableObject
     {
         if (!_yandexDiskService.IsAuthorized)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
             return;
         }
 
         if (_selectedBackup == null)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Выберите резервную копию для восстановления", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Выберите резервную копию для восстановления", "OK");
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlertAsync("Подтверждение",
+        var confirm = await _dialog.ShowConfirmAsync("Подтверждение",
             $"Вы уверены, что хотите восстановить базу данных из резервной копии?\n\n{_selectedBackup.Name}\n\nТекущая база данных будет заменена.",
             "Да", "Нет");
         if (!confirm) return;
@@ -244,17 +246,17 @@ public partial class YandexDiskViewModel : ObservableObject
             var success = await _yandexDiskService.RestoreDatabaseAsync(_selectedBackup.Path, _appConfig.DatabasePath);
             if (success)
             {
-                await Shell.Current.DisplayAlertAsync("Успех", "База данных восстановлена из резервной копии.\n\nПриложение нужно перезапустить.", "OK");
+                await _dialog.ShowAlertAsync("Успех", "База данных восстановлена из резервной копии.\n\nПриложение нужно перезапустить.", "OK");
                 Application.Current?.Quit();
             }
             else
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", "Не удалось восстановить базу данных", "OK");
+                await _dialog.ShowAlertAsync("Ошибка", "Не удалось восстановить базу данных", "OK");
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось восстановить базу данных: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось восстановить базу данных: {ex.Message}", "OK");
         }
         finally
         {
@@ -267,17 +269,17 @@ public partial class YandexDiskViewModel : ObservableObject
     {
         if (!_yandexDiskService.IsAuthorized)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Сначала подключите Яндекс Диск", "OK");
             return;
         }
 
         if (_selectedBackup == null)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Выберите резервную копию для удаления", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Выберите резервную копию для удаления", "OK");
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlertAsync("Подтверждение",
+        var confirm = await _dialog.ShowConfirmAsync("Подтверждение",
             $"Вы уверены, что хотите удалить резервную копию?\n\n{_selectedBackup.Name}\n\nЭто действие нельзя отменить.",
             "Да", "Нет");
         if (!confirm) return;
@@ -288,18 +290,18 @@ public partial class YandexDiskViewModel : ObservableObject
             var success = await _yandexDiskService.DeleteFileAsync(_selectedBackup.Path, permanently: true);
             if (success)
             {
-                await Shell.Current.DisplayAlertAsync("Успех", "Резервная копия удалена", "OK");
+                await _dialog.ShowAlertAsync("Успех", "Резервная копия удалена", "OK");
                 _selectedBackup = null;
                 await LoadBackupsAsync();
             }
             else
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", "Не удалось удалить резервную копию", "OK");
+                await _dialog.ShowAlertAsync("Ошибка", "Не удалось удалить резервную копию", "OK");
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось удалить резервную копию: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось удалить резервную копию: {ex.Message}", "OK");
         }
         finally
         {
@@ -324,11 +326,11 @@ public partial class YandexDiskViewModel : ObservableObject
             var settings = _settingsService.GetYandexDiskSettings();
             settings.AutoBackupFrequencyDays = frequency;
             _settingsService.SaveYandexDiskSettings(settings);
-            await Shell.Current.DisplayAlertAsync("Успех", $"Частота резервного копирования установлена: {frequency} дней", "OK");
+            await _dialog.ShowAlertAsync("Успех", $"Частота резервного копирования установлена: {frequency} дней", "OK");
         }
         else
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", "Введите корректное число дней (больше 0)", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Введите корректное число дней (больше 0)", "OK");
         }
     }
 
@@ -357,7 +359,7 @@ public partial class YandexDiskViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось загрузить список резервных копий: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось загрузить список резервных копий: {ex.Message}", "OK");
         }
         finally
         {
