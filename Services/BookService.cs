@@ -87,14 +87,11 @@ namespace Library.Services
 
         public async Task SetCurrentBookAsync(Book book)
         {
-            var allBooks = await _context.Books.ToListAsync();
-            foreach (var b in allBooks)
-            {
-                b.IsCurrentlyReading = false;
-            }
+            await _context.Books
+                .Where(b => b.IsCurrentlyReading)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.IsCurrentlyReading, false));
 
             book.IsCurrentlyReading = true;
-
             await _context.SaveChangesAsync();
         }
     }

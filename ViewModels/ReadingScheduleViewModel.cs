@@ -13,6 +13,8 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
     private readonly IReadingScheduleService _readingScheduleService;
     private readonly PageByHourService _pageByHourService;
     private readonly AppConfiguration _appConfig;
+    private readonly INavigationService _navigation;
+    private readonly IDialogService _dialog;
 
     private Book? _book;
     private BookReadingSchedule? _schedule;
@@ -53,12 +55,14 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
     [ObservableProperty]
     private ObservableCollection<ReadByHourRecord> _scheduleRecords = new();
 
-    public ReadingScheduleViewModel(IBookService bookService, IReadingScheduleService readingScheduleService, PageByHourService pageByHourService, AppConfiguration appConfig)
+    public ReadingScheduleViewModel(IBookService bookService, IReadingScheduleService readingScheduleService, PageByHourService pageByHourService, AppConfiguration appConfig, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _readingScheduleService = readingScheduleService;
         _pageByHourService = pageByHourService;
         _appConfig = appConfig;
+        _navigation = navigation;
+        _dialog = dialog;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -83,8 +87,8 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
             _book = await _bookService.GetBookByIdAsync(bookId);
             if (_book == null)
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", "Книга не найдена", "OK");
-                await Shell.Current.GoToAsync("..");
+                await _dialog.ShowAlertAsync("Ошибка", "Книга не найдена", "OK");
+                await _navigation.GoBackAsync();
                 return;
             }
 
@@ -105,7 +109,7 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось загрузить данные: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось загрузить данные: {ex.Message}", "OK");
         }
         finally
         {
@@ -128,7 +132,7 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
 
             if (startHour < 0 || startHour > 23 || endHour < 0 || endHour > 23 || startHour >= endHour)
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка",
+                await _dialog.ShowAlertAsync("Ошибка",
                     "Некорректные часы чтения. Начало должно быть от 0 до 23, окончание от 0 до 23, и начало должно быть меньше окончания.", "OK");
                 return;
             }
@@ -161,13 +165,13 @@ public partial class ReadingScheduleViewModel : ObservableObject, IQueryAttribut
             }
             else
             {
-                await Shell.Current.DisplayAlertAsync("Внимание",
+                await _dialog.ShowAlertAsync("Внимание",
                     "Недостаточно времени для расчета графика. Попробуйте выбрать более позднюю дату или расширить часы чтения.", "OK");
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Ошибка", $"Не удалось выполнить расчет: {ex.Message}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", $"Не удалось выполнить расчет: {ex.Message}", "OK");
         }
         finally
         {

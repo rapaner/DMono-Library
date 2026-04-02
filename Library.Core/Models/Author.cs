@@ -7,7 +7,7 @@ namespace Library.Core.Models
     /// Модель автора для хранения в базе данных
     /// </summary>
     [Table("Authors")]
-    public record Author
+    public class Author
     {
         /// <summary>
         /// Уникальный идентификатор автора в базе данных

@@ -14,6 +14,7 @@ public partial class StatisticsViewModel : ObservableObject
 {
     private readonly IStatisticsService _statisticsService;
     private readonly IDateFilterService _dateFilterService;
+    private readonly INavigationService _navigation;
 
     [ObservableProperty]
     private string _totalBooks = "0";
@@ -65,10 +66,11 @@ public partial class StatisticsViewModel : ObservableObject
 
     private bool _isMonthlyMode = true;
 
-    public StatisticsViewModel(IStatisticsService statisticsService, IDateFilterService dateFilterService)
+    public StatisticsViewModel(IStatisticsService statisticsService, IDateFilterService dateFilterService, INavigationService navigation)
     {
         _statisticsService = statisticsService;
         _dateFilterService = dateFilterService;
+        _navigation = navigation;
         _chartDrawable = new ReadingChartDrawable();
     }
 
@@ -136,7 +138,7 @@ public partial class StatisticsViewModel : ObservableObject
     private async Task SelectBookRankingAsync(BookRanking? ranking)
     {
         if (ranking == null) return;
-        await Shell.Current.GoToAsync($"{nameof(BookDetailPage)}?bookId={ranking.BookId}");
+        await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={ranking.BookId}");
     }
 
     private async Task LoadChartDataAsync(DateTime? startDate, DateTime? endDate)
