@@ -153,7 +153,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         ProgressText = _book.ProgressText;
         ProgressPercentage = $"{_book.ProgressPercentage:F2}%";
 
-        bool isFinished = _book.Status == BookStatus.Finished;
+        bool isFinished = _book.Status == BookStatus.Finished || _book.Status == BookStatus.FinishedLongAgo;
         IsUpdateProgressVisible = !isFinished;
         IsReadingScheduleVisible = !isFinished;
         IsAlternativeCalculationVisible = !isFinished;

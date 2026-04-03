@@ -39,6 +39,8 @@ namespace Library.Core.Models
                     return BookStatus.Reading;
                 if (DateFinished.HasValue)
                     return BookStatus.Finished;
+                if (IsFinishedLongAgo)
+                    return BookStatus.FinishedLongAgo;
                 return BookStatus.Planned;
             }
         }
@@ -51,6 +53,7 @@ namespace Library.Core.Models
         {
             BookStatus.Reading => "Читаю сейчас",
             BookStatus.Finished => "Прочитано",
+            BookStatus.FinishedLongAgo => "Прочитана давно",
             BookStatus.Planned => "В планах",
             _ => "Неизвестно"
         };

@@ -57,6 +57,11 @@ namespace Library.Core.Models
         public bool IsCurrentlyReading { get; set; }
 
         /// <summary>
+        /// Флаг, указывающий что книга была прочитана давно (без известной даты завершения)
+        /// </summary>
+        public bool IsFinishedLongAgo { get; set; }
+
+        /// <summary>
         /// Дата добавления книги в библиотеку
         /// </summary>
         [Required]

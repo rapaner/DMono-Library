@@ -41,6 +41,13 @@
                         Padding="15,8" 
                         Command="{Binding FilterCommand}"
                         CommandParameter="Finished" />
+                <Button Text="Прочитана давно" 
+                        BackgroundColor="{DynamicResource CardBackgroundColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Command="{Binding FilterCommand}"
+                        CommandParameter="FinishedLongAgo" />
             </StackLayout>
         </ScrollView>
 

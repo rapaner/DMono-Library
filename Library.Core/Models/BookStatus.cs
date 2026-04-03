@@ -18,6 +18,11 @@ namespace Library.Core.Models
         /// <summary>
         /// Книга прочитана
         /// </summary>
-        Finished = 2
+        Finished = 2,
+
+        /// <summary>
+        /// Книга прочитана давно (без известной даты завершения)
+        /// </summary>
+        FinishedLongAgo = 3
     }
 }
