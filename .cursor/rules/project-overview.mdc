@@ -31,6 +31,7 @@ alwaysApply: true
 - **BasePage** — `SafeExecute` для обработки ошибок в code-behind
 - **Загрузка данных** — code-behind хранит `private readonly` ссылку на ViewModel; в `OnAppearing()` вызывает `SafeExecute(async () => await _viewModel.LoadDataCommand.ExecuteAsync(null))` для загрузки/обновления данных при каждом появлении страницы
 - **Без messaging** — прямой DI, code-behind event handlers, параметры через query strings
+- **Динамические списки** — `CollectionView` и другие прокручиваемые списки размещать в `Grid` с `*`-row, не в `StackLayout` (он даёт бесконечную высоту и ломает прокрутку)
 
 ## Стек
 

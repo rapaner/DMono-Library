@@ -68,7 +68,7 @@
             </Border>
 
             <!-- Меню действий -->
-            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="15" RowSpacing="15">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="15" RowSpacing="15">
 
                 <!-- Просмотр библиотеки -->
                 <Border Grid.Row="0" Grid.Column="0"
@@ -195,8 +195,33 @@
                     </StackLayout>
                 </Border>
 
-                <!-- Настройки -->
+                <!-- Авторы -->
                 <Border Grid.Row="2" Grid.Column="1"
+                        BackgroundColor="{DynamicResource CardBackgroundColor}"
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToAuthorsCommand}" />
+                    </Border.GestureRecognizers>
+                    <StackLayout HorizontalOptions="Center">
+                        <Label Text="✍️" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Авторы"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label Text="Управление авторами"
+                               FontSize="12"
+                               HorizontalOptions="Center"
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                </Border>
+
+                <!-- Настройки -->
+                <Border Grid.Row="3" Grid.Column="0"
                         BackgroundColor="{DynamicResource CardBackgroundColor}"
                         StrokeThickness="0"
                         Padding="20">
