@@ -31,6 +31,7 @@ public class BookItemViewModel
         {
             BookStatus.Reading => "📖",
             BookStatus.Finished => "✅",
+            BookStatus.FinishedLongAgo => "📗",
             BookStatus.Planned => "📚",
             _ => "📚"
         };

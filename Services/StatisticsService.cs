@@ -63,7 +63,7 @@ namespace Library.Services
             return new LibraryStatistics
             {
                 TotalBooks = filteredBooks.Count,
-                ReadBooks = filteredBooks.Count(b => b.Status == BookStatus.Finished),
+                ReadBooks = filteredBooks.Count(b => b.Status == BookStatus.Finished || b.Status == BookStatus.FinishedLongAgo),
                 CurrentBooks = filteredBooks.Count(b => b.Status == BookStatus.Reading),
                 PlannedBooks = filteredBooks.Count(b => b.Status == BookStatus.Planned),
                 TotalPagesRead = totalPagesRead,

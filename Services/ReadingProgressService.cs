@@ -64,6 +64,7 @@ namespace Library.Services
             {
                 book.IsCurrentlyReading = false;
                 book.DateFinished = DateTime.Now;
+                book.IsFinishedLongAgo = false;
             }
             else if (!book.IsCurrentlyReading && currentPageNumber < book.TotalPages)
             {

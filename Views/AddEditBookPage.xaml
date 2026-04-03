@@ -99,6 +99,7 @@
                                 <x:String>В планах</x:String>
                                 <x:String>Читаю сейчас</x:String>
                                 <x:String>Прочитано</x:String>
+                                <x:String>Прочитана давно</x:String>
                             </Picker.Items>
                         </Picker>
                     </StackLayout>
