@@ -1,5 +1,101 @@
 # История изменений
 
+## [2.8] - Форма управления авторами
+
+### Добавлено
+- ✅ **`Models/AuthorWithBookCount.cs`** — DTO для отображения автора с количеством книг (`Id`, `Name`, `BookCount`)
+- ✅ **`Services/IAuthorService.cs`** — 4 новых метода:
+  - `GetAuthorsWithBookCountAsync()` — список авторов с количеством книг
+  - `UpdateAuthorAsync(Author)` — обновление автора
+  - `DeleteAuthorAsync(Author)` — удаление автора
+  - `CanDeleteAuthorAsync(int)` — проверка возможности удаления (нет привязанных книг)
+- ✅ **`Services/AuthorService.cs`** — реализация новых методов `IAuthorService`
+- ✅ **`ViewModels/AuthorsViewModel.cs`** — ViewModel списка авторов с сортировкой (по имени / по количеству книг) через `SelectedSortIndex`
+- ✅ **`ViewModels/EditAuthorViewModel.cs`** — ViewModel для редактирования/удаления автора (`IQueryAttributable`, валидация: нельзя удалить автора с книгами)
+- ✅ **`Views/AuthorsPage.xaml`** + **`.cs`** — страница списка авторов с `CollectionView` и Picker сортировки
+- ✅ **`Views/EditAuthorPage.xaml`** + **`.cs`** — страница редактирования автора (сохранение, удаление, отмена)
+- ✅ **`MainPage.xaml`** — кнопка «Авторы» в главном меню (Grid расширен до 4 строк)
+- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `GoToAuthorsAsync`
+
+### Изменено
+- 🔄 **`AppShell.xaml.cs`** — зарегистрированы маршруты `AuthorsPage`, `EditAuthorPage`
+- 🔄 **`MauiProgram.cs`** — регистрация `AuthorsViewModel`, `EditAuthorViewModel`, `AuthorsPage`, `EditAuthorPage`
+- 🔄 **`Views/AuthorsPage.xaml`** — `StackLayout` заменён на `Grid` с `*`-row для корректной прокрутки `CollectionView`
+- 🔄 **`Library.csproj`** — версия обновлена: `2.7` → `2.8`, `ApplicationVersion`: `34` → `35`
+
+---
+
+## [2.7] - Статус «Прочитана давно»
+
+### Добавлено
+- ✅ **`Library.Core/Models/BookStatus.cs`** — новое значение `FinishedLongAgo = 3` в enum `BookStatus`
+- ✅ **`Library.Core/Models/Book.cs`** — свойство `IsFinishedLongAgo` (bool) для книг, прочитанных давно без известной даты завершения
+- ✅ Миграция **`AddIsFinishedLongAgo`** — столбец `IsFinishedLongAgo` в таблице `Books`
+- ✅ **`Views/LibraryPage.xaml`** — кнопка-фильтр «Прочитана давно» (`CommandParameter="FinishedLongAgo"`)
+- ✅ **`Views/AddEditBookPage.xaml`** — «Прочитана давно» в Picker статусов
+
+### Изменено
+- 🔄 **`Library.Core/Models/Book.Computed.cs`** — `Status` возвращает `FinishedLongAgo` при `IsFinishedLongAgo == true`; `StatusText` = «Прочитана давно»
+- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — обработка нового статуса при загрузке (`StatusPickerIndex = 3`) и при сохранении (`IsFinishedLongAgo = true`, `DateFinished = null`)
+- 🔄 **`ViewModels/BookDetailViewModel.cs`** — `isFinished` учитывает `FinishedLongAgo` (скрытие кнопок обновления прогресса и расписания)
+- 🔄 **`ViewModels/BookItemViewModel.cs`** — эмодзи 📗 для статуса `FinishedLongAgo`
+- 🔄 **`ViewModels/LibraryViewModel.cs`** — фильтр `"FinishedLongAgo"` в `FilterCommand`
+- 🔄 **`Services/StatisticsService.cs`** — `ReadBooks` считает `Finished` + `FinishedLongAgo`
+- 🔄 **`Services/ReadingProgressService.cs`** — при завершении книги сбрасывает `IsFinishedLongAgo = false`
+- 🔄 **`Library.csproj`** — версия обновлена: `2.6` → `2.7`, `ApplicationVersion`: `33` → `34`
+
+---
+
+## [2.6] - Полки (Shelves)
+
+### Добавлено
+- ✅ **`Library.Core/Models/Shelf.cs`** — модель полки: `Id`, `Name`, `Books` (1:N с `Book`), seed «Дом» (`Id=1`)
+- ✅ Миграция **`AddBookShelf`** — таблица `Shelves`, FK `Books.ShelfId` (default=1, `OnDelete: Restrict`)
+- ✅ **`Library.Core/Models/Book.cs`** — свойства `ShelfId` и навигационное свойство `Shelf`
+- ✅ **`Services/IShelfService.cs`** + **`Services/ShelfService.cs`** — CRUD-операции, `GetShelvesWithBookCountAsync`, `CanDeleteShelfAsync`
+- ✅ **`Models/ShelfWithBookCount.cs`** — DTO для отображения полки с количеством книг
+- ✅ **`ViewModels/ShelvesViewModel.cs`** — список полок с количеством книг, навигация на добавление/редактирование
+- ✅ **`ViewModels/AddEditShelfViewModel.cs`** — создание/редактирование/удаление полки с валидацией (нельзя удалить полку с книгами)
+- ✅ **`Views/ShelvesPage.xaml`** + **`.cs`** — страница списка полок с кнопкой «Новая полка»
+- ✅ **`Views/AddEditShelfPage.xaml`** + **`.cs`** — страница добавления/редактирования полки
+- ✅ **`MainPage.xaml`** — кнопка «Полки» в главном меню
+- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `GoToShelvesAsync`
+- ✅ **`ViewModels/BookDetailViewModel.cs`** — свойство `ShelfName` для отображения названия полки
+- ✅ **`Views/AddEditBookPage.xaml`** — Picker для выбора полки
+
+### Изменено
+- 🔄 **`Library.Core/Data/LibraryDbContext.cs`** — `DbSet<Shelf>`, конфигурация связи `Book` → `Shelf` (FK, Restrict, default=1, индекс)
+- 🔄 **`Services/BookService.cs`** — `Include(b => b.Shelf)` во всех запросах (`GetAllBooksAsync`, `GetCurrentBookAsync`, `GetBooksByStatusAsync`, `GetBookByIdAsync`)
+- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — инжекция `IShelfService`, загрузка и выбор полки через `AllShelves` / `SelectedShelf`
+- 🔄 **`Views/BookDetailPage.xaml`** — строка «Полка» в информации о книге (Grid расширен на 1 строку)
+- 🔄 **`AppShell.xaml.cs`** — зарегистрированы маршруты `ShelvesPage`, `AddEditShelfPage`
+- 🔄 **`MauiProgram.cs`** — регистрация `IShelfService` / `ShelfService` (Scoped), VM и Pages
+- 🔄 **`Views/YandexDiskPage.xaml.cs`** — `DisplayAlert` → `DisplayAlertAsync`
+- 🔄 **`Library.csproj`** — версия обновлена: `2.5` → `2.6`, `ApplicationVersion`: `32` → `33`
+
+---
+
+## [2.5] - Миграция на .slnx, обновление пакетов, ActionSheet для выбора автора
+
+### Добавлено
+- ✅ **`Library.slnx`** — новый формат Solution XML (замена `Library.sln`)
+- ✅ **`Services/IDialogService.cs`** — новый метод `ShowActionSheetAsync(title, cancel, destruction, buttons)` для показа ActionSheet
+- ✅ **`Services/MauiDialogService.cs`** — реализация `ShowActionSheetAsync` через `DisplayActionSheetAsync`
+
+### Изменено
+- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — выбор автора переработан: вместо `Picker` (`AuthorPickerIndex` + `AuthorNames`) используется ActionSheet через `ShowActionSheetAsync`; доступные авторы фильтруются (исключаются уже выбранные)
+- 🔄 **`Views/AddEditBookPage.xaml`** — убран `Picker` для автора, кнопка «+» занимает всю ширину и открывает ActionSheet
+- 🔄 **`Services/MauiDialogService.cs`** — `DisplayAlert` → `DisplayAlertAsync`
+- 🔄 **`Library.csproj`** — пакеты обновлены: `CommunityToolkit.Mvvm` 8.4.0 → 8.4.2, `Maui.Controls` 10.0.41 → 10.0.51, `EF Core` / `Extensions` 10.0.3 → 10.0.5; версия обновлена: `2.4` → `2.5`, `ApplicationVersion`: `31` → `32`
+- 🔄 **`Library.Core/Library.Core.csproj`** — `EF Core` 10.0.3 → 10.0.5
+- 🔄 **`.github/workflows/android-build.yml`** — `dotnet restore Library.sln` → `dotnet restore Library.slnx`
+
+### Удалено
+- ❌ **`Library.sln`** — заменён на `Library.slnx`
+- ❌ **`AddEditBookViewModel.AuthorPickerIndex`** и **`AuthorNames`** — заменены ActionSheet-подходом
+
+---
+
 ## [2.4] - Внедрение INavigationService и IDialogService, замена record на class в моделях
 
 ### Добавлено
