@@ -156,6 +156,7 @@ public static class MauiProgram
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IDateFilterService, DateFilterService>();
             builder.Services.AddScoped<IReadingScheduleService, ReadingScheduleService>();
+            builder.Services.AddScoped<IShelfService, ShelfService>();
             builder.Services.AddSingleton<YandexDiskService>();
             builder.Services.AddSingleton<YandexOAuthService>();
             builder.Services.AddSingleton<SettingsService>();
@@ -180,6 +181,8 @@ public static class MauiProgram
             builder.Services.AddTransient<ReadingScheduleViewModel>();
             builder.Services.AddTransient<ReadingHistoryEditViewModel>();
             builder.Services.AddTransient<AlternativePageCalculationViewModel>();
+            builder.Services.AddTransient<ShelvesViewModel>();
+            builder.Services.AddTransient<AddEditShelfViewModel>();
 
             // Регистрация страниц
             builder.Services.AddTransient<Views.LoadingPage>();
@@ -195,6 +198,8 @@ public static class MauiProgram
             builder.Services.AddTransient<Views.ReadingSchedulePage>();
             builder.Services.AddTransient<Views.ReadingHistoryEditPage>();
             builder.Services.AddTransient<Views.AlternativePageCalculationPage>();
+            builder.Services.AddTransient<Views.ShelvesPage>();
+            builder.Services.AddTransient<Views.AddEditShelfPage>();
 
             // Сервисы выбора книги (keyed)
             builder.Services.AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(Models.BookChooseServiceKey.PrioritizedRandomId);

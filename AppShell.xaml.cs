@@ -24,6 +24,8 @@ public partial class AppShell : Shell
             Routing.RegisterRoute(nameof(ReadingSchedulePage), typeof(ReadingSchedulePage));
             Routing.RegisterRoute(nameof(AlternativePageCalculationPage), typeof(AlternativePageCalculationPage));
             Routing.RegisterRoute(nameof(YandexDiskPage), typeof(YandexDiskPage));
+            Routing.RegisterRoute(nameof(ShelvesPage), typeof(ShelvesPage));
+            Routing.RegisterRoute(nameof(AddEditShelfPage), typeof(AddEditShelfPage));
 
             System.Diagnostics.Debug.WriteLine("=== AppShell routes registered ===");
             System.Diagnostics.Debug.WriteLine("=== AppShell constructor completed ===");

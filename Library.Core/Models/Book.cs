@@ -86,5 +86,15 @@ namespace Library.Core.Models
         /// Последняя страница альтернативного издания книги (для альтернативного расчета страниц)
         /// </summary>
         public int? AlternativeLastPage { get; set; }
+
+        /// <summary>
+        /// Идентификатор полки, на которой находится книга
+        /// </summary>
+        public int ShelfId { get; set; } = 1;
+
+        /// <summary>
+        /// Полка, на которой находится книга (навигационное свойство)
+        /// </summary>
+        public Shelf? Shelf { get; set; }
     }
 }

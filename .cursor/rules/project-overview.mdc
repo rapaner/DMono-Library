@@ -1,0 +1,44 @@
+---
+description: Общее описание архитектуры проекта «Моя Библиотека»
+alwaysApply: true
+---
+
+# Моя Библиотека (DMono-Library)
+
+Персональное Android-приложение для управления домашней библиотекой и отслеживания прогресса чтения. C# / .NET 10 / .NET MAUI.
+
+## Архитектура
+
+Два проекта в решении `Library.slnx`:
+
+- **Library** (`net10.0-android`) — MAUI-приложение: Views, ViewModels, Services, Models (DTO/view-models), Converters, Resources
+- **Library.Core** (`net10.0; net10.0-android`) — доменная модель (`Book`, `Author`, `Shelf`, `PagesReadInDate`, `BookReadingSchedule`), EF Core `LibraryDbContext`, миграции
+
+## Доменная модель
+
+- `Book` (partial: основная + computed-свойства) — M:N `Author`, 1:N `PagesReadInDate`, 1:1 `BookReadingSchedule`, N:1 `Shelf`
+- `Shelf` (seed: «Дом»), `Author`, `PagesReadInDate`, `BookReadingSchedule`, `BookStatus` (enum: Planned, Reading, Finished)
+
+## Ключевые паттерны
+
+- **MVVM** — `CommunityToolkit.Mvvm`: `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`
+- **Навигация** — `INavigationService` → `ShellNavigationService` (Shell routes + query strings), `IQueryAttributable` на VM
+- **Сервисный слой** — интерфейсы (`IBookService`, `IShelfService`, `IAuthorService`, `IReadingProgressService`, `IStatisticsService`, `IReadingScheduleService`, `IDateFilterService`) + реализации, работают напрямую с `LibraryDbContext` (без репозиториев)
+- **DI** — встроенный `Microsoft.Extensions.DependencyInjection`: scoped (data-сервисы), singleton (навигация, диалоги, настройки), transient (VM, Pages)
+- **Keyed services** — стратегии выбора книги (`IBookChooseService`: `RandomBookChooseService`, `PrioritizedRandomBookChooseService`)
+- **Compiled bindings** — `x:DataType` на всех страницах
+- **Динамические темы** — `ColorsLight` / `ColorsDark` через merged `ResourceDictionary`, переключение в рантайме
+- **BasePage** — `SafeExecute` для обработки ошибок в code-behind
+- **Без messaging** — прямой DI, code-behind event handlers, параметры через query strings
+
+## Стек
+
+- .NET 10, MAUI Controls 10.0.51
+- EF Core 10.0.5 + SQLite
+- CommunityToolkit.Mvvm 8.4.2
+- YandexDisk.Client 1.3.27 (резервное копирование через Яндекс Диск)
+- GitHub Actions CI/CD (сборка, подпись и публикация APK)
+
+## Язык
+
+Код на C#, UI и документация на русском языке.

@@ -10,6 +10,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IBookService _bookService;
     private readonly IAuthorService _authorService;
+    private readonly IShelfService _shelfService;
     private readonly INavigationService _navigation;
     private readonly IDialogService _dialog;
     private Book? _book;
@@ -37,10 +38,17 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     [ObservableProperty]
     private ObservableCollection<Author> _selectedAuthors = new();
 
-    public AddEditBookViewModel(IBookService bookService, IAuthorService authorService, INavigationService navigation, IDialogService dialog)
+    [ObservableProperty]
+    private ObservableCollection<Shelf> _allShelves = new();
+
+    [ObservableProperty]
+    private Shelf? _selectedShelf;
+
+    public AddEditBookViewModel(IBookService bookService, IAuthorService authorService, IShelfService shelfService, INavigationService navigation, IDialogService dialog)
     {
         _bookService = bookService;
         _authorService = authorService;
+        _shelfService = shelfService;
         _navigation = navigation;
         _dialog = dialog;
     }
@@ -75,6 +83,11 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
     {
         _allAuthors = await _authorService.GetAllAuthorsAsync();
 
+        var shelves = await _shelfService.GetAllShelvesAsync();
+        AllShelves.Clear();
+        foreach (var shelf in shelves)
+            AllShelves.Add(shelf);
+
         if (_isEditMode && _book != null)
         {
             Title = _book.Title;
@@ -92,10 +105,13 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                 BookStatus.Finished => 2,
                 _ => 0
             };
+
+            SelectedShelf = AllShelves.FirstOrDefault(s => s.Id == _book.ShelfId);
         }
         else
         {
             StatusPickerIndex = 0;
+            SelectedShelf = AllShelves.FirstOrDefault(s => s.Id == 1);
         }
     }
 
@@ -189,6 +205,8 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             book.Authors.Clear();
             foreach (var author in SelectedAuthors)
                 book.Authors.Add(author);
+
+            book.ShelfId = SelectedShelf?.Id ?? 1;
 
             var statusItems = new[] { "В планах", "Читаю сейчас", "Прочитано" };
             var selectedStatus = StatusPickerIndex >= 0 && StatusPickerIndex < statusItems.Length

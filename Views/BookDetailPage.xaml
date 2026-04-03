@@ -153,7 +153,7 @@
                            FontAttributes="Bold" 
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*,*,*,*,*" 
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*,*,*,*,*,*" 
                           ColumnSpacing="10" RowSpacing="10" Margin="0,15,0,0">
                         
                         <Label Grid.Row="0" Grid.Column="0" 
@@ -207,6 +207,13 @@
                                TextColor="{DynamicResource SecondaryTextColor}" />
                         <Label Grid.Row="6" Grid.Column="1" 
                                Text="{Binding SeriesNumber}" FontSize="14" 
+                               TextColor="{DynamicResource PrimaryTextColor}" />
+                        
+                        <Label Grid.Row="7" Grid.Column="0" 
+                               Text="Полка:" FontSize="14" 
+                               TextColor="{DynamicResource SecondaryTextColor}" />
+                        <Label Grid.Row="7" Grid.Column="1" 
+                               Text="{Binding ShelfName}" FontSize="14" 
                                TextColor="{DynamicResource PrimaryTextColor}" />
                     </Grid>
                 </StackLayout>

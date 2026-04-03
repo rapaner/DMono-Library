@@ -29,6 +29,11 @@ namespace Library.Core.Data
         public DbSet<BookReadingSchedule> BookReadingSchedules { get; set; }
 
         /// <summary>
+        /// Коллекция полок в базе данных
+        /// </summary>
+        public DbSet<Shelf> Shelves { get; set; }
+
+        /// <summary>
         /// Конструктор контекста базы данных
         /// </summary>
         /// <param name="options">Опции для настройки контекста</param>
@@ -115,6 +120,18 @@ namespace Library.Core.Data
                     .WithOne(e => e.Book)
                     .HasForeignKey<BookReadingSchedule>(e => e.BookId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                // Настройка связи многие-к-одному с полкой
+                entity.HasOne(e => e.Shelf)
+                    .WithMany(e => e.Books)
+                    .HasForeignKey(e => e.ShelfId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.ShelfId)
+                    .HasDefaultValue(1);
+
+                entity.HasIndex(e => e.ShelfId)
+                    .HasDatabaseName("IX_Books_ShelfId");
             });
 
             // Настройка таблицы BookReadingSchedules
@@ -136,6 +153,24 @@ namespace Library.Core.Data
                 entity.HasIndex(e => e.BookId)
                     .HasDatabaseName("IX_BookReadingSchedules_BookId")
                     .IsUnique(); // One-to-one связь
+            });
+
+            // Настройка таблицы Shelves
+            modelBuilder.Entity<Shelf>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasIndex(e => e.Name)
+                    .HasDatabaseName("IX_Shelves_Name");
+
+                entity.HasData(new Shelf { Id = 1, Name = "Дом" });
             });
 
             // Настройка таблицы PagesReadInDate

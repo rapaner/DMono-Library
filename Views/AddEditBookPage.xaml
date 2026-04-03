@@ -103,6 +103,17 @@
                         </Picker>
                     </StackLayout>
                     
+                    <!-- Полка -->
+                    <StackLayout>
+                        <Label Text="Полка" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Picker ItemsSource="{Binding AllShelves}"
+                                SelectedItem="{Binding SelectedShelf}"
+                                ItemDisplayBinding="{Binding Name}"
+                                TextColor="{DynamicResource PrimaryTextColor}"
+                                TitleColor="{DynamicResource SecondaryTextColor}"
+                                Title="Выберите полку" />
+                    </StackLayout>
+                    
                 </StackLayout>
             </Border>
             
