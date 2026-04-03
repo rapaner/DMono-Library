@@ -107,4 +107,10 @@ public partial class MainPageViewModel : ObservableObject
     {
         await _navigation.GoToAsync(nameof(ShelvesPage));
     }
+
+    [RelayCommand]
+    private async Task GoToAuthorsAsync()
+    {
+        await _navigation.GoToAsync(nameof(AuthorsPage));
+    }
 }

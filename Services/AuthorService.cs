@@ -1,5 +1,6 @@
 using Library.Core.Data;
 using Library.Core.Models;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Services
@@ -47,6 +48,41 @@ namespace Library.Services
             }
 
             return author;
+        }
+
+        public async Task<List<AuthorWithBookCount>> GetAuthorsWithBookCountAsync()
+        {
+            return await _context.Authors
+                .Select(a => new AuthorWithBookCount
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    BookCount = a.Books.Count
+                })
+                .OrderBy(a => a.Name)
+                .ToListAsync();
+        }
+
+        public async Task<Author> UpdateAuthorAsync(Author author)
+        {
+            _context.Authors.Update(author);
+            await _context.SaveChangesAsync();
+            return author;
+        }
+
+        public async Task<bool> DeleteAuthorAsync(Author author)
+        {
+            _context.Authors.Remove(author);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CanDeleteAuthorAsync(int authorId)
+        {
+            return !await _context.Authors
+                .Where(a => a.Id == authorId)
+                .SelectMany(a => a.Books)
+                .AnyAsync();
         }
     }
 }

@@ -183,6 +183,8 @@ public static class MauiProgram
             builder.Services.AddTransient<AlternativePageCalculationViewModel>();
             builder.Services.AddTransient<ShelvesViewModel>();
             builder.Services.AddTransient<AddEditShelfViewModel>();
+            builder.Services.AddTransient<AuthorsViewModel>();
+            builder.Services.AddTransient<EditAuthorViewModel>();
 
             // Регистрация страниц
             builder.Services.AddTransient<Views.LoadingPage>();
@@ -200,6 +202,8 @@ public static class MauiProgram
             builder.Services.AddTransient<Views.AlternativePageCalculationPage>();
             builder.Services.AddTransient<Views.ShelvesPage>();
             builder.Services.AddTransient<Views.AddEditShelfPage>();
+            builder.Services.AddTransient<Views.AuthorsPage>();
+            builder.Services.AddTransient<Views.EditAuthorPage>();
 
             // Сервисы выбора книги (keyed)
             builder.Services.AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(Models.BookChooseServiceKey.PrioritizedRandomId);
