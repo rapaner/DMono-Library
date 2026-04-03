@@ -29,6 +29,7 @@ alwaysApply: true
 - **Compiled bindings** — `x:DataType` на всех страницах
 - **Динамические темы** — `ColorsLight` / `ColorsDark` через merged `ResourceDictionary`, переключение в рантайме
 - **BasePage** — `SafeExecute` для обработки ошибок в code-behind
+- **Загрузка данных** — code-behind хранит `private readonly` ссылку на ViewModel; в `OnAppearing()` вызывает `SafeExecute(async () => await _viewModel.LoadDataCommand.ExecuteAsync(null))` для загрузки/обновления данных при каждом появлении страницы
 - **Без messaging** — прямой DI, code-behind event handlers, параметры через query strings
 
 ## Стек
