@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<base:BasePage x:Class="Library.Views.AddEditShelfPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:base="clr-namespace:Library.Views"
+             xmlns:vm="clr-namespace:Library.ViewModels"
+             x:DataType="vm:AddEditShelfViewModel"
+             Title="{Binding PageTitle}"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+                <StackLayout Spacing="15">
+                    
+                    <Label Text="📚 Информация о полке" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                    
+                    <!-- Название -->
+                    <StackLayout>
+                        <Label Text="Название *" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Entry Text="{Binding Name}"
+                               Placeholder="Введите название полки"
+                               TextColor="{DynamicResource PrimaryTextColor}"
+                               PlaceholderColor="{DynamicResource SecondaryTextColor}" />
+                    </StackLayout>
+                    
+                </StackLayout>
+            </Border>
+            
+            <!-- Кнопки действий -->
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Button Text="💾 Сохранить" 
+                        BackgroundColor="{DynamicResource PrimaryColor}" 
+                        TextColor="{DynamicResource SecondaryTextColor}" 
+                        CornerRadius="10" HorizontalOptions="Fill" 
+                        Command="{Binding SaveCommand}" />
+                <Button Text="❌ Отмена" 
+                        BackgroundColor="{DynamicResource SecondaryColor}" 
+                        TextColor="{DynamicResource PrimaryTextColor}" 
+                        CornerRadius="10" HorizontalOptions="Fill" 
+                        Command="{Binding CancelCommand}" />
+            </StackLayout>
+            
+            <!-- Кнопка удаления (только при редактировании) -->
+            <Button Text="🗑️ Удалить полку" 
+                    BackgroundColor="{DynamicResource ErrorColor}" 
+                    TextColor="{DynamicResource PrimaryTextColor}" 
+                    CornerRadius="10" 
+                    IsVisible="{Binding IsDeleteVisible}"
+                    Command="{Binding DeleteCommand}" />
+            
+        </StackLayout>
+    </ScrollView>
+
+</base:BasePage>

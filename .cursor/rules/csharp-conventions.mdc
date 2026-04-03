@@ -1,0 +1,17 @@
+---
+description: Соглашения по C# коду
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# C# Conventions
+
+- Target framework: net10.0
+- Используй nullable reference types
+- Async-методы НЕ должны иметь суффикс Async
+- Используй record для DTO и команд
+- Обработка ошибок: не глотай исключения, логируй через ILogger
+- Dependency Injection через constructor injection
+- Не создавай сервисы как static-классы
+- Создавай регионы Поля, Конструкторы, Свойства, Методы
+- Для каждого элемента класса создавай xml описание summary. Для элементов, которые наследуются из интерфейса, описание не нужно

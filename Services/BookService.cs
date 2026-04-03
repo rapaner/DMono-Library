@@ -19,6 +19,7 @@ namespace Library.Services
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -29,6 +30,7 @@ namespace Library.Services
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
                 .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
         }
 
@@ -38,6 +40,7 @@ namespace Library.Services
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
                 .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
@@ -49,6 +52,7 @@ namespace Library.Services
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 

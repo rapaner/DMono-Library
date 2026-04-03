@@ -51,6 +51,9 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private string _seriesNumber = "—";
 
     [ObservableProperty]
+    private string _shelfName = "—";
+
+    [ObservableProperty]
     private double _progress;
 
     [ObservableProperty]
@@ -144,6 +147,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
         SeriesTitle = !string.IsNullOrEmpty(_book.SeriesTitle) ? _book.SeriesTitle : "—";
         SeriesNumber = _book.SeriesNumber?.ToString() ?? "—";
+        ShelfName = _book.Shelf?.Name ?? "—";
 
         Progress = _book.ProgressPercentage / 100;
         ProgressText = _book.ProgressText;

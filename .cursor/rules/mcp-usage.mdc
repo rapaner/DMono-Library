@@ -1,0 +1,41 @@
+---
+description: Правила использования MCP-серверов
+alwaysApply: true
+---
+
+# MCP Usage
+
+## Когда и какой MCP использовать
+
+- **MS Learn Docs** — для вопросов по .NET, ASP.NET Core, EF Core, Azure, C#.
+  Сначала `microsoft_docs_search`, затем `microsoft_docs_fetch` для деталей.
+  Для примеров кода — `microsoft_code_sample_search`.
+
+- **Context7** — для документации сторонних библиотек (Quartz.NET, NSwag, Serilog, Polly и др.).
+  Сначала `resolve-library-id`, затем `query-docs`.
+
+- **Serena** — семантический анализ и редактирование C#-кода через LSP (Roslyn).
+  Приоритетнее grep/чтения файлов целиком для работы с кодом.
+
+  **Исследование кода:**
+  - `get_symbols_overview` — первый шаг при знакомстве с файлом (классы, методы, свойства).
+  - `find_symbol` — поиск символа по name path (например, `GoodsRealizationReportService/Execute`).
+    Используй `depth: 1` для получения методов класса, `include_body: true` только когда нужен исходный код.
+  - `find_referencing_symbols` — все ссылки на символ (аналог Find All References в IDE).
+  - `search_for_pattern` — regex-поиск по файлам, когда символьные инструменты не подходят.
+
+  **Редактирование кода:**
+  - `replace_symbol_body` — замена целого символа (метод, класс). Предпочтительнее для полной замены.
+  - `replace_content` — regex/literal замена фрагментов внутри файла. Для точечных правок.
+  - `insert_before_symbol` / `insert_after_symbol` — вставка нового кода рядом с существующим символом.
+  - `rename_symbol` — переименование с обновлением всех ссылок.
+
+  **Принцип работы с Serena:**
+  1. Сначала `get_symbols_overview` для обзора файла.
+  2. Затем `find_symbol` с `include_body: false` для выбора нужных символов.
+  3. `include_body: true` только для тех символов, которые действительно нужно прочитать/изменить.
+  4. Перед редактированием — `find_referencing_symbols` для проверки обратной совместимости.
+
+## Принцип
+
+При работе с незнакомым API или библиотекой — сначала обратись к MCP за актуальной документацией, не полагайся только на обучающие данные.
