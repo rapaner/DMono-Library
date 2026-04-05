@@ -223,7 +223,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                     break;
                 case "Прочитано":
                     book.IsCurrentlyReading = false;
-                    book.DateFinished = DateTime.Now;
+                    book.DateFinished ??= DateTime.Now;
                     book.IsFinishedLongAgo = false;
                     break;
                 case "Прочитана давно":
