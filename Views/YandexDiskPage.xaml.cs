@@ -31,9 +31,6 @@ public partial class YandexDiskPage : BasePage
             if (e.CurrentSelection.FirstOrDefault() is YandexDisk.Client.Protocol.Resource backup)
             {
                 _viewModel.OnBackupSelected(backup);
-                await DisplayAlertAsync("Резервная копия выбрана",
-                    $"Выбрана резервная копия:\n{backup.Name}\n\nНажмите 'Восстановить из резервной копии' для восстановления или 'Удалить резервную копию' для удаления.",
-                    "OK");
             }
         });
     }
