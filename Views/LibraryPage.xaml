@@ -8,7 +8,7 @@
              Title="Вся библиотека"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
         
         <!-- Фильтры -->
         <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -51,8 +51,17 @@
             </StackLayout>
         </ScrollView>
 
+        <!-- Поиск по названию -->
+        <SearchBar Grid.Row="1"
+                   Placeholder="Поиск по названию..."
+                   Text="{Binding SearchText}"
+                   Margin="15,0"
+                   BackgroundColor="{DynamicResource CardBackgroundColor}"
+                   TextColor="{DynamicResource PrimaryTextColor}"
+                   PlaceholderColor="{DynamicResource SecondaryTextColor}" />
+
         <!-- Сортировка -->
-        <StackLayout Grid.Row="1" 
+        <StackLayout Grid.Row="2" 
                      Orientation="Horizontal" 
                      Padding="15,10" 
                      Spacing="10">
@@ -73,7 +82,7 @@
         </StackLayout>
 
         <!-- Список книг -->
-        <CollectionView Grid.Row="2"
+        <CollectionView Grid.Row="3"
                          ItemsSource="{Binding Books}"
                          SelectionMode="Single"
                          SelectionChanged="OnBookSelected">
@@ -123,7 +132,7 @@
         </CollectionView>
 
         <!-- Кнопка добавления -->
-        <Button Grid.Row="3" 
+        <Button Grid.Row="4" 
                 Text="➕ Добавить книгу" 
                 BackgroundColor="{DynamicResource PrimaryColor}" 
                 TextColor="{DynamicResource SecondaryTextColor}" 
