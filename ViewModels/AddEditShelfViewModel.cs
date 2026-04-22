@@ -2,16 +2,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Library.Core.Models;
 using Library.Services;
+using Library.Views;
+using System.Collections.ObjectModel;
 
 namespace Library.ViewModels;
 
 public partial class AddEditShelfViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IShelfService _shelfService;
+    private readonly IBookService _bookService;
     private readonly INavigationService _navigation;
     private readonly IDialogService _dialog;
     private Shelf? _shelf;
     private bool _isEditMode;
+    private List<Book> _allShelfBooks = new();
 
     [ObservableProperty]
     private string _pageTitle = "Новая полка";
@@ -22,9 +26,21 @@ public partial class AddEditShelfViewModel : ObservableObject, IQueryAttributabl
     [ObservableProperty]
     private bool _isDeleteVisible;
 
-    public AddEditShelfViewModel(IShelfService shelfService, INavigationService navigation, IDialogService dialog)
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasBooks;
+
+    [ObservableProperty]
+    private bool _isEmpty = true;
+
+    public ObservableCollection<BookItemViewModel> Books { get; } = new();
+
+    public AddEditShelfViewModel(IShelfService shelfService, IBookService bookService, INavigationService navigation, IDialogService dialog)
     {
         _shelfService = shelfService;
+        _bookService = bookService;
         _navigation = navigation;
         _dialog = dialog;
     }
@@ -51,7 +67,51 @@ public partial class AddEditShelfViewModel : ObservableObject, IQueryAttributabl
         if (_shelf != null)
         {
             Name = _shelf.Name;
+            await LoadBooksAsync();
         }
+    }
+
+    [RelayCommand]
+    public async Task LoadBooksAsync()
+    {
+        Books.Clear();
+
+        if (_shelf == null)
+        {
+            _allShelfBooks.Clear();
+            HasBooks = false;
+            IsEmpty = true;
+            return;
+        }
+
+        _allShelfBooks = await _bookService.GetBooksByShelfIdAsync(_shelf.Id);
+
+        HasBooks = _allShelfBooks.Count > 0;
+        IsEmpty = _allShelfBooks.Count == 0;
+
+        var filtered = _allShelfBooks.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            filtered = filtered.Where(b => b.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        foreach (var book in filtered)
+        {
+            Books.Add(new BookItemViewModel(book));
+        }
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = LoadBooksAsync();
+    }
+
+    [RelayCommand]
+    private async Task SelectBookAsync(BookItemViewModel? bookItem)
+    {
+        if (bookItem == null) return;
+        await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={bookItem.Id}");
     }
 
     [RelayCommand]

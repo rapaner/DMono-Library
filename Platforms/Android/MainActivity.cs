@@ -49,14 +49,6 @@ public class MainActivity : MauiAppCompatActivity
         return false;
     }
 
-    public override void OnBackPressed()
-    {
-        if (!TryHandleBackNavigation())
-        {
-            base.OnBackPressed();
-        }
-    }
-
     private sealed class BackPressHandler : OnBackPressedCallback
     {
         private readonly MainActivity _activity;

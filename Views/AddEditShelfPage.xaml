@@ -51,6 +51,73 @@
                     IsVisible="{Binding IsDeleteVisible}"
                     Command="{Binding DeleteCommand}" />
             
+            <!-- Книги на полке -->
+            <Label Text="📖 Книги на полке" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   TextColor="{DynamicResource PrimaryTextColor}" />
+
+            <Label Text="Нет книг на этой полке"
+                   FontSize="14"
+                   TextColor="{DynamicResource SecondaryTextColor}"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding IsEmpty}" />
+
+            <SearchBar Placeholder="Поиск по названию..."
+                       Text="{Binding SearchText}"
+                       BackgroundColor="{DynamicResource PageBackgroundColor}"
+                       TextColor="{DynamicResource PrimaryTextColor}"
+                       PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                       IsVisible="{Binding HasBooks}" />
+
+            <StackLayout BindableLayout.ItemsSource="{Binding Books}"
+                         Spacing="0">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BookItemViewModel">
+                        <Grid Padding="15" ColumnDefinitions="Auto,*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddEditShelfViewModel}}, Path=SelectBookCommand}"
+                                    CommandParameter="{Binding}" />
+                            </Grid.GestureRecognizers>
+                            
+                            <Label Grid.Column="0" 
+                                   Text="{Binding StatusIcon}" 
+                                   FontSize="24" 
+                                   VerticalOptions="Center" 
+                                   Margin="0,0,15,0" />
+                            
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding Title}" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{DynamicResource PrimaryTextColor}" />
+                                <Label Text="{Binding Author}" 
+                                       FontSize="14" 
+                                       TextColor="{DynamicResource SecondaryTextColor}" />
+                                
+                                <StackLayout IsVisible="{Binding IsCurrentlyReading}">
+                                    <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
+                                                 Margin="0,5,0,0"
+                                                 ProgressColor="{DynamicResource TertiaryColor}" />
+                                    <Label Text="{Binding ProgressText}" 
+                                           FontSize="12" 
+                                           TextColor="{DynamicResource SecondaryTextColor}" />
+                                </StackLayout>
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Column="2" HorizontalOptions="End">
+                                <Label Text="{Binding DateAdded, StringFormat='{0:dd.MM.yyyy}'}" 
+                                       FontSize="10" 
+                                       TextColor="{DynamicResource SecondaryTextColor}" 
+                                       HorizontalOptions="End" />
+                            </StackLayout>
+                            
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+
         </StackLayout>
     </ScrollView>
 
