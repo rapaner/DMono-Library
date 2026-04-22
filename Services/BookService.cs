@@ -89,6 +89,18 @@ namespace Library.Services
             return result > 0;
         }
 
+        public async Task<List<Book>> GetBooksByShelfIdAsync(int shelfId)
+        {
+            return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
+                .Where(b => b.ShelfId == shelfId)
+                .OrderByDescending(b => b.DateAdded)
+                .ToListAsync();
+        }
+
         public async Task SetCurrentBookAsync(Book book)
         {
             await _context.Books

@@ -12,5 +12,6 @@ namespace Library.Services
         Task<Book> UpdateBookAsync(Book book);
         Task<bool> DeleteBookAsync(Book book);
         Task SetCurrentBookAsync(Book book);
+        Task<List<Book>> GetBooksByShelfIdAsync(int shelfId);
     }
 }

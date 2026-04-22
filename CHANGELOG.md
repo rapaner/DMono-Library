@@ -1,11 +1,18 @@
 # История изменений
 
-## [2.11] - Поиск книг по названию
+## [2.11] - Поиск книг по названию + отображение книг на странице полки
 
 ### Добавлено
 - ✅ **`ViewModels/LibraryViewModel.cs`** — свойство `SearchText` (`[ObservableProperty]`) и partial-метод `OnSearchTextChanged` для фильтрации списка в реальном времени при вводе текста
 - ✅ **`ViewModels/LibraryViewModel.cs`** — фильтрация по `Title` (case-insensitive) в `LoadBooksAsync` — применяется после фильтра по статусу и перед сортировкой
 - ✅ **`Views/LibraryPage.xaml`** — `SearchBar` с placeholder «Поиск по названию...» между фильтрами по статусу и блоком сортировки (`Grid.Row="1"`, `RowDefinitions` расширен до `Auto,Auto,Auto,*,Auto`)
+- ✅ **`Services/IBookService.cs`** — метод `GetBooksByShelfIdAsync(int shelfId)` для получения книг по идентификатору полки
+- ✅ **`Services/BookService.cs`** — реализация `GetBooksByShelfIdAsync` с фильтрацией по `ShelfId` и `Include` для `Authors`, `PagesReadHistory`, `ReadingSchedule`, `Shelf`
+- ✅ **`ViewModels/AddEditShelfViewModel.cs`** — свойства `Books` (`ObservableCollection<BookItemViewModel>`), `SearchText`, `HasBooks`, `IsEmpty`; методы `LoadBooksAsync`, `SelectBookCommand`; зависимость `IBookService`
+- ✅ **`Views/AddEditShelfPage.xaml`** — блок «Книги на полке» под кнопкой «Удалить полку»: заголовок, `SearchBar` (видим при `HasBooks`), `BindableLayout` со списком книг (иконка, название, автор, прогресс, дата), Label «Нет книг на этой полке» (при `IsEmpty`), навигация на `BookDetailPage` по нажатию
+
+### Изменено
+- 🔄 **`Views/AddEditShelfPage.xaml.cs`** — сохранена ссылка на ViewModel, добавлен `OnAppearing` для перезагрузки списка книг при возврате на страницу
 
 ---
 
