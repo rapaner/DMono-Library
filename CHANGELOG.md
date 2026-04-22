@@ -1,5 +1,14 @@
 # История изменений
 
+## [2.11] - Поиск книг по названию
+
+### Добавлено
+- ✅ **`ViewModels/LibraryViewModel.cs`** — свойство `SearchText` (`[ObservableProperty]`) и partial-метод `OnSearchTextChanged` для фильтрации списка в реальном времени при вводе текста
+- ✅ **`ViewModels/LibraryViewModel.cs`** — фильтрация по `Title` (case-insensitive) в `LoadBooksAsync` — применяется после фильтра по статусу и перед сортировкой
+- ✅ **`Views/LibraryPage.xaml`** — `SearchBar` с placeholder «Поиск по названию...» между фильтрами по статусу и блоком сортировки (`Grid.Row="1"`, `RowDefinitions` расширен до `Auto,Auto,Auto,*,Auto`)
+
+---
+
 ## [2.10] - Исправление даты завершения книги
 
 ### Исправлено

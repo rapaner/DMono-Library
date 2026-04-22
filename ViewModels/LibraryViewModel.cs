@@ -18,6 +18,9 @@ public partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private int _selectedSortIndex;
 
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
     public ObservableCollection<BookItemViewModel> Books { get; } = new();
 
     public LibraryViewModel(IBookService bookService, INavigationService navigation)
@@ -41,6 +44,11 @@ public partial class LibraryViewModel : ObservableObject
             "FinishedLongAgo" => allBooks.Where(b => b.Status == BookStatus.FinishedLongAgo).ToList(),
             _ => allBooks
         };
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            books = books.Where(b => b.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
 
         string sort = SelectedSortIndex switch
         {
@@ -70,6 +78,11 @@ public partial class LibraryViewModel : ObservableObject
     }
 
     partial void OnSelectedSortIndexChanged(int value)
+    {
+        _ = LoadBooksAsync();
+    }
+
+    partial void OnSearchTextChanged(string value)
     {
         _ = LoadBooksAsync();
     }
