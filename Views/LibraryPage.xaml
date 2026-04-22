@@ -56,7 +56,7 @@
                    Placeholder="Поиск по названию..."
                    Text="{Binding SearchText}"
                    Margin="15,0"
-                   BackgroundColor="{DynamicResource CardBackgroundColor}"
+                   BackgroundColor="{DynamicResource PageBackgroundColor}"
                    TextColor="{DynamicResource PrimaryTextColor}"
                    PlaceholderColor="{DynamicResource SecondaryTextColor}" />
 
