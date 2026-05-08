@@ -60,6 +60,15 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private string _progressText = string.Empty;
 
     [ObservableProperty]
+    private int _remainingPages;
+
+    [ObservableProperty]
+    private string _remainingPagesText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isRemainingPagesVisible;
+
+    [ObservableProperty]
     private string _progressPercentage = string.Empty;
 
     [ObservableProperty]
@@ -151,6 +160,11 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
         Progress = _book.ProgressPercentage / 100;
         ProgressText = _book.ProgressText;
+
+        RemainingPages = Math.Max(0, _book.TotalPages - _book.CurrentPage);
+        RemainingPagesText = $"Осталось страниц {RemainingPages}";
+        IsRemainingPagesVisible = _book.Status == BookStatus.Reading && RemainingPages > 0;
+
         ProgressPercentage = $"{_book.ProgressPercentage:F2}%";
 
         bool isFinished = _book.Status == BookStatus.Finished || _book.Status == BookStatus.FinishedLongAgo;
@@ -189,10 +203,9 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
             if (_book.Status == BookStatus.Reading && averagePages > 0)
             {
-                var remainingPages = _book.TotalPages - _book.CurrentPage;
-                if (remainingPages > 0)
+                if (RemainingPages > 0)
                 {
-                    var daysRemaining = (int)Math.Ceiling(remainingPages / averagePages);
+                    var daysRemaining = (int)Math.Ceiling(RemainingPages / averagePages);
                     var lastReadDate = dailyData.Max(d => d.Date);
                     var estimatedDate = lastReadDate.AddDays(daysRemaining);
 

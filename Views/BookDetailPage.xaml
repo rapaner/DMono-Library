@@ -51,6 +51,13 @@
                            FontSize="16" 
                            TextColor="{DynamicResource PrimaryTextColor}" 
                            HorizontalOptions="Center" />
+
+                    <Label Text="{Binding RemainingPagesText}"
+                           FontSize="14"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           HorizontalOptions="Center"
+                           Margin="0,6,0,0"
+                           IsVisible="{Binding IsRemainingPagesVisible}" />
                     
                     <Label Text="{Binding ProgressPercentage}" 
                            FontSize="20" 

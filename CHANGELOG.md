@@ -1,5 +1,16 @@
 # История изменений
 
+## [2.12] - Остаток страниц в карточке книги
+
+### Добавлено
+- ✅ **`ViewModels/BookDetailViewModel.cs`** — новые bindable-свойства `RemainingPages`, `RemainingPagesText`, `IsRemainingPagesVisible` для вывода остатка страниц в UI
+- ✅ **`Views/BookDetailPage.xaml`** — в блоке прогресса чтения добавлен `Label` после `ProgressText` с текстом `Осталось страниц {N}` и видимостью через `IsRemainingPagesVisible`
+
+### Изменено
+- 🔄 **`ViewModels/BookDetailViewModel.cs`** — расчет остатка страниц вынесен в единое место (`LoadBookData`) и переиспользуется в `LoadChartData` для расчета планируемой даты окончания, без дублирования локальной переменной
+
+---
+
 ## [2.11] - Поиск книг по названию + отображение книг на странице полки
 
 ### Добавлено

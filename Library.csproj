@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>2.11</ApplicationDisplayVersion>
-		<ApplicationVersion>38</ApplicationVersion>
+		<ApplicationDisplayVersion>2.12</ApplicationDisplayVersion>
+		<ApplicationVersion>39</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -61,8 +61,8 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.51" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.60" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
