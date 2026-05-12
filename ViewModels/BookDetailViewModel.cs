@@ -206,8 +206,10 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
                 if (RemainingPages > 0)
                 {
                     var daysRemaining = (int)Math.Ceiling(RemainingPages / averagePages);
-                    var lastReadDate = dailyData.Max(d => d.Date);
-                    var estimatedDate = lastReadDate.AddDays(daysRemaining);
+                    var yesterday = DateTime.Today.AddDays(-1);
+                    var lastReadDay = dailyData.Max(d => d.Date).Date;
+                    var referenceDate = new[] { yesterday, lastReadDay }.Max();
+                    var estimatedDate = referenceDate.AddDays(daysRemaining);
 
                     EstimatedFinishDate = $"📅 Планируемая дата окончания: {estimatedDate:dd.MM.yyyy}";
                     IsEstimatedFinishDateVisible = true;
