@@ -1,5 +1,18 @@
 # История изменений
 
+## [2.14] - Все текущие книги на главной
+
+### Добавлено
+- ✅ **`ViewModels/MainPageViewModel.cs`** — коллекция `CurrentBooks` (`ObservableCollection<BookItemViewModel>`) и флаги `HasCurrentBooks` / `HasNoCurrentBooks` для переключения между списком книг и пустым состоянием
+- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `ViewBookCommand` для перехода на `BookDetailPage` выбранной книги из списка
+
+### Изменено
+- 🔄 **`ViewModels/MainPageViewModel.cs`** — вместо одной «текущей книги» загружаются все активные через `GetBooksByStatusAsync(true)`; `LoadCurrentBookAsync` заменён на `LoadCurrentBooksAsync`
+- 🔄 **`MainPage.xaml`** — секция «📖 Текущие книги»: при отсутствии активных книг показывается одна карточка «Нет активной книги»; при наличии — `BindableLayout` с карточками (название, автор, прогресс, процент, кнопка «Просмотр»)
+- 🔄 **`MainPage.xaml.cs`** — в `OnAppearing` вызывается `LoadCurrentBooksCommand` для обновления списка при каждом появлении страницы
+
+---
+
 ## [2.13] - Планируемая дата окончания чтения
 
 ### Изменено

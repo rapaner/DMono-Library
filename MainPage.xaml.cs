@@ -17,6 +17,6 @@ public partial class MainPage : BasePage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        SafeExecute(async () => await _viewModel.LoadCurrentBookCommand.ExecuteAsync(null));
+        SafeExecute(async () => await _viewModel.LoadCurrentBooksCommand.ExecuteAsync(null));
     }
 }

@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Library.Services;
 using Library.Views;
+using System.Collections.ObjectModel;
 
 namespace Library.ViewModels;
 
@@ -11,24 +12,12 @@ public partial class MainPageViewModel : ObservableObject
     private readonly INavigationService _navigation;
 
     [ObservableProperty]
-    private string _currentBookTitle = "Нет активной книги";
+    private bool _hasCurrentBooks;
 
     [ObservableProperty]
-    private string _currentBookAuthor = string.Empty;
+    private bool _hasNoCurrentBooks = true;
 
-    [ObservableProperty]
-    private double _currentBookProgress;
-
-    [ObservableProperty]
-    private string _currentBookProgressText = string.Empty;
-
-    [ObservableProperty]
-    private string _currentBookPercentage = string.Empty;
-
-    [ObservableProperty]
-    private bool _isViewCurrentBookVisible;
-
-    private int? _currentBookId;
+    public ObservableCollection<BookItemViewModel> CurrentBooks { get; } = new();
 
     public MainPageViewModel(IBookService bookService, INavigationService navigation)
     {
@@ -37,39 +26,25 @@ public partial class MainPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadCurrentBookAsync()
+    private async Task LoadCurrentBooksAsync()
     {
-        var currentBook = await _bookService.GetCurrentBookAsync();
+        var books = await _bookService.GetBooksByStatusAsync(true);
 
-        if (currentBook != null)
+        CurrentBooks.Clear();
+        foreach (var book in books)
         {
-            _currentBookId = currentBook.Id;
-            CurrentBookTitle = currentBook.Title;
-            CurrentBookAuthor = $"Автор: {currentBook.AuthorsText}";
-            CurrentBookProgress = currentBook.ProgressPercentage / 100;
-            CurrentBookProgressText = currentBook.ProgressText;
-            CurrentBookPercentage = $"{currentBook.ProgressPercentage:F2}%";
-            IsViewCurrentBookVisible = true;
+            CurrentBooks.Add(new BookItemViewModel(book));
         }
-        else
-        {
-            _currentBookId = null;
-            CurrentBookTitle = "Нет активной книги";
-            CurrentBookAuthor = string.Empty;
-            CurrentBookProgress = 0;
-            CurrentBookProgressText = string.Empty;
-            CurrentBookPercentage = string.Empty;
-            IsViewCurrentBookVisible = false;
-        }
+
+        HasCurrentBooks = books.Count > 0;
+        HasNoCurrentBooks = books.Count == 0;
     }
 
     [RelayCommand]
-    private async Task ViewCurrentBookAsync()
+    private async Task ViewBookAsync(BookItemViewModel? bookItem)
     {
-        if (_currentBookId.HasValue)
-        {
-            await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={_currentBookId.Value}");
-        }
+        if (bookItem == null) return;
+        await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={bookItem.Id}");
     }
 
     [RelayCommand]
