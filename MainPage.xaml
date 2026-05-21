@@ -18,54 +18,74 @@
                    HorizontalOptions="Center"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <!-- Карточка текущей книги -->
+            <!-- Текущие книги -->
+            <Label Text="📖 Текущие книги"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryTextColor}" />
+
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
                     StrokeThickness="0"
                     Padding="20"
-                    Margin="0">
+                    Margin="0"
+                    IsVisible="{Binding HasNoCurrentBooks}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="15" />
                 </Border.StrokeShape>
-                <StackLayout>
-                    <Label Text="📖 Текущая книга"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-
-                    <Label Text="{Binding CurrentBookTitle}"
-                           FontSize="16"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           Margin="0,10,0,0" />
-
-                    <Label Text="{Binding CurrentBookAuthor}"
-                           FontSize="14"
-                           TextColor="{DynamicResource SecondaryTextColor}" />
-
-                    <ProgressBar Progress="{Binding CurrentBookProgress}"
-                                 Margin="0,10,0,0"
-                                 ProgressColor="{DynamicResource TertiaryColor}" />
-
-                    <Label Text="{Binding CurrentBookProgressText}"
-                           FontSize="12"
-                           TextColor="{DynamicResource SecondaryTextColor}"
-                           HorizontalOptions="Center" />
-
-                    <Label Text="{Binding CurrentBookPercentage}"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryColor}"
-                           HorizontalOptions="Center"
-                           Margin="0,5,0,0" />
-
-                    <Button Text="Просмотр"
-                            BackgroundColor="{DynamicResource PrimaryColor}"
-                            TextColor="{DynamicResource SecondaryTextColor}"
-                            CornerRadius="10"
-                            Margin="0,15,0,0"
-                            IsVisible="{Binding IsViewCurrentBookVisible}"
-                            Command="{Binding ViewCurrentBookCommand}" />
-                </StackLayout>
+                <Label Text="Нет активной книги"
+                       FontSize="16"
+                       TextColor="{DynamicResource SecondaryTextColor}" />
             </Border>
+
+            <StackLayout BindableLayout.ItemsSource="{Binding CurrentBooks}"
+                         IsVisible="{Binding HasCurrentBooks}"
+                         Spacing="20">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BookItemViewModel">
+                        <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
+                                StrokeThickness="0"
+                                Padding="20"
+                                Margin="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="15" />
+                            </Border.StrokeShape>
+                            <StackLayout>
+                                <Label Text="{Binding Title}"
+                                       FontSize="16"
+                                       TextColor="{DynamicResource SecondaryTextColor}" />
+
+                                <Label Text="{Binding Author, StringFormat='Автор: {0}'}"
+                                       FontSize="14"
+                                       TextColor="{DynamicResource SecondaryTextColor}" />
+
+                                <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}"
+                                             Margin="0,10,0,0"
+                                             ProgressColor="{DynamicResource TertiaryColor}" />
+
+                                <Label Text="{Binding ProgressText}"
+                                       FontSize="12"
+                                       TextColor="{DynamicResource SecondaryTextColor}"
+                                       HorizontalOptions="Center" />
+
+                                <Label Text="{Binding ProgressPercentage, StringFormat='{0:F2}%'}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{DynamicResource PrimaryColor}"
+                                       HorizontalOptions="Center"
+                                       Margin="0,5,0,0" />
+
+                                <Button Text="Просмотр"
+                                        BackgroundColor="{DynamicResource PrimaryColor}"
+                                        TextColor="{DynamicResource SecondaryTextColor}"
+                                        CornerRadius="10"
+                                        Margin="0,15,0,0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=ViewBookCommand}"
+                                        CommandParameter="{Binding}" />
+                            </StackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
 
             <!-- Меню действий -->
             <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="15" RowSpacing="15">

@@ -103,10 +103,6 @@ namespace Library.Services
 
         public async Task SetCurrentBookAsync(Book book)
         {
-            await _context.Books
-                .Where(b => b.IsCurrentlyReading)
-                .ExecuteUpdateAsync(s => s.SetProperty(b => b.IsCurrentlyReading, false));
-
             book.IsCurrentlyReading = true;
             await _context.SaveChangesAsync();
         }
