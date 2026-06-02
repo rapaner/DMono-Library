@@ -23,7 +23,7 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore dependencies
-        run: dotnet restore Library.sln
+        run: dotnet restore Library.slnx
 
       - name: Build Library.Core
         run: dotnet build Library.Core/Library.Core.csproj -c Debug
