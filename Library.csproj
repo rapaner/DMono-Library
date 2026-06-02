@@ -10,9 +10,12 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>2.14</ApplicationDisplayVersion>
-		<ApplicationVersion>41</ApplicationVersion>
+		<ApplicationDisplayVersion>2.15</ApplicationDisplayVersion>
+		<ApplicationVersion>42</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
+		
+		<!-- Enable Material 3 design on Android -->
+		<UseMaterial3>true</UseMaterial3>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<DefaultLanguage>ru</DefaultLanguage>
@@ -61,8 +64,8 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.8" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.60" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.70" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8">
