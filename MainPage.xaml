@@ -49,6 +49,11 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="15" />
                             </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=ViewBookCommand}"
+                                    CommandParameter="{Binding}" />
+                            </Border.GestureRecognizers>
                             <StackLayout>
                                 <Label Text="{Binding Title}"
                                        FontSize="16"
@@ -73,14 +78,6 @@
                                        TextColor="{DynamicResource PrimaryColor}"
                                        HorizontalOptions="Center"
                                        Margin="0,5,0,0" />
-
-                                <Button Text="Просмотр"
-                                        BackgroundColor="{DynamicResource PrimaryColor}"
-                                        TextColor="{DynamicResource SecondaryTextColor}"
-                                        CornerRadius="10"
-                                        Margin="0,15,0,0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=ViewBookCommand}"
-                                        CommandParameter="{Binding}" />
                             </StackLayout>
                         </Border>
                     </DataTemplate>
