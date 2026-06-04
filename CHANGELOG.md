@@ -1,1761 +1,343 @@
 # История изменений
 
-## [2.16] - Тап по карточке книги на главной
-
-### Изменено
-- 🔄 **`MainPage.xaml`** — карточка текущей книги открывает `BookDetailPage` по нажатию на всю карточку (`TapGestureRecognizer` на `Border` + `ViewBookCommand`); кнопка «Просмотр» удалена
-- 🔄 **`Library.csproj`** — версия обновлена: `2.15` → `2.16`, `ApplicationVersion`: `42` → `43`
+Здесь описаны обновления приложения **Моя Библиотека** — простым языком, без технических деталей разработки.
 
 ---
 
-## [2.15] - Добавлен Material Design 3
+## [2.16] — Открытие книги с главной
 
-### Добавлено
-- ✅ **`Library.csproj`** — активирован Material Design 3
-
----
-
-## [2.14] - Все текущие книги на главной
-
-### Добавлено
-- ✅ **`ViewModels/MainPageViewModel.cs`** — коллекция `CurrentBooks` (`ObservableCollection<BookItemViewModel>`) и флаги `HasCurrentBooks` / `HasNoCurrentBooks` для переключения между списком книг и пустым состоянием
-- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `ViewBookCommand` для перехода на `BookDetailPage` выбранной книги из списка
-
-### Изменено
-- 🔄 **`ViewModels/MainPageViewModel.cs`** — вместо одной «текущей книги» загружаются все активные через `GetBooksByStatusAsync(true)`; `LoadCurrentBookAsync` заменён на `LoadCurrentBooksAsync`
-- 🔄 **`MainPage.xaml`** — секция «📖 Текущие книги»: при отсутствии активных книг показывается одна карточка «Нет активной книги»; при наличии — `BindableLayout` с карточками (название, автор, прогресс, процент, кнопка «Просмотр»)
-- 🔄 **`MainPage.xaml.cs`** — в `OnAppearing` вызывается `LoadCurrentBooksCommand` для обновления списка при каждом появлении страницы
+### Улучшения
+- На главной можно нажать на всю карточку текущей книги, чтобы открыть её страницу — отдельная кнопка «Просмотр» больше не нужна.
 
 ---
 
-## [2.13] - Планируемая дата окончания чтения
+## [2.15] — Обновлённый внешний вид
 
-### Изменено
-- 🔄 **`ViewModels/BookDetailViewModel.cs`** — в `LoadChartData` планируемая дата окончания считается от более поздней из двух календарных дат: вчера (`DateTime.Today.AddDays(-1)`) и дня последнего чтения по дневной статистике (`dailyData.Max(d => d.Date).Date`), затем к выбранной дате добавляется `daysRemaining`
-
----
-
-## [2.12] - Остаток страниц в карточке книги
-
-### Добавлено
-- ✅ **`ViewModels/BookDetailViewModel.cs`** — новые bindable-свойства `RemainingPages`, `RemainingPagesText`, `IsRemainingPagesVisible` для вывода остатка страниц в UI
-- ✅ **`Views/BookDetailPage.xaml`** — в блоке прогресса чтения добавлен `Label` после `ProgressText` с текстом `Осталось страниц {N}` и видимостью через `IsRemainingPagesVisible`
-
-### Изменено
-- 🔄 **`ViewModels/BookDetailViewModel.cs`** — расчет остатка страниц вынесен в единое место (`LoadBookData`) и переиспользуется в `LoadChartData` для расчета планируемой даты окончания, без дублирования локальной переменной
+### Улучшения
+- Интерфейс переведён на стиль **Material Design 3** — элементы выглядят современнее и единообразнее.
 
 ---
 
-## [2.11] - Поиск книг по названию + отображение книг на странице полки
+## [2.14] — Все текущие книги на главной
 
-### Добавлено
-- ✅ **`ViewModels/LibraryViewModel.cs`** — свойство `SearchText` (`[ObservableProperty]`) и partial-метод `OnSearchTextChanged` для фильтрации списка в реальном времени при вводе текста
-- ✅ **`ViewModels/LibraryViewModel.cs`** — фильтрация по `Title` (case-insensitive) в `LoadBooksAsync` — применяется после фильтра по статусу и перед сортировкой
-- ✅ **`Views/LibraryPage.xaml`** — `SearchBar` с placeholder «Поиск по названию...» между фильтрами по статусу и блоком сортировки (`Grid.Row="1"`, `RowDefinitions` расширен до `Auto,Auto,Auto,*,Auto`)
-- ✅ **`Services/IBookService.cs`** — метод `GetBooksByShelfIdAsync(int shelfId)` для получения книг по идентификатору полки
-- ✅ **`Services/BookService.cs`** — реализация `GetBooksByShelfIdAsync` с фильтрацией по `ShelfId` и `Include` для `Authors`, `PagesReadHistory`, `ReadingSchedule`, `Shelf`
-- ✅ **`ViewModels/AddEditShelfViewModel.cs`** — свойства `Books` (`ObservableCollection<BookItemViewModel>`), `SearchText`, `HasBooks`, `IsEmpty`; методы `LoadBooksAsync`, `SelectBookCommand`; зависимость `IBookService`
-- ✅ **`Views/AddEditShelfPage.xaml`** — блок «Книги на полке» под кнопкой «Удалить полку»: заголовок, `SearchBar` (видим при `HasBooks`), `BindableLayout` со списком книг (иконка, название, автор, прогресс, дата), Label «Нет книг на этой полке» (при `IsEmpty`), навигация на `BookDetailPage` по нажатию
+### Новое
+- На главной отображаются **все книги**, которые вы сейчас читаете, а не одна.
+- Для каждой книги видны название, автор, прогресс и процент прочитанного.
+- Можно перейти к карточке любой из них.
 
-### Изменено
-- 🔄 **`Views/AddEditShelfPage.xaml.cs`** — сохранена ссылка на ViewModel, добавлен `OnAppearing` для перезагрузки списка книг при возврате на страницу
+### Улучшения
+- Если активных книг нет, показывается понятное сообщение «Нет активной книги».
+- Список обновляется при каждом возврате на главную.
 
 ---
 
-## [2.10] - Исправление даты завершения книги
+## [2.13] — Точнее прогноз даты окончания
 
-### Исправлено
-- 🐛 **`ViewModels/AddEditBookViewModel.cs`** — при сохранении книги со статусом «Прочитано» дата завершения (`DateFinished`) больше не перезаписывается, если она уже была установлена (оператор `=` заменён на `??=`)
-- 🐛 **`ViewModels/AddEditBookViewModel.cs`** — при первом выставлении статуса «Прочитано» дата завершения теперь берётся из максимальной даты в истории чтения (`PagesReadHistory`), а не из `DateTime.Now`. Если история пуста — используется текущая дата
-
----
-
-## [2.8] - Форма управления авторами
-
-### Добавлено
-- ✅ **`Models/AuthorWithBookCount.cs`** — DTO для отображения автора с количеством книг (`Id`, `Name`, `BookCount`)
-- ✅ **`Services/IAuthorService.cs`** — 4 новых метода:
-  - `GetAuthorsWithBookCountAsync()` — список авторов с количеством книг
-  - `UpdateAuthorAsync(Author)` — обновление автора
-  - `DeleteAuthorAsync(Author)` — удаление автора
-  - `CanDeleteAuthorAsync(int)` — проверка возможности удаления (нет привязанных книг)
-- ✅ **`Services/AuthorService.cs`** — реализация новых методов `IAuthorService`
-- ✅ **`ViewModels/AuthorsViewModel.cs`** — ViewModel списка авторов с сортировкой (по имени / по количеству книг) через `SelectedSortIndex`
-- ✅ **`ViewModels/EditAuthorViewModel.cs`** — ViewModel для редактирования/удаления автора (`IQueryAttributable`, валидация: нельзя удалить автора с книгами)
-- ✅ **`Views/AuthorsPage.xaml`** + **`.cs`** — страница списка авторов с `CollectionView` и Picker сортировки
-- ✅ **`Views/EditAuthorPage.xaml`** + **`.cs`** — страница редактирования автора (сохранение, удаление, отмена)
-- ✅ **`MainPage.xaml`** — кнопка «Авторы» в главном меню (Grid расширен до 4 строк)
-- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `GoToAuthorsAsync`
-
-### Изменено
-- 🔄 **`AppShell.xaml.cs`** — зарегистрированы маршруты `AuthorsPage`, `EditAuthorPage`
-- 🔄 **`MauiProgram.cs`** — регистрация `AuthorsViewModel`, `EditAuthorViewModel`, `AuthorsPage`, `EditAuthorPage`
-- 🔄 **`Views/AuthorsPage.xaml`** — `StackLayout` заменён на `Grid` с `*`-row для корректной прокрутки `CollectionView`
-- 🔄 **`Library.csproj`** — версия обновлена: `2.7` → `2.8`, `ApplicationVersion`: `34` → `35`
+### Улучшения
+- Планируемая дата окончания чтения считается аккуратнее: учитывается и вчерашний день, и день вашего последнего чтения по статистике — берётся более поздняя из них.
 
 ---
 
-## [2.7] - Статус «Прочитана давно»
+## [2.12] — Сколько страниц осталось
 
-### Добавлено
-- ✅ **`Library.Core/Models/BookStatus.cs`** — новое значение `FinishedLongAgo = 3` в enum `BookStatus`
-- ✅ **`Library.Core/Models/Book.cs`** — свойство `IsFinishedLongAgo` (bool) для книг, прочитанных давно без известной даты завершения
-- ✅ Миграция **`AddIsFinishedLongAgo`** — столбец `IsFinishedLongAgo` в таблице `Books`
-- ✅ **`Views/LibraryPage.xaml`** — кнопка-фильтр «Прочитана давно» (`CommandParameter="FinishedLongAgo"`)
-- ✅ **`Views/AddEditBookPage.xaml`** — «Прочитана давно» в Picker статусов
+### Новое
+- На странице книги в блоке прогресса отображается **«Осталось страниц: N»** (если книга ещё не дочитана).
 
-### Изменено
-- 🔄 **`Library.Core/Models/Book.Computed.cs`** — `Status` возвращает `FinishedLongAgo` при `IsFinishedLongAgo == true`; `StatusText` = «Прочитана давно»
-- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — обработка нового статуса при загрузке (`StatusPickerIndex = 3`) и при сохранении (`IsFinishedLongAgo = true`, `DateFinished = null`)
-- 🔄 **`ViewModels/BookDetailViewModel.cs`** — `isFinished` учитывает `FinishedLongAgo` (скрытие кнопок обновления прогресса и расписания)
-- 🔄 **`ViewModels/BookItemViewModel.cs`** — эмодзи 📗 для статуса `FinishedLongAgo`
-- 🔄 **`ViewModels/LibraryViewModel.cs`** — фильтр `"FinishedLongAgo"` в `FilterCommand`
-- 🔄 **`Services/StatisticsService.cs`** — `ReadBooks` считает `Finished` + `FinishedLongAgo`
-- 🔄 **`Services/ReadingProgressService.cs`** — при завершении книги сбрасывает `IsFinishedLongAgo = false`
-- 🔄 **`Library.csproj`** — версия обновлена: `2.6` → `2.7`, `ApplicationVersion`: `33` → `34`
+### Улучшения
+- Тот же расчёт используется для прогноза даты окончания — цифры не расходятся.
 
 ---
 
-## [2.6] - Полки (Shelves)
+## [2.11] — Поиск в библиотеке и книги на полке
 
-### Добавлено
-- ✅ **`Library.Core/Models/Shelf.cs`** — модель полки: `Id`, `Name`, `Books` (1:N с `Book`), seed «Дом» (`Id=1`)
-- ✅ Миграция **`AddBookShelf`** — таблица `Shelves`, FK `Books.ShelfId` (default=1, `OnDelete: Restrict`)
-- ✅ **`Library.Core/Models/Book.cs`** — свойства `ShelfId` и навигационное свойство `Shelf`
-- ✅ **`Services/IShelfService.cs`** + **`Services/ShelfService.cs`** — CRUD-операции, `GetShelvesWithBookCountAsync`, `CanDeleteShelfAsync`
-- ✅ **`Models/ShelfWithBookCount.cs`** — DTO для отображения полки с количеством книг
-- ✅ **`ViewModels/ShelvesViewModel.cs`** — список полок с количеством книг, навигация на добавление/редактирование
-- ✅ **`ViewModels/AddEditShelfViewModel.cs`** — создание/редактирование/удаление полки с валидацией (нельзя удалить полку с книгами)
-- ✅ **`Views/ShelvesPage.xaml`** + **`.cs`** — страница списка полок с кнопкой «Новая полка»
-- ✅ **`Views/AddEditShelfPage.xaml`** + **`.cs`** — страница добавления/редактирования полки
-- ✅ **`MainPage.xaml`** — кнопка «Полки» в главном меню
-- ✅ **`ViewModels/MainPageViewModel.cs`** — команда `GoToShelvesAsync`
-- ✅ **`ViewModels/BookDetailViewModel.cs`** — свойство `ShelfName` для отображения названия полки
-- ✅ **`Views/AddEditBookPage.xaml`** — Picker для выбора полки
+### Новое
+- **Поиск по названию** в разделе «Библиотека» — фильтр срабатывает по мере ввода.
+- При редактировании **полки** виден список книг на ней, с поиском по названию.
+- Нажатие на книгу в списке полки открывает её карточку.
 
-### Изменено
-- 🔄 **`Library.Core/Data/LibraryDbContext.cs`** — `DbSet<Shelf>`, конфигурация связи `Book` → `Shelf` (FK, Restrict, default=1, индекс)
-- 🔄 **`Services/BookService.cs`** — `Include(b => b.Shelf)` во всех запросах (`GetAllBooksAsync`, `GetCurrentBookAsync`, `GetBooksByStatusAsync`, `GetBookByIdAsync`)
-- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — инжекция `IShelfService`, загрузка и выбор полки через `AllShelves` / `SelectedShelf`
-- 🔄 **`Views/BookDetailPage.xaml`** — строка «Полка» в информации о книге (Grid расширен на 1 строку)
-- 🔄 **`AppShell.xaml.cs`** — зарегистрированы маршруты `ShelvesPage`, `AddEditShelfPage`
-- 🔄 **`MauiProgram.cs`** — регистрация `IShelfService` / `ShelfService` (Scoped), VM и Pages
-- 🔄 **`Views/YandexDiskPage.xaml.cs`** — `DisplayAlert` → `DisplayAlertAsync`
-- 🔄 **`Library.csproj`** — версия обновлена: `2.5` → `2.6`, `ApplicationVersion`: `32` → `33`
+### Улучшения
+- Список книг на полке обновляется, когда вы возвращаетесь на экран полки.
 
 ---
 
-## [2.5] - Миграция на .slnx, обновление пакетов, ActionSheet для выбора автора
+## [2.10] — Корректная дата «Прочитано»
 
-### Добавлено
-- ✅ **`Library.slnx`** — новый формат Solution XML (замена `Library.sln`)
-- ✅ **`Services/IDialogService.cs`** — новый метод `ShowActionSheetAsync(title, cancel, destruction, buttons)` для показа ActionSheet
-- ✅ **`Services/MauiDialogService.cs`** — реализация `ShowActionSheetAsync` через `DisplayActionSheetAsync`
-
-### Изменено
-- 🔄 **`ViewModels/AddEditBookViewModel.cs`** — выбор автора переработан: вместо `Picker` (`AuthorPickerIndex` + `AuthorNames`) используется ActionSheet через `ShowActionSheetAsync`; доступные авторы фильтруются (исключаются уже выбранные)
-- 🔄 **`Views/AddEditBookPage.xaml`** — убран `Picker` для автора, кнопка «+» занимает всю ширину и открывает ActionSheet
-- 🔄 **`Services/MauiDialogService.cs`** — `DisplayAlert` → `DisplayAlertAsync`
-- 🔄 **`Library.csproj`** — пакеты обновлены: `CommunityToolkit.Mvvm` 8.4.0 → 8.4.2, `Maui.Controls` 10.0.41 → 10.0.51, `EF Core` / `Extensions` 10.0.3 → 10.0.5; версия обновлена: `2.4` → `2.5`, `ApplicationVersion`: `31` → `32`
-- 🔄 **`Library.Core/Library.Core.csproj`** — `EF Core` 10.0.3 → 10.0.5
-- 🔄 **`.github/workflows/android-build.yml`** — `dotnet restore Library.sln` → `dotnet restore Library.slnx`
-
-### Удалено
-- ❌ **`Library.sln`** — заменён на `Library.slnx`
-- ❌ **`AddEditBookViewModel.AuthorPickerIndex`** и **`AuthorNames`** — заменены ActionSheet-подходом
+### Исправления
+- Если книга уже была отмечена прочитанной с датой завершения, повторное сохранение **не затирает** эту дату.
+- При первом переводе в «Прочитано» дата завершения берётся из **последнего дня в истории чтения**, а не «сейчас». Если истории нет — используется сегодняшняя дата.
 
 ---
 
-## [2.4] - Внедрение INavigationService и IDialogService, замена record на class в моделях
+## [2.8] — Управление авторами
 
-### Добавлено
-- ✅ **`Services/IDialogService.cs`** — интерфейс сервиса диалогов:
-  - `ShowAlertAsync(title, message, cancel)` — показ информационного алерта
-  - `ShowConfirmAsync(title, message, accept, cancel)` — показ диалога подтверждения
-  - `ShowPromptAsync(title, message, accept, cancel)` — показ диалога с текстовым вводом
-- ✅ **`Services/MauiDialogService.cs`** — реализация `IDialogService` через `Shell.Current` / `Application.Current`
-- ✅ **`Services/INavigationService.cs`** — интерфейс сервиса навигации:
-  - `GoToAsync(route)` — навигация по маршруту
-  - `GoToAsync(route, parameters)` — навигация с параметрами
-  - `GoBackAsync()` — возврат назад
-- ✅ **`Services/ShellNavigationService.cs`** — реализация `INavigationService` через `Shell.Current.GoToAsync`
-
-### Изменено
-- 🔄 **`MauiProgram.cs`** — зарегистрированы `INavigationService` / `ShellNavigationService` и `IDialogService` / `MauiDialogService` как Singleton
-- 🔄 **12 ViewModel-классов** — добавлены зависимости `INavigationService` и/или `IDialogService` через конструктор; все прямые вызовы `Shell.Current.GoToAsync`, `Shell.Current.DisplayAlertAsync`, `Shell.Current.DisplayPromptAsync` заменены на вызовы через интерфейсы:
-  - `AddEditBookViewModel` — `INavigationService` + `IDialogService`
-  - `AlternativePageCalculationViewModel` — `INavigationService` + `IDialogService`
-  - `BookDetailViewModel` — `INavigationService` + `IDialogService`
-  - `LibraryViewModel` — `INavigationService`
-  - `LoadingViewModel` — `IDialogService`
-  - `MainPageViewModel` — `INavigationService`
-  - `ReadingHistoryEditViewModel` — `IDialogService`
-  - `ReadingScheduleViewModel` — `IDialogService`
-  - `SettingsViewModel` — `INavigationService` + `IDialogService`
-  - `StatisticsViewModel` — `INavigationService`
-  - `UpdateProgressViewModel` — `INavigationService` + `IDialogService`
-  - `YandexDiskViewModel` — `IDialogService`
-- 🔄 **5 моделей в Library.Core** — `record` заменён на `class` для совместимости с EF Core и предсказуемости поведения:
-  - `Author` (`record` → `class`)
-  - `Book` (`partial record` → `partial class`)
-  - `Book.Computed` (`partial record` → `partial class`)
-  - `BookReadingSchedule` (`record` → `class`)
-  - `PagesReadInDate` (`record` → `class`)
-- 🔄 **`Services/BookService.cs`** — метод `SetCurrentBookAsync` оптимизирован: вместо загрузки всех книг в память используется `ExecuteUpdateAsync` для массового обновления `IsCurrentlyReading` на уровне БД
-- 🔄 **`Views/YandexDiskPage.xaml.cs`** — вызов `DisplayAlertAsync` заменён на `_viewModel.ShowInstructionsCommand`
-- 🔄 **`Library.csproj`** — версия обновлена: `2.3` → `2.4`, `ApplicationVersion`: `30` → `31`
-
-### Удалено
-- ❌ Прямые зависимости ViewModel от `Shell.Current` — заменены абстракциями `INavigationService` / `IDialogService`
+### Новое
+- Раздел **«Авторы»** с главного экрана.
+- Список авторов с количеством книг, сортировка по имени или по числу книг.
+- Редактирование имени и удаление автора (удалить нельзя, если к автору привязаны книги).
 
 ---
 
-## [2.3] - Вынос дублирующегося кода: плюрализация, тема, фильтрация дат
+## [2.7] — Статус «Прочитана давно»
 
-### Добавлено
-- ✅ **`Helpers/RussianPluralization.cs`** — статический хелпер для русского склонения существительных по числительным:
-  - `Pluralize(int count, string one, string few, string many)` — универсальный метод (11-14 → many; lastDigit 1 → one; 2-4 → few; иначе → many)
-  - `Days(int count)` — обёртка для «день/дня/дней»
-  - `Months(int count)` — обёртка для «месяц/месяца/месяцев»
-- ✅ **`Extensions/ApplicationExtensions.cs`** — extension method `GetThemeColor(this Application?, string, Color)` для получения цвета из ресурсов темы
-- ✅ **`Services/IDateFilterService.cs`** — интерфейс сервиса фильтрации дат:
-  - `GetDateRange(int filterIndex, DateTime? customStart, DateTime? customEnd)` — преобразование индекса фильтра (0-6) в пару дат
-  - `FilterByDateRange<T>(IEnumerable<T>, DateTime?, DateTime?, Func<T, DateTime>)` — обобщённая фильтрация коллекций по диапазону дат
-  - `IsBookInDateRange(Book, DateTime?, DateTime?)` — проверка попадания книги в диапазон по `DateFinished` или `PagesReadHistory`
-- ✅ **`Services/DateFilterService.cs`** — реализация `IDateFilterService`
+### Новое
+- Статус **«Прочитана давно»** — для книг, которые вы давно закончили, но точную дату окончания не помните.
+- Фильтр в библиотеке и выбор статуса при добавлении/редактировании книги.
+- Такие книги учитываются в статистике прочитанных.
 
-### Изменено
-- 🔄 **`Services/StatisticsService.cs`** — добавлена инжекция `IDateFilterService`; 5 повторяющихся inline-лямбд фильтрации по датам заменены на вызовы `FilterByDateRange` и `IsBookInDateRange`
-- 🔄 **`ViewModels/BookDetailViewModel.cs`** — вызовы `GetThemeColor` → `Application.Current.GetThemeColor(...)`, `GetDaysText` → `RussianPluralization.Days(...)`
-- 🔄 **`ViewModels/StatisticsViewModel.cs`** — добавлена инжекция `IDateFilterService`; вызовы `GetThemeColor` → extension method, `GetDaysText`/`GetMonthsText` → `RussianPluralization`, `GetDateRange()` → `_dateFilterService.GetDateRange(...)`
-- 🔄 **`MauiProgram.cs`** — зарегистрирован `IDateFilterService` / `DateFilterService` как Scoped
-
-### Удалено
-- ❌ `BookDetailViewModel.GetThemeColor` и `BookDetailViewModel.GetDaysText` — заменены хелперами
-- ❌ `StatisticsViewModel.GetThemeColor`, `GetDaysText`, `GetMonthsText`, `GetDateRange` — заменены сервисом и хелперами
-- ❌ 5 inline-лямбд фильтрации по датам в `StatisticsService` — заменены вызовами `DateFilterService`
+### Улучшения
+- Для «прочитана давно» скрыты кнопки обновления прогресса и почасового графика — как для обычных завершённых книг.
 
 ---
 
-## [2.2] - SafeExecute: безопасная обработка async void
+## [2.6] — Полки
 
-### Добавлено
-- ✅ **`Views/BasePage.cs`** — базовый класс `BasePage : ContentPage` с методом `SafeExecute(Func<Task>)`, оборачивающим асинхронные вызовы в `try/catch` с показом `DisplayAlertAsync` при ошибке
+### Новое
+- **Полки** для группировки книг (по умолчанию есть полка «Дом»).
+- Раздел «Полки» с главного экрана: создание, переименование, удаление пустых полок.
+- При добавлении и редактировании книги можно выбрать полку; на карточке книги видно, где она лежит.
 
-### Изменено
-- 🔄 **13 XAML-файлов** — корневой элемент `<ContentPage>` заменён на `<base:BasePage>` с добавлением `xmlns:base="clr-namespace:Library.Views"`:
-  - `MainPage.xaml`, `LibraryPage.xaml`, `BookDetailPage.xaml`, `StatisticsPage.xaml`, `YandexDiskPage.xaml`, `LoadingPage.xaml`, `AddEditBookPage.xaml`, `SettingsPage.xaml`, `BookChoosePage.xaml`, `UpdateProgressPage.xaml`, `ReadingHistoryEditPage.xaml`, `ReadingSchedulePage.xaml`, `AlternativePageCalculationPage.xaml`
-- 🔄 **13 code-behind файлов** — наследование изменено с `ContentPage` на `BasePage`
-- 🔄 **12 методов `async void` в 6 файлах обёрнуты в `SafeExecute`** — метод теряет `async` в сигнатуре, тело передаётся как лямбда:
-  - `MainPage.xaml.cs` — `OnAppearing`
-  - `LibraryPage.xaml.cs` — `OnAppearing`, `OnBookSelected`
-  - `BookDetailPage.xaml.cs` — `OnAppearing`
-  - `StatisticsPage.xaml.cs` — `OnAppearing`, `OnDateFilterChanged`, `OnCustomDateChanged`, `OnSearchTextChanged`, `OnBookRankingSelected`
-  - `YandexDiskPage.xaml.cs` — `OnAppearing`, `OnBackupSelectionChanged`
-  - `LoadingPage.xaml.cs` — `OnAppearing`
+### Исправления
+- Устранены мелкие сбои в диалогах на экране Яндекс Диска.
 
 ---
 
-## [2.1] - Разбиение LibraryService на доменные сервисы
+## [2.5] — Выбор автора и обновления
 
-### Добавлено
-- ✅ **5 доменных сервисов с интерфейсами** вместо монолитного `LibraryService`:
-  - `IBookService` / `BookService` — CRUD книг (`GetAllBooksAsync`, `GetBookByIdAsync`, `AddBookAsync`, `UpdateBookAsync`, `DeleteBookAsync`, `SetCurrentBookAsync`, `GetCurrentBookAsync`, `GetBooksByStatusAsync`)
-  - `IAuthorService` / `AuthorService` — CRUD авторов (`GetAllAuthorsAsync`, `GetAuthorByIdAsync`, `AddAuthorAsync`, `GetOrCreateAuthorAsync`)
-  - `IReadingProgressService` / `ReadingProgressService` — прогресс чтения и история (`AddOrUpdateReadingProgressAsync`, `RemoveReadingProgressAsync`, `GetReadingHistoryAsync`)
-  - `IStatisticsService` / `StatisticsService` — агрегация статистики и графиков (`GetStatisticsAsync`, `GetBookRankingsAsync`, `GetDailyReadingDataAsync`, `GetMonthlyReadingDataAsync`, `GetDailyReadingDataForBookAsync`)
-  - `IReadingScheduleService` / `ReadingScheduleService` — расписание чтения (`GetBookReadingScheduleAsync`, `UpdateBookReadingScheduleAsync`, `GetEffectiveReadingHoursAsync`)
-- ✅ **10 новых файлов** в папке `Services/`: 5 интерфейсов + 5 реализаций
-
-### Изменено
-- 🔄 **`DatabaseMigrationService.cs`**: перенесён метод `InitializeDatabaseAsync()` из `LibraryService` — инфраструктурная логика инициализации БД теперь в профильном сервисе
-- 🔄 **`MauiProgram.cs`**: заменена регистрация `AddScoped<LibraryService>()` на 5 интерфейсных привязок (`AddScoped<IBookService, BookService>()` и т.д.)
-- 🔄 **`AddEditBookViewModel`**: зависимость `LibraryService` → `IBookService` + `IAuthorService`
-- 🔄 **`AlternativePageCalculationViewModel`**: зависимость `LibraryService` → `IBookService`
-- 🔄 **`BookDetailViewModel`**: зависимость `LibraryService` → `IBookService` + `IStatisticsService`
-- 🔄 **`LibraryViewModel`**: зависимость `LibraryService` → `IBookService`
-- 🔄 **`MainPageViewModel`**: зависимость `LibraryService` → `IBookService`
-- 🔄 **`ReadingHistoryEditViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
-- 🔄 **`ReadingScheduleViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingScheduleService`
-- 🔄 **`SettingsViewModel`**: зависимость `LibraryService` → `IBookService`
-- 🔄 **`StatisticsViewModel`**: зависимость `LibraryService` → `IStatisticsService`
-- 🔄 **`UpdateProgressViewModel`**: зависимость `LibraryService` → `IBookService` + `IReadingProgressService`
-- 🔄 **`LoadingViewModel`**: зависимость `LibraryService` → `DatabaseMigrationService`
-
-### Удалено
-- ❌ **`Services/LibraryService.cs`** (738 строк) — God Object разделён на 5 доменных сервисов с чёткой ответственностью
+### Улучшения
+- При добавлении книги автор выбирается через **удобное меню** (вместо длинного списка) — уже выбранные авторы в меню не дублируются.
+- Обновлены библиотеки приложения для стабильности и совместимости.
 
 ---
 
-## [2.0] - Внедрение MVVM-архитектуры
+## [2.4] — Надёжность интерфейса
 
-### Добавлено
-- ✅ **Папка `ViewModels/` с 15 ViewModel-классами**:
-  - `MainPageViewModel` — отображение текущей книги, навигация по разделам
-  - `LibraryViewModel` — загрузка списка книг, фильтрация, сортировка
-  - `BookItemViewModel` — вынесен из code-behind `LibraryPage.xaml.cs`
-  - `BookDetailViewModel` — данные книги, прогресс, график чтения, навигация к дочерним страницам
-  - `SettingsViewModel` — смена темы, очистка данных, навигация на Яндекс Диск
-  - `BookChooseViewModel` — настройки выбора книг, вызов сервиса расчёта
-  - `LoadingViewModel` — инициализация БД, переход на AppShell
-  - `StatisticsViewModel` — статистика, фильтрация по датам, графики, рейтинг книг
-  - `AddEditBookViewModel` — форма добавления/редактирования книги с валидацией
-  - `UpdateProgressViewModel` — обновление прогресса чтения
-  - `YandexDiskViewModel` — OAuth, бэкапы, управление резервными копиями
-  - `ReadingScheduleViewModel` — расчёт почасового графика чтения
-  - `ReadingHistoryEditViewModel` — редактирование истории чтения по дням
-  - `ReadingHistoryItemViewModel` — вынесен из code-behind `ReadingHistoryEditPage.xaml.cs`
-  - `AlternativePageCalculationViewModel` — конвертация страниц между изданиями
-
-- ✅ **Shell-навигация для всех страниц**:
-  - Все 11 страниц зарегистрированы как Shell-маршруты в `AppShell.xaml.cs`
-  - Навигация `Navigation.PushAsync(new Page(...))` заменена на `Shell.Current.GoToAsync`
-  - Передача параметров через query-строку (`?bookId=...`) вместо конструкторов
-
-- ✅ **DI-регистрация всех компонентов**:
-  - 13 ViewModel и 13 Page зарегистрированы как `Transient` в `MauiProgram.cs`
-  - Shell автоматически резолвит страницы из DI при навигации
-
-### Изменено
-- 🔄 **AppShell.xaml.cs**: зарегистрированы маршруты для `LibraryPage`, `BookDetailPage`, `AddEditBookPage`, `StatisticsPage`, `SettingsPage`, `BookChoosePage`, `UpdateProgressPage`, `ReadingHistoryEditPage`, `AlternativePageCalculationPage`
-- 🔄 **MauiProgram.cs**: добавлен `using Library.ViewModels`, зарегистрированы все ViewModel и Page
-- 🔄 **App.xaml.cs**: `LoadingPage` теперь резолвится из DI вместо ручного создания через `new`
-- 🔄 **MainPage.xaml / MainPage.xaml.cs**: навигация через команды ViewModel, TapGestureRecognizer в XAML вместо code-behind
-- 🔄 **Views/SettingsPage.xaml / .cs**: привязки `{Binding}` для темы и версии, команды для кнопок
-- 🔄 **Views/BookChoosePage.xaml / .cs**: привязки для полей ввода, `Command` для кнопки расчёта
-- 🔄 **Views/LoadingPage.xaml.cs**: вызов `InitializeCommand` из ViewModel в `OnAppearing`
-- 🔄 **Views/LibraryPage.xaml / .cs**: `ItemsSource="{Binding Books}"`, команды для фильтрации и сортировки
-- 🔄 **Views/BookDetailPage.xaml / .cs**: все данные через привязки, `Drawable="{Binding ChartDrawable}"`, `IQueryAttributable` для приёма `bookId`
-- 🔄 **Views/StatisticsPage.xaml / .cs**: привязки для статистики и графиков, команды для фильтров
-- 🔄 **Views/AddEditBookPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для режима редактирования
-- 🔄 **Views/UpdateProgressPage.xaml / .cs**: форма через привязки, `IQueryAttributable` для `bookId`
-- 🔄 **Views/YandexDiskPage.xaml / .cs**: все состояния через привязки, команды для OAuth и бэкапов
-- 🔄 **Views/ReadingSchedulePage.xaml / .cs**: привязки, `IQueryAttributable`, убран `[QueryProperty]`
-- 🔄 **Views/ReadingHistoryEditPage.xaml / .cs**: `ItemsSource="{Binding Items}"`, команда удаления через `RelativeSource`
-- 🔄 **Views/AlternativePageCalculationPage.xaml / .cs**: форма через привязки, `IQueryAttributable`
-
-### Удалено
-- ❌ **Pseudo-ViewModel `BookViewModel`** из `LibraryPage.xaml.cs` — вынесен в `ViewModels/BookItemViewModel.cs`
-- ❌ **Pseudo-ViewModel `ReadingHistoryItemViewModel`** из `ReadingHistoryEditPage.xaml.cs` — вынесен в `ViewModels/ReadingHistoryItemViewModel.cs`
-- ❌ **Вся бизнес-логика из code-behind** всех 14 страниц — перенесена в соответствующие ViewModel
-- ❌ **Ручное создание страниц** (`new Page(service)`) — заменено на Shell-навигацию с DI
-
-### Технические детали
-- 📐 **CommunityToolkit.Mvvm 8.4.0**: задействованы `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`
-- 📐 **IQueryAttributable**: используется в `BookDetailViewModel`, `AddEditBookViewModel`, `UpdateProgressViewModel`, `ReadingScheduleViewModel`, `ReadingHistoryEditViewModel`, `AlternativePageCalculationViewModel` для приёма параметров навигации
-- 📐 **DisplayAlertAsync**: все вызовы диалогов используют `DisplayAlertAsync` (вместо устаревшего `DisplayAlert`)
-- 📐 **Code-behind**: сведён к минимуму — конструктор с `BindingContext = viewModel` и `OnAppearing` для загрузки данных
-- 📐 **Сборка**: 0 ошибок, 0 предупреждений
-
-## [1.26] - Переключение графика статистики по дням и по месяцам
-
-### Добавлено
-- ✅ **Помесячный режим графика чтения**:
-  - Новый метод `GetMonthlyReadingDataAsync` в `LibraryService` для получения данных о чтении, сгруппированных по месяцам
-  - При открытии страницы статистики график по умолчанию отображается по месяцам
-  - Переключение между режимами «по дням» и «по месяцам» по нажатию на график
-  - Подсказка под графиком о возможности переключения режима
-
-### Изменено
-- 🔄 **Controls/ReadingChartDrawable.cs**:
-  - Добавлено свойство `IsMonthlyMode` для управления режимом отображения
-  - Ось X в месячном режиме показывает сокращённые названия месяцев, год отображается при смене года
-  - Ширина столбцов адаптирована: 60px на месяц, 30px на день
-- 🔄 **Views/StatisticsPage.xaml**:
-  - На `GraphicsView` добавлен `TapGestureRecognizer` для переключения режима
-  - Добавлена подсказка о переключении режима под графиком
-- 🔄 **Views/StatisticsPage.xaml.cs**:
-  - Метод `LoadChartData` адаптирован для работы с обоими режимами
-  - Описание графика меняется в зависимости от режима («за N дней» / «за N месяцев»)
-  - Среднее количество страниц в день отображается в обоих режимах
-
-### Технические детали
-- 📐 **Модель данных**: переиспользуется `DailyReadingData` — для месячных данных поле `Date` содержит первое число месяца
-- 📐 **Группировка**: `GetMonthlyReadingDataAsync` группирует по `{ Year, Month }` аналогично `GetDailyReadingDataAsync`, который группирует по `Date.Date`
-
-## [1.24] - Улучшение разметки карточки чтения за дату
-
-### Изменено
-- 🔄 **Views/ReadingHistoryEditPage.xaml**:
-  - Изменена структура Grid карточки чтения за дату с 4 колонок на 2 колонки
-  - В левой части создан вложенный Grid с двумя строками:
-    - Первая строка: дата
-    - Вторая строка: сумма страниц на дату (редактируемое поле) и количество страниц за день (горизонтально)
-  - Кнопка удаления размещена в правой колонке и растягивается на всю высоту карточки (`VerticalOptions="Fill"`)
-  - Улучшена читаемость и организация элементов интерфейса
-
-### Технические детали
-- 📐 **Структура разметки**:
-  - Основной Grid: `ColumnDefinitions="*,Auto"` (левая часть занимает доступное пространство, правая - фиксированная для кнопки)
-  - Вложенный Grid в левой колонке: `RowDefinitions="Auto,Auto"` (дата сверху, информация о страницах снизу)
-  - Горизонтальный StackLayout во второй строке для суммы страниц и количества за день
-  - Кнопка удаления с `VerticalOptions="Fill"` для растягивания по высоте
-
-## [1.23] - Дата завершения книги и навигация из рейтинга
-
-### Добавлено
-- ✅ **Дата завершения чтения**:
-  - На `BookDetailPage` отображается дата завершения из поля `DateFinished`, если оно заполнено
-
-### Изменено
-- 🔄 **Views/StatisticsPage.xaml(.cs)**:
-  - Элементы рейтинга книг поддерживают переход к `BookDetailPage` и сбрасывают выделение после навигации
-- 🔄 **Views/BookChoosePage.xaml**:
-  - Выбранный номер книги выравнен по центру для лучшей читаемости
-
-## [1.22] - Альтернативный расчет страниц для разных изданий
-
-### Добавлено
-- ✅ **Функционал альтернативного расчета страниц**:
-  - Новая страница `AlternativePageCalculationPage` для настройки и конвертации страниц между бумажным и электронным изданиями
-  - Возможность указать диапазоны страниц для основного (бумажного) и альтернативного (электронного) изданий
-  - Автоматический расчет коэффициентов конвертации между изданиями
-  - Конвертация страниц в реальном времени при вводе значений
-  - Сохранение настроек диапазонов в базе данных
-
-- ✅ **Новые поля в модели Book**:
-  - `MainFirstPage` (int?) - первая страница основного издания
-  - `AlternativeFirstPage` (int?) - первая страница альтернативного издания
-  - `AlternativeLastPage` (int?) - последняя страница альтернативного издания
-  - Все поля nullable, по умолчанию пустые
-
-- ✅ **Миграция базы данных**:
-  - Создана миграция `20251106214245_AddAlternativePageCalculationFields`
-  - Добавлены три новых nullable столбца в таблицу `Books`
-  - Обновлен `LibraryDbContextModelSnapshot` с новыми полями
-
-- ✅ **Кнопка на странице деталей книги**:
-  - Добавлена кнопка "🔄 Альтернативный расчет страниц" в секцию "Прогресс чтения"
-  - Расположена после кнопки "График чтения по часам"
-  - Навигация на страницу альтернативного расчета с передачей данных книги
-
-### Изменено
-- 🔄 **Library.Core/Models/Book.cs**:
-  - Добавлены три новых nullable свойства для хранения диапазонов страниц
-  - Поля используются для расчета коэффициентов конвертации
-
-- 🔄 **Views/BookDetailPage.xaml**:
-  - Добавлена кнопка "🔄 Альтернативный расчет страниц" в секцию прогресса чтения
-  - Кнопка стилизована с использованием `SecondaryColor`
-
-- 🔄 **Views/BookDetailPage.xaml.cs**:
-  - Добавлен метод `OnAlternativePageCalculationClicked` для навигации
-  - Перезагрузка актуальных данных книги перед открытием страницы конвертации
-
-- 🔄 **Library.Core/Migrations/LibraryDbContextModelSnapshot.cs**:
-  - Обновлен снимок модели для отражения новых полей в схеме БД
-
-### Технические детали
-- 📊 **Алгоритм расчета коэффициентов**:
-  ```csharp
-  // Коэффициент для перевода из основного в альтернативный
-  mainToAlternativeCoefficient = (AlternativeLastPage - AlternativeFirstPage + 1) / 
-                                 (TotalPages - MainFirstPage + 1)
-  
-  // Коэффициент для перевода из альтернативного в основной (обратный)
-  alternativeToMainCoefficient = (TotalPages - MainFirstPage + 1) / 
-                                (AlternativeLastPage - AlternativeFirstPage + 1)
-  ```
-
-- 🔄 **Логика конвертации**:
-  - При вводе страницы основного издания: `altPage = altFirst + (mainPage - mainFirst) * coefficient`
-  - При вводе страницы альтернативного издания: `mainPage = mainFirst + (altPage - altFirst) * coefficient`
-  - Конвертация происходит в реальном времени при изменении текста в полях ввода
-  - Результаты округляются до целого числа страниц
-
-- 🎯 **Валидация данных**:
-  - Проверка корректности диапазонов страниц перед сохранением
-  - Валидация: первая страница основного издания не может быть больше TotalPages
-  - Валидация: последняя страница альтернативного издания должна быть >= первой
-  - Все поля должны содержать положительные числа
-
-- 💾 **Сохранение настроек**:
-  - Значения диапазонов сохраняются в модель книги через `LibraryService.UpdateBookAsync()`
-  - При следующем открытии страницы значения автоматически загружаются из БД
-  - Коэффициенты пересчитываются при изменении диапазонов
-
-- 📱 **UI компоненты**:
-  - Использованы существующие стили Library: `CardBackgroundColor`, `PageBackgroundColor`, `PrimaryTextColor`, `SecondaryTextColor`, `PrimaryColor`, `TertiaryColor`
-  - Border с RoundRectangle CornerRadius="15" для карточек
-  - Инструкции по использованию функционала в отдельной карточке
-  - Два блока конвертации с визуальными стрелками (→) для указания направления
-
-### Примеры использования
-```
-Пример 1: Настройка диапазонов
-- Основное издание: страницы 5-400 (всего 400 страниц, начинается с 5)
-- Альтернативное издание: страницы 1-600
-- Коэффициент: 600 / 396 = 1.515
-
-Пример 2: Конвертация из основного в альтернативное
-- Ввод: страница 100 основного издания
-- Расчет: 1 + (100 - 5) * 1.515 = 1 + 95 * 1.515 = 144.925 ≈ 145
-- Результат: страница 145 альтернативного издания
-
-Пример 3: Конвертация из альтернативного в основное
-- Ввод: страница 300 альтернативного издания
-- Расчет: 5 + (300 - 1) * 0.66 = 5 + 299 * 0.66 = 202.34 ≈ 202
-- Результат: страница 202 основного издания
-```
-
-### Особенности реализации
-- 🔄 **Реальное время**: Конвертация происходит мгновенно при вводе текста
-- 💡 **Инструкции**: Подробное описание работы с функционалом на странице
-- ✅ **Валидация**: Проверка корректности всех введенных значений
-- 💾 **Сохранение**: Автоматическое сохранение настроек в базу данных
-- 🔄 **Обновление**: Автоматический пересчет коэффициентов при изменении диапазонов
+### Улучшения
+- Улучшена работа диалогов и переходов между экранами — меньше сбоев при навигации.
+- Ускорено переключение «текущей» книги при большой библиотеке.
 
 ---
 
-## [1.21] - Интеграция функционала выбора книги
+## [2.3] — Статистика и формулировки
 
-### Добавлено
-- ✅ **Страница "Выбор книги"** (`BookChoosePage`):
-  - Новая страница для случайного выбора номера книги из заданного диапазона
-  - Отображение предыдущего выбранного номера (read-only)
-  - Поле ввода количества книг для расчёта
-  - Выбор метода расчёта (Picker с двумя вариантами)
-  - Кнопка "Рассчитать" для выполнения выбора
-  - Крупное отображение выбранного номера книги
-  - Стилизация в соответствии с общим дизайном приложения Library
-
-- ✅ **Сервисы выбора книги**:
-  - `IBookChooseService` - интерфейс для сервисов выбора
-  - `PrioritizedRandomBookChooseService` - метод с приоритизацией (меньшие номера имеют больший вес)
-  - `RandomBookChooseService` - равновероятный случайный выбор
-  - Оба сервиса возвращают одно число (номер выбранной книги) вместо списка
-  - Логика: выполняется серия выборов, выбирается книга с наибольшим количеством выпадений (при равенстве - меньший номер)
-
-- ✅ **Модель `BookChooseServiceKey`**:
-  - Размещена в папке `Models` (как модель, а не сервис)
-  - Содержит идентификаторы и названия методов расчёта
-  - Два варианта: "Приоритет первым" (ID: 0) и "Наугад" (ID: 1)
-  - Методы `GetAll()` и `Get(int id)` для работы с ключами
-
-- ✅ **Расширение SettingsService**:
-  - Метод `GetBookChooseSettings()` - получение сохранённых настроек выбора книги
-  - Метод `SaveBookChooseSettings()` - сохранение настроек выбора книги
-  - Хранение через `Preferences` с ключами:
-    - `BookChooseBooksAmount` - количество книг
-    - `BookChooseLastChosenBookNumber` - последний выбранный номер
-    - `BookChooseServiceOption` - выбранный метод расчёта
-  - Автоматическое сохранение и загрузка при перезапуске приложения
-
-- ✅ **Кнопка "Выбор книги" на главном экране**:
-  - Добавлена карточка "🎲 Выбор книги" между "Статистика" и "Настройки"
-  - Расположена в Grid.Row="1" Grid.Column="1"
-  - Стилизация соответствует остальным карточкам меню
-  - Обработчик навигации на страницу выбора книги
-
-### Изменено
-- 🔄 **MainPage.xaml**:
-  - Изменена структура Grid меню действий: с 2x2 на 2x3 (добавлена третья строка)
-  - Карточка "Настройки" перемещена в Grid.Row="2" Grid.Column="0"
-  - Добавлена карточка "Выбор книги" в Grid.Row="1" Grid.Column="1"
-
-- 🔄 **MainPage.xaml.cs**:
-  - Добавлен обработчик `OnBookChooseTapped` для навигации на `BookChoosePage`
-  - Навигация с передачей `IServiceProvider` и `SettingsService`
-
-- 🔄 **MauiProgram.cs**:
-  - Зарегистрированы сервисы выбора книги как keyed services:
-    - `AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(BookChooseServiceKey.PrioritizedRandomId)`
-    - `AddKeyedSingleton<IBookChooseService, RandomBookChooseService>(BookChooseServiceKey.RandomId)`
-  - Зарегистрирована страница `BookChoosePage` как Transient
-
-- 🔄 **Library.csproj**:
-  - Добавлен пакет `CommunityToolkit.Mvvm` Version="8.4.0" (использовался временно, затем логика перенесена в code-behind)
-
-### Технические детали
-- 🎯 **Логика выбора книги**:
-  - `PrioritizedRandomBookChooseService`: формирует кумулятивные веса для книг (меньшие номера имеют больший вес), выполняет серию выборов, возвращает лидера
-  - `RandomBookChooseService`: выполняет равновероятные выборы из диапазона [1..booksAmount], возвращает лидера по количеству выпадений
-  - Оба метода возвращают одно число вместо списка (как в оригинальном BookChooser)
-
-- 💾 **Сохранение настроек**:
-  - Все три значения сохраняются через `Preferences` API
-  - При загрузке страницы автоматически подставляются сохранённые значения
-  - Предыдущий выбор заполняется из последнего расчёта
-  - При перезапуске приложения все настройки восстанавливаются
-
-- 🏗️ **Архитектура**:
-  - Логика страницы реализована в code-behind (`BookChoosePage.xaml.cs`)
-  - Использование событий вместо привязок (Binding) для управления UI
-  - Прямое обновление элементов управления через `x:Name`
-  - Сервисы зарегистрированы как keyed services для выбора по ID
-
-- 📱 **UI компоненты**:
-  - Использованы существующие стили Library: `CardBackgroundColor`, `PageBackgroundColor`, `PrimaryTextColor`, `SecondaryTextColor`, `PrimaryColor`, `TertiaryColor`
-  - Border с RoundRectangle CornerRadius="15" для карточек
-  - Крупный шрифт (40px) для отображения выбранного номера
-
-### Примеры использования
-```
-Пример 1: Выбор с приоритизацией
-- Количество книг: 1000
-- Метод: "Приоритет первым"
-- Результат: выбирается книга с наибольшим количеством выпадений (с приоритетом меньших номеров)
-
-Пример 2: Равновероятный выбор
-- Количество книг: 500
-- Метод: "Наугад"
-- Результат: выбирается книга с наибольшим количеством выпадений (равновероятно)
-
-Пример 3: Сохранение настроек
-- Пользователь вводит количество книг: 1000
-- Выбирает метод: "Приоритет первым"
-- Выполняет расчёт → получает номер 42
-- При следующем запуске приложения:
-  - Количество книг: 1000 (восстановлено)
-  - Предыдущий выбор: 42 (восстановлено)
-  - Метод: "Приоритет первым" (восстановлен)
-```
+### Улучшения
+- В статистике и на карточке книги корректные подписи **«день / дня / дней»** и **«месяц / месяца / месяцев»**.
+- Фильтры по периоду в статистике работают единообразно для всех блоков.
 
 ---
 
-## [1.20] - Удаление резервных копий на странице Яндекс Диска
+## [2.2] — Сообщения об ошибках
 
-### Добавлено
-- ✅ **Функция удаления резервных копий** на странице Яндекс Диска:
-  - Кнопка "Удалить резервную копию" после кнопки "Восстановить из резервной копии"
-  - Предварительный выбор резервной копии из списка перед удалением
-  - Диалог подтверждения с названием файла перед удалением
-  - Цвет кнопки: `ErrorColor` для визуального указания на опасное действие
-  - Безвозвратное удаление резервных копий с Яндекс Диска
-
-### Изменено
-- 🔄 **Views/YandexDiskPage.xaml**:
-  - Добавлена кнопка "Удалить резервную копию" в секции "Резервное копирование"
-  - Кнопка размещена после кнопки "Восстановить из резервной копии"
-  - Использован цвет `ErrorColor` для фона кнопки
-  - Текст кнопки: `SecondaryTextColor`
-
-- 🔄 **Views/YandexDiskPage.xaml.cs**:
-  - Добавлен метод `OnDeleteBackupClicked` для обработки удаления резервных копий
-  - Проверка авторизации в Яндекс Диске перед удалением
-  - Проверка выбранной резервной копии (`_selectedBackup != null`)
-  - Диалог подтверждения с предупреждением о необратимости действия
-  - Вызов `DeleteFileAsync()` с параметром `permanently: true` для полного удаления
-  - Автоматическое обновление списка резервных копий после успешного удаления
-  - Очистка выбранной копии (`_selectedBackup = null`) после удаления
-  - Обработка ошибок с отображением информативных сообщений
-
-### Технические детали
-- 🗑️ **Процесс удаления**:
-  1. Пользователь выбирает резервную копию из списка
-  2. Нажимает кнопку "Удалить резервную копию"
-  3. Показывается диалог подтверждения с названием файла
-  4. При подтверждении вызывается `YandexDiskService.DeleteFileAsync()` с параметром `permanently: true`
-  5. После успешного удаления обновляется список резервных копий
-  
-- 🎯 **Валидация**:
-  - Проверка авторизации перед удалением
-  - Проверка выбранной резервной копии
-  - Подтверждение действия через диалог
-  
-- 💡 **UX особенности**:
-  - Кнопка использует цвет `ErrorColor` для визуального указания на опасность
-  - Диалог подтверждения содержит предупреждение "Это действие нельзя отменить"
-  - Показ индикатора загрузки во время операции удаления
-  - Информативные сообщения об успехе или ошибке
-
-### Примеры использования
-```
-Пример: Удаление устаревшей резервной копии
-1. Пользователь открывает страницу "Яндекс Диск"
-2. Просматривает список резервных копий
-3. Выбирает нужную копию (например, "library_20240101_120000.db")
-4. Нажимает кнопку "Удалить резервную копию" (красная кнопка)
-5. Подтверждает удаление в диалоге
-6. Резервная копия удаляется с Яндекс Диска
-7. Список автоматически обновляется
-```
+### Улучшения
+- При сбое загрузки данных приложение показывает понятное сообщение вместо «тихого» зависания.
 
 ---
 
-## [1.19] - Текстовый фильтр на странице статистики
+## [2.1] — Внутренняя организация данных
 
-### Добавлено
-- ✅ **Текстовый фильтр поиска** на странице статистики:
-  - Карточка "Поиск" с полем для ввода текста между фильтром "Период" и "Общая статистика"
-  - Регистронезависимый поиск по названию книги или имени автора
-  - Фильтрация применяется на уровне получения данных из БД
-  - Влияет на все разделы статистики: общие показатели, рейтинг книг, график чтения, топ авторов
-  - Автоматическое обновление при вводе текста
-
-### Изменено
-- 🔄 **Views/StatisticsPage.xaml**:
-  - Добавлена карточка с Entry для поиска между блоками "Период" и "Общая статистика"
-  - Использованы стили, соответствующие остальным карточкам страницы
-  - Placeholder: "Поиск по названию или автору"
-
-- 🔄 **Views/StatisticsPage.xaml.cs**:
-  - Добавлено приватное поле `_searchText` для хранения текста фильтра
-  - Добавлен обработчик `OnSearchTextChanged` для автоматического обновления статистики
-  - Метод `LoadStatistics()` передает параметр `searchText` во все методы сервиса
-  - Метод `LoadChartData()` также учитывает текстовый фильтр
-
-- 🔄 **Services/LibraryService.cs**:
-  - Метод `GetStatisticsAsync()` теперь принимает параметр `searchText`
-  - Фильтрация книг по названию или автору перед подсчетом статистики
-  - Метод `GetBookRankingsAsync()` расширен параметром `searchText`
-  - Метод `GetDailyReadingDataAsync()` теперь фильтрует данные по поисковому запросу
-  - Все методы используют `Contains()` с `StringComparison.OrdinalIgnoreCase` для регистронезависимого поиска
-
-### Технические детали
-- 🔍 **Логика фильтрации**:
-  ```csharp
-  books = books.Where(b =>
-      b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-      b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-  ).ToList();
-  ```
-- 🎯 **Применение фильтра**:
-  - Если `searchText` пустой или null, фильтрация не применяется
-  - Фильтр работает совместно с фильтром по датам
-  - Фильтрация выполняется на уровне получения данных из БД, что обеспечивает консистентность всех разделов
-- 📊 **Охват фильтрации**:
-  - Общая статистика (количество книг, прочитанных, текущих, в планах, страниц)
-  - Рейтинг книг (отображаются только книги, соответствующие поиску)
-  - График чтения (учитываются только данные отфильтрованных книг)
-  - Топ авторов (формируется только из отфильтрованных книг)
-
-### Примеры использования
-```
-Пример 1: Поиск по названию
-- Ввод: "война"
-- Результат: показываются только книги с "Война и мир", "Война миров" и т.д.
-
-Пример 2: Поиск по автору
-- Ввод: "толстой"
-- Результат: показываются только книги автора "Лев Толстой"
-
-Пример 3: Комбинированный фильтр
-- Фильтр по датам: "Последние 30 дней"
-- Поиск: "достоевский"
-- Результат: показывается статистика только по книгам Достоевского за последний месяц
-```
+### Улучшения
+- Под капотом сервисы разделены по задачам (книги, авторы, прогресс, статистика, расписание) — для вас это прозрачно, но приложение стало проще поддерживать.
 
 ---
 
-## [1.18] - Улучшения интерфейса и CI/CD
+## [2.0] — Обновлённая архитектура экранов
 
-### Изменено
-- 🔄 **Views/LibraryPage.xaml**:
-  - Улучшен пользовательский интерфейс страницы библиотеки
-  - Оптимизирована структура макета для лучшей читаемости
-
-- 🔄 **Views/LibraryPage.xaml.cs**:
-  - Улучшена логика работы с фильтрами и сортировкой книг
-  - Оптимизирована производительность загрузки списка книг
-
-- 🔄 **Library.csproj**:
-  - Обновлена версия приложения до 1.18
-
-- 🔄 **.github/workflows/android-build.yml**:
-  - Улучшен процесс сборки и публикации Android приложения
-  - Добавлены дополнительные проверки целостности APK файлов
-  - Оптимизированы шаги сборки для Release конфигурации
-  - Улучшена обработка keystore для подписи релизных сборок
-
-### Технические детали
-- 📱 **UI**: Улучшена структура и читаемость страницы библиотеки
-- 🔄 **CI/CD**: Оптимизирован workflow для более надежной сборки Android приложений
-- 📦 **Сборка**: Добавлены проверки на наличие APK файлов после сборки
+### Улучшения
+- Все основные экраны переведены на единый подход к данным и навигации — плавнее переходы, проще добавлять новые функции.
+- Параметры (например, какую книгу открыть) передаются через адрес страницы, а не «зашиты» в код экрана.
 
 ---
 
-## [1.17] - Отображение количества дней чтения в статистике
+## [1.26] — График по дням и по месяцам
 
-### Добавлено
-- ✅ **Информация о количестве дней чтения** в рейтинге книг:
-  - Добавлена строка "Читалось: X дней" под средним количеством страниц в день
-  - Отображается для каждой книги в рейтинге на странице статистики
-  - Показывает количество уникальных дней, когда велись записи о чтении книги
-  - Использует свойство `UniqueDaysCount` из модели `BookRanking`
+### Новое
+- На странице **Статистика** график можно переключать: **по дням** или **по месяцам** — нажатием на график.
+- По умолчанию открывается помесячный режим; под графиком есть подсказка.
 
-### Изменено
-- 🔄 **Views/StatisticsPage.xaml**:
-  - Добавлена дополнительная строка в `DataTemplate` для рейтинга книг
-  - Расширена сетка с 3 до 4 строк (`RowDefinitions="Auto,Auto,Auto,Auto"`)
-  - Новая строка отображает количество дней чтения с форматированием "Читалось: {0} дней"
-  - Стилизация соответствует остальным элементам (размер шрифта 11, цвет SecondaryTextColor)
-
-- 🔄 **Library.csproj**:
-  - Удалены настройки `TreatWarningsAsErrors` для упрощения сборки
-
-- 🔄 **MauiProgram.cs**:
-  - Удалена условная компиляция `#if DEBUG` для загрузки `appsettings.Development.json`
-  - Теперь файл разработки загружается на всех платформах
-
-- 🔄 **Library.sln**:
-  - Обновлена версия Visual Studio
-  - Добавлен файл `.github/workflows/android-build.yml` в решение
-
-- 🔄 **ANDROID_PUBLISH.md**:
-  - Обновлены команды публикации с конкретными значениями вместо переменных окружения
-
-### Технические детали
-- 📊 **Отображение данных**: Используется привязка `{Binding UniqueDaysCount, StringFormat='Читалось: {0} дней'}`
-- 🎨 **Стилизация**: Размер шрифта 11px, цвет SecondaryTextColor, отступы 2px сверху
-- 📱 **UI**: Информация размещена в четвертой строке сетки, занимает всю ширину (Grid.ColumnSpan="2")
-- 🔄 **Совместимость**: Изменения обратно совместимы, не влияют на существующую функциональность
-
-### Примеры использования
-```
-Пример отображения в рейтинге книг:
-┌─────────────────────────────────────┐
-│ Война и мир                          │
-│ Лев Толстой                          │
-│ Среднее: 20.00 стр/день              │
-│ Читалось: 15 дней                    │
-└─────────────────────────────────────┘
-```
+### Улучшения
+- Подписи осей и ширина столбцов подстраиваются под выбранный режим.
 
 ---
 
-## [1.13] - Рейтинг книг по среднему количеству страниц в день
+## [1.24] — Редактирование истории чтения
 
-### Добавлено
-- ✅ **Панель "Рейтинг книг" на странице статистики**:
-  - Отображается между графиком чтения и топом авторов
-  - Показывает книги, отсортированные по убыванию среднего количества прочитанных страниц в день
-  - Для каждой книги отображается:
-    - Название книги и авторы
-    - Среднее количество страниц в день (формат с двумя знаками после запятой)
-  - Адаптируется под текущую тему (светлую/тёмную)
-
-- ✅ **Модель `BookRanking`** - данные для рейтинга книг:
-  - `BookId` - идентификатор книги
-  - `Title` - название книги
-  - `AuthorsText` - авторы в текстовом формате
-  - `TotalPagesRead` - всего прочитано страниц
-  - `UniqueDaysCount` - количество уникальных дней с записями о чтении
-  - `AveragePagesPerDay` - среднее количество страниц в день
-
-- ✅ **Новый метод в LibraryService**:
-  - `GetBookRankingsAsync(startDate, endDate)` - получение рейтинга книг
-  - Фильтрует книги: включает только те, у которых есть история чтения
-  - При указании фильтра по датам отбирает книги с записями в выбранном периоде
-  - Среднее значение рассчитывается по всей истории книги, не только по периоду фильтра
-  - Сортировка по убыванию среднего количества страниц в день и по убыванию количества страниц в книге
-
-### Изменено
-- 🔄 **Views/StatisticsPage.xaml**:
-  - Добавлен блок "📚 Рейтинг книг" между графиком и топом авторов
-  - Используется `CollectionView` для отображения списка книг
-  - Каждая книга отображается в отдельной карточке с информацией
-  - Стилизация в соответствии с существующими панелями
-
-- 🔄 **Views/StatisticsPage.xaml.cs**:
-  - В метод `LoadStatistics()` добавлена загрузка рейтинга книг
-  - Рейтинг обновляется автоматически при изменении фильтра по датам
-
-- 🔄 **Services/LibraryService.cs**:
-  - Добавлен метод `GetBookRankingsAsync()` для расчета рейтинга
-  - Используется LINQ для фильтрации и сортировки книг
-
-### Технические детали
-- 📊 **Алгоритм расчета среднего**:
-  ```csharp
-  var totalPagesRead = book.PagesReadHistory.Sum(p => p.PagesRead);
-  var uniqueDaysCount = book.PagesReadHistory.Select(p => p.Date.Date).Distinct().Count();
-  var averagePagesPerDay = uniqueDaysCount > 0 ? (double)totalPagesRead / uniqueDaysCount : 0;
-  ```
-
-- 🎯 **Логика фильтрации**:
-  - Отбираются только книги с историей чтения (`PagesReadHistory.Any()`)
-  - Если указан фильтр по датам, проверяется наличие записей в этом периоде
-  - Среднее всегда рассчитывается по всей истории книги (за все время)
-
-- 📱 **UI компоненты**:
-  - Использованы существующие цвета темы: `CardBackgroundColor`, `PageBackgroundColor`, `PrimaryTextColor`, `SecondaryTextColor`, `PrimaryColor`
-  - Формат отображения: `{AveragePagesPerDay:F2}` (два знака после запятой)
-  - Подпись "стр/день" под числовым значением
-
-- 🔄 **Синхронизация с фильтрами**:
-  - Рейтинг обновляется при изменении фильтра по датам на странице статистики
-  - Консистентность с другими секциями статистики (график, топ авторов)
-
-### Примеры использования
-```
-Пример 1: Книга с регулярным чтением
-- Название: "Война и мир"
-- Авторы: Лев Толстой
-- Всего прочитано: 300 страниц
-- Дней с чтением: 15
-- Среднее: 20.00 стр/день
-
-Пример 2: Книга с интенсивным чтением
-- Название: "Мастер и Маргарита"
-- Авторы: Михаил Булгаков
-- Всего прочитано: 420 страниц
-- Дней с чтением: 7
-- Среднее: 60.00 стр/день
-```
+### Улучшения
+- Карточка записи за день в **истории чтения** стала нагляднее: дата, суммарный прогресс и страницы за день — в одном блоке, кнопка удаления справа на всю высоту.
 
 ---
 
-## [1.12] - Планирование чтения по часам
+## [1.23] — Дата завершения и переход из рейтинга
 
-### Добавлено
-- ✅ **Новый проект Library.Core**:
-  - Выделен отдельный проект для моделей данных и контекста БД
-  - Вынесены модели: `Author`, `Book`, `BookStatus`, `PagesReadInDate`
-  - Вынесены классы работы с БД: `LibraryDbContext`, `LibraryDbContextFactory`
-  - Улучшена модульность и переиспользуемость кода
-  - Создан файл `MIGRATIONS_GUIDE.md` с инструкциями по работе с миграциями
+### Новое
+- На карточке книги показывается **дата завершения**, если она указана.
 
-- ✅ **Модель BookReadingSchedule** - хранение параметров расписания чтения:
-  - `BookId` - внешний ключ на книгу
-  - `TargetFinishDate` - целевая дата окончания чтения
-  - `StartHour` - час начала чтения (nullable, если не задан - используется глобальное значение)
-  - `EndHour` - час окончания чтения (nullable, если не задан - используется глобальное значение)
-  - Связь один-к-одному с книгой
-
-- ✅ **Страница ReadingSchedulePage** - планирование чтения по часам:
-  - Отображение информации о книге (название, автор, прогресс)
-  - Настройка целевой даты окончания чтения
-  - Настройка часов чтения (начало и окончание)
-  - Возможность использовать глобальные настройки часов или указать индивидуальные
-  - Расчет почасового графика чтения
-  - Отображение списка временных отметок с количеством страниц
-  - Индикатор загрузки во время расчета
-
-- ✅ **Сервис PageByHourService** - расчет чтения по часам:
-  - Метод `Calculate(pagesRead, pagesToRead, finishDate, startHour, endHour)`
-  - Расчет количества доступных часов для чтения до целевой даты
-  - Равномерное распределение страниц по часам
-  - Генерация почасового графика с временными отметками
-  - Учет только указанных часов чтения (например, с 6 утра до 23 вечера)
-
-- ✅ **Модель ReadByHourRecord** - запись о чтении в час:
-  - `TimeStamp` - дата и время в формате "ДД.ММ.ГГГГ ЧЧ:ММ"
-  - `Pages` - количество страниц (округленное вверх)
-  - Используется для отображения почасового графика
-
-- ✅ **LoadingPage** - страница загрузки:
-  - Отображается при инициализации приложения
-  - Показывает логотип приложения
-  - Индикатор загрузки
-  - Улучшен пользовательский опыт при запуске
-
-- ✅ **Настройки по умолчанию в AppConfiguration**:
-  - `DefaultStartHour` - час начала чтения по умолчанию (6)
-  - `DefaultEndHour` - час окончания чтения по умолчанию (23)
-  - Используются в ReadingSchedulePage как значения по умолчанию
-
-### Изменено
-- 🔄 **Views/BookDetailPage.xaml**:
-  - Добавлена кнопка "⏰ График чтения по часам"
-  - Кнопка расположена после кнопки "Обновить прогресс"
-  - Стилизована с цветом `TertiaryColor`
-  - Обновлены HorizontalOptions для кнопок редактирования/удаления: `FillAndExpand` → `Fill`
-
-- 🔄 **Views/BookDetailPage.xaml.cs**:
-  - Добавлен метод `OnReadingScheduleClicked` для навигации к странице графика
-  - Передача ID книги при переходе к ReadingSchedulePage
-
-- 🔄 **AppShell.xaml.cs**:
-  - Зарегистрирован маршрут для `ReadingSchedulePage`
-  - Добавлена навигация к странице планирования чтения
-
-- 🔄 **App.xaml.cs**:
-  - Добавлен переход на LoadingPage при запуске
-  - Гарантированная инициализация БД до отображения основного интерфейса
-  - После инициализации переход на MainPage
-
-- 🔄 **MauiProgram.cs**:
-  - Добавлена регистрация `PageByHourService` в DI контейнере
-  - Добавлена регистрация `LoadingPage` и `ReadingSchedulePage`
-  - Обновлена строка подключения для использования Library.Core
-
-- 🔄 **Services/LibraryService.cs**:
-  - Обновлены импорты для использования моделей из Library.Core
-  - Методы работы с книгами теперь включают загрузку расписания чтения
-
-- 🔄 **Services/DatabaseMigrationService.cs**:
-  - Обновлены импорты для работы с Library.Core
-
-- 🔄 **Services/SettingsService.cs**:
-  - Добавлен импорт `Library.Core.Models`
-
-- 🔄 **Library.csproj**:
-  - Добавлена ссылка на проект Library.Core
-  - Добавлен файл конфигурации `appsettings.json`
-
-- 🔄 **Library.sln**:
-  - Добавлен проект Library.Core в решение
-
-### Миграция базы данных
-Создана миграция `20251014165406_AddBookReadingSchedule` которая:
-1. Создает таблицу `BookReadingSchedules`
-2. Добавляет столбцы: `Id`, `BookId`, `TargetFinishDate`, `StartHour`, `EndHour`
-3. Настраивает внешний ключ на таблицу `Books` с каскадным удалением
-4. Добавляет индекс на `BookId`
-
-### Технические детали
-- 📊 **Алгоритм расчета графика**:
-  ```csharp
-  // 1. Подсчет количества доступных часов до целевой даты
-  int hourCount = 0;
-  while (now <= targetDate) {
-      if (now.Hour > startHour && now.Hour <= endHour)
-          hourCount++;
-      now = now.AddHours(1);
-  }
-  
-  // 2. Расчет страниц в час
-  decimal pagesPerHour = (totalPages - pagesRead) / hourCount;
-  
-  // 3. Генерация графика с временными отметками
-  ```
-
-- 🎯 **Особенности расчета**:
-  - Учитываются только указанные часы чтения
-  - Страницы распределяются равномерно
-  - Округление количества страниц до целого числа вверх
-  - Начало расчета - со следующего часа от текущего времени
-
-- 📱 **Навигация**:
-  - Из BookDetailPage → ReadingSchedulePage с параметром bookId
-  - После расчета отображается почасовой график в CollectionView
-
-- 🏗️ **Структура Library.Core**:
-  ```
-  Library.Core/
-  ├── Data/
-  │   ├── LibraryDbContext.cs
-  │   └── LibraryDbContextFactory.cs
-  ├── Migrations/
-  │   ├── 20250101000000_InitialCreate.cs
-  │   ├── 20251014165406_AddBookReadingSchedule.cs
-  │   └── LibraryDbContextModelSnapshot.cs
-  ├── Models/
-  │   ├── Author.cs
-  │   ├── Book.cs
-  │   ├── Book.Computed.cs
-  │   ├── BookReadingSchedule.cs
-  │   ├── BookStatus.cs
-  │   └── PagesReadInDate.cs
-  ├── Library.Core.csproj
-  └── MIGRATIONS_GUIDE.md
-  ```
-
-### Примеры использования
-```
-Пример: Книга 400 страниц, прочитано 100 страниц
-- Осталось прочитать: 300 страниц
-- Целевая дата: 20.10.2024
-- Часы чтения: с 6 утра до 23 вечера (17 часов в день)
-- Доступно часов до цели: ~85 часов
-- Страниц в час: 300 / 85 ≈ 3.53 → 4 страницы
-
-График покажет временные отметки:
-15.10.2024 07:00 → 104 стр.
-15.10.2024 08:00 → 108 стр.
-15.10.2024 09:00 → 112 стр.
-...
-```
-
-### Улучшения UX
-- 💡 **Подсказки**: "Оставьте пустым для использования глобальных настроек"
-- 💡 **Валидация**: Проверка корректности часов и даты
-- 💡 **Обратная связь**: Индикатор загрузки во время расчета
-- 💡 **Информативность**: Сводка графика с общей информацией
+### Улучшения
+- Из **рейтинга книг** в статистике можно нажать на книгу и перейти к её карточке.
+- На экране «Выбор книги» номер выровнен по центру.
 
 ---
 
-## [1.11] - Автообновление данных BookDetailPage
+## [1.22] — Разные издания одной книги
 
-### Исправлено
-- 🐛 **Обновление данных после редактирования книги**:
-  - Добавлен метод `OnAppearing()` в `Views/BookDetailPage.xaml.cs`
-  - Теперь при возврате на страницу деталей книги данные автоматически перезагружаются из базы
-  - Исправлена проблема, когда после редактирования книги отображалась устаревшая информация
-  - Перезагружается как основная информация о книге, так и график чтения
-
-### Изменено
-- 🔄 **Views/BookDetailPage.xaml.cs**:
-  - Добавлен переопределенный метод `OnAppearing()`
-  - При каждом появлении страницы вызывается `GetBookByIdAsync()` для получения актуальных данных
-  - Обновляются UI элементы через `LoadBookData()` и `LoadChartData()`
-  - Обеспечена актуальность данных при возврате из любого места (редактирование, обновление прогресса)
-
-- 🔄 **Views/AddEditBookPage.xaml.cs**:
-  - При создании новой книги автоматически выбирается статус "В планах" (`StatusPicker.SelectedIndex = 0`)
-  - Улучшен UX - пользователю не нужно вручную выбирать статус для новых книг
-  - При редактировании книги статус загружается из существующих данных
-
-### Технические детали
-- 🔄 **Механизм обновления**:
-  ```csharp
-  protected override async void OnAppearing()
-  {
-      base.OnAppearing();
-      var updatedBook = await _libraryService.GetBookByIdAsync(_book.Id);
-      if (updatedBook != null)
-      {
-          _book = updatedBook;
-          LoadBookData();
-          await LoadChartData();
-      }
-  }
-  ```
-- 📱 **Жизненный цикл страницы**: Использует стандартный метод MAUI `OnAppearing()`
-- ✅ **Преимущества**: Универсальное решение, работающее для всех сценариев возврата на страницу
+### Новое
+- **Альтернативный расчёт страниц** — если у вас бумажное и электронное издание с разной нумерацией, можно задать диапазоны страниц и переводить номер из одного издания в другое.
+- Кнопка на карточке книги в разделе прогресса; настройки сохраняются для этой книги.
 
 ---
 
-## [1.10] - Расчетная дата окончания чтения
+## [1.21] — «Выбор книги»
 
-### Добавлено
-- ✅ **Расчетная дата окончания чтения** на странице BookDetailPage:
-  - Отображается в блоке "Прогресс чтения"
-  - Рассчитывается на основе среднего количества страниц в день
-  - Формула: оставшиеся страницы / среднее в день = дни до окончания
-  - Дни прибавляются к последней дате из истории чтения
-  - Отображается только для книг в статусе "Читаю сейчас"
-  - Требует наличие хотя бы одной записи в истории чтения
-  - Формат отображения: "📅 Планируемая дата окончания: ДД.ММ.ГГГГ"
-
-### Изменено
-- 🔄 **Views/BookDetailPage.xaml**:
-  - Добавлен `EstimatedFinishDateLabel` в секцию "Прогресс чтения"
-  - Label с динамической видимостью (скрыт по умолчанию)
-  - Расположен после индикатора процента выполнения
-  - Стилизован в соответствии с SecondaryTextColor
-
-- 🔄 **Views/BookDetailPage.xaml.cs**:
-  - Обновлен метод `LoadChartData()` для расчета планируемой даты
-  - Логика расчета:
-    1. Вычисление оставшихся страниц: `TotalPages - CurrentPage`
-    2. Расчет оставшихся дней: `Math.Ceiling(remainingPages / averagePages)`
-    3. Получение последней даты чтения: `dailyData.Max(d => d.Date)`
-    4. Добавление дней к последней дате: `lastReadDate.AddDays(daysRemaining)`
-  - Условия отображения:
-    - Статус книги должен быть `BookStatus.Reading`
-    - Должна быть история чтения (`dailyData.Count > 0`)
-    - Среднее значение должно быть больше нуля (`averagePages > 0`)
-    - Должны остаться непрочитанные страницы (`remainingPages > 0`)
-
-### Исправлено
-- 🐛 **Views/StatisticsPage.xaml**:
-  - Исправлена ошибка компиляции XC0000
-  - `AuthorStatistic` был указан с неправильным namespace
-  - Изменено: `services:AuthorStatistic` → `models:AuthorStatistic`
-  - Добавлен импорт `xmlns:models="clr-namespace:Library.Models"`
-
-### Технические детали
-- 📊 **Алгоритм расчета**:
-  ```csharp
-  var remainingPages = _book.TotalPages - _book.CurrentPage;
-  var daysRemaining = (int)Math.Ceiling(remainingPages / averagePages);
-  var lastReadDate = dailyData.Max(d => d.Date);
-  var estimatedFinishDate = lastReadDate.AddDays(daysRemaining);
-  ```
-- 🎯 **Округление**: Используется `Math.Ceiling` для округления до большего целого числа дней
-- 📅 **Формат даты**: "dd.MM.yyyy" (соответствует остальным датам в приложении)
-- 🔄 **Автоматическое обновление**: Расчетная дата обновляется при каждом обновлении прогресса чтения
-
-### Примеры использования
-```
-Пример 1: Книга 400 страниц, прочитано 100 страниц
-- Среднее в день: 20 страниц
-- Осталось: 400 - 100 = 300 страниц
-- Дней до окончания: ceil(300 / 20) = 15 дней
-- Последняя дата чтения: 01.10.2024
-- Планируемая дата: 16.10.2024
-
-Пример 2: Книга 250 страниц, прочитано 200 страниц
-- Среднее в день: 15 страниц
-- Осталось: 250 - 200 = 50 страниц
-- Дней до окончания: ceil(50 / 15) = 4 дня
-- Последняя дата чтения: 10.10.2024
-- Планируемая дата: 14.10.2024
-```
+### Новое
+- Раздел **«Выбор книги»** с главного экрана: случайный номер из диапазона (например, какую книгу из домашней полки взять).
+- Два режима: с приоритетом меньших номеров и полностью случайный.
+- Запоминаются количество книг, последний результат и выбранный метод.
 
 ---
 
-## [1.9] - Система миграций базы данных
+## [1.20] — Удаление резервных копий
 
-### Добавлено
-- ✅ **DatabaseMigrationService** - сервис для управления миграциями:
-  - Проверка существования таблицы `__EFMigrationsHistory`
-  - Создание таблицы истории миграций
-  - Автоматическое применение ожидающих миграций
-  - Детальное логирование всех операций с БД
-  - Методы `IsMigrationHistoryTableExistsAsync()`, `CreateMigrationHistoryTableAsync()`, `MigrateAsync()`
-
-- ✅ **AppConfiguration** - модель конфигурации приложения:
-  - `DatabasePath` - полный путь к файлу БД
-  - `DatabaseFileName` - имя файла БД (по умолчанию `library.db`)
-  - `AppDataDirectory` - директория данных приложения
-  - `AppVersion` - версия приложения из `AppInfo.VersionString`
-  - `AppName` - имя приложения из `AppInfo.Name`
-  - Регистрируется как Singleton в DI контейнере
-
-- ✅ **Автоматическая миграция существующих баз данных**:
-  - Обнаружение старых БД (созданных через `EnsureCreatedAsync`)
-  - Создание таблицы `__EFMigrationsHistory` для существующих БД
-  - Добавление записи о миграции `20250101000000_InitialCreate`
-  - Автоматическое применение всех последующих миграций
-  - Сохранение всех данных пользователя
-
-- ✅ **Документация APP_CONFIGURATION.md**:
-  - Описание всех свойств `AppConfiguration`
-  - Примеры использования в сервисах и на страницах
-  - Инструкции по добавлению новых настроек
-  - Рекомендации по работе с конфигурацией
-
-- ✅ **Вынесены модели данных в отдельные файлы**:
-  - `Models/AuthorStatistic.cs` - статистика по автору
-  - `Models/DailyReadingData.cs` - данные о чтении за день
-  - `Models/LibraryStatistics.cs` - общая статистика библиотеки
-  - Улучшена модульность и читаемость кода
-
-### Изменено
-- 🔄 **Структура миграций**:
-  - Миграции перенесены из `Migrations/` в `Data/Migrations/`
-  - Удалена старая миграция `20241005_AddAuthorsAndSeries.cs`
-  - Создана новая InitialCreate миграция `20250101000000_InitialCreate.cs`
-  - Обновлен `LibraryDbContextModelSnapshot.cs` в новой директории
-
-- 🔄 **MauiProgram.cs**:
-  - Создание и регистрация `AppConfiguration` перед регистрацией БД
-  - Добавлен параметр `MigrationsAssembly()` для указания сборки с миграциями
-  - Connection string теперь использует путь из `AppConfiguration`
-  - Детальное логирование конфигурации приложения
-
-- 🔄 **LibraryService**:
-  - Добавлен параметр `AppConfiguration` в конструктор
-  - Метод `EnsureDatabaseCreatedAsync()` заменен на `InitializeDatabaseAsync()`
-  - Новая логика инициализации БД с использованием `DatabaseMigrationService`
-  - Проверка типа БД (старая без миграций / новая с миграциями)
-  - Автоматическое применение миграций для обоих случаев
-
-- 🔄 **App.xaml.cs**:
-  - Вызов изменен с `EnsureDatabaseCreatedAsync()` на `InitializeDatabaseAsync()`
-  - Обновлено логирование процесса инициализации БД
-
-- 🔄 **Data/LibraryDbContextFactory.cs**:
-  - Обновлена строка подключения: `library_migrations.db` → `library.db`
-  - Добавлен параметр `MigrationsAssembly()` для корректной работы миграций
-  - Явное указание сборки с миграциями через `typeof(LibraryDbContext)`
-
-- 🔄 **YandexDiskService**:
-  - Добавлен параметр `AppConfiguration` в конструктор
-  - Использование `_appConfig.DatabasePath` вместо hardcoded пути
-
-- 🔄 **YandexDiskPage.xaml.cs**:
-  - Добавлен параметр `AppConfiguration` в конструктор
-  - Передача пути к БД из конфигурации в сервисы
-
-- 🔄 **Docs/MIGRATIONS.md**:
-  - Обновлена структура путей к файлам миграций
-  - Добавлен раздел "Автоматическая миграция существующих баз данных"
-  - Описан процесс безопасной миграции с сохранением данных
-  - Добавлена информация о `DatabaseMigrationService`
-
-- 🔄 **Версия приложения**:
-  - `ApplicationDisplayVersion`: `1.8` → `1.9`
-  - `ApplicationVersion`: `8` → `9`
-
-### Технические детали
-
-#### Процесс автоматической миграции
-1. **Проверка**: Система проверяет наличие таблицы `__EFMigrationsHistory`
-2. **Обнаружение старой БД**: Если таблица отсутствует, но файл БД существует
-3. **Создание истории**: Создаётся таблица `__EFMigrationsHistory`
-4. **Добавление записи**: Добавляется запись о базовой миграции `20250101000000_InitialCreate`
-5. **Применение миграций**: Все новые миграции применяются автоматически
-6. **Завершение**: БД готова к работе с системой миграций
-
-#### AppConfiguration как Singleton
-```csharp
-// Регистрация в MauiProgram.cs
-var appConfig = new AppConfiguration
-{
-    AppDataDirectory = FileSystem.AppDataDirectory,
-    DatabaseFileName = "library.db",
-    DatabasePath = Path.Combine(FileSystem.AppDataDirectory, "library.db"),
-    AppVersion = AppInfo.VersionString,
-    AppName = AppInfo.Name
-};
-builder.Services.AddSingleton(appConfig);
-
-// Использование в сервисах
-public LibraryService(LibraryDbContext context, AppConfiguration appConfig)
-{
-    _context = context;
-    _appConfig = appConfig;
-}
-```
-
-#### Преимущества новой системы
-- 🎯 **Безопасность данных**: Все существующие БД мигрируются автоматически
-- 🎯 **Типобезопасность**: Конфигурация через объект вместо строк
-- 🎯 **Единый источник правды**: Все пути и настройки в `AppConfiguration`
-- 🎯 **Расширяемость**: Легко добавить новые настройки без изменения сигнатур
-- 🎯 **Детальное логирование**: Отладочный вывод на каждом этапе миграции
-- 🎯 **EF Core миграции**: Контролируемые изменения схемы БД
-
-#### Структура миграций
-```
-Data/Migrations/
-├── 20250101000000_InitialCreate.cs          # Базовая миграция (полная схема)
-└── LibraryDbContextModelSnapshot.cs         # Снимок текущей модели
-```
+### Новое
+- На **Яндекс Диске** можно **удалить** выбранную резервную копию (с подтверждением).
 
 ---
 
-## [1.8] - Добавление графика чтения для отдельной книги и среднего значения
+## [1.19] — Поиск в статистике
 
-### Добавлено
-- ✅ **Перечисление BookStatus для статуса книги**:
-  - Добавлен enum `BookStatus` с тремя значениями: `Planned`, `Reading`, `Finished`
-  - Добавлено вычисляемое свойство `Status` в модель `Book`
-  - Упрощена логика определения статуса книги во всех представлениях
-  - Улучшена читаемость и надежность кода
-
-- ✅ **Разделение класса Book на partial классы**:
-  - Создан файл `Models/Book.Computed.cs` для вычисляемых свойств
-  - `Models/Book.cs` теперь содержит только свойства, хранящиеся в БД
-  - Улучшена организация кода и читаемость
-  - Четкое разделение между данными БД и бизнес-логикой
-
-- ✅ **Вынесен enum BookStatus в отдельный файл**:
-  - Создан файл `Models/BookStatus.cs` с enum статусов книги
-  - Улучшена модульность и переиспользуемость кода
-  - Enum может использоваться независимо от модели Book
-
-- ✅ **Новый фильтр "В планах" на странице LibraryPage**:
-  - Добавлена кнопка фильтра "В планах" между "Читаю сейчас" и "Прочитано"
-  - Показывает книги, которые не читаются сейчас и еще не прочитаны
-  - Логика фильтрации: `IsCurrentlyReading = false` и `DateFinished = null`
-  - Добавлен горизонтальный ScrollView для кнопок фильтров (для поддержки маленьких экранов)
-
-- ✅ **График чтения на странице BookDetailPage**:
-  - Добавлен график чтения для конкретной книги
-  - Отображается между блоками "Прогресс чтения" и "Информация о книге"
-  - Показывает историю чтения только для текущей книги
-  - Автоматически обновляется при обновлении прогресса чтения
-  - Использует те же стили и компоненты, что и график на странице статистики
-
-- ✅ **Среднее количество страниц в день**:
-  - Добавлена строка "Среднее количество в день - {number}" на странице StatisticsPage
-  - Добавлена та же метрика на странице BookDetailPage
-  - Точность отображения - 2 знака после запятой
-  - Автоматический расчет на основе общего количества страниц / количество дней
-
-- ✅ **Новый метод в LibraryService**:
-  - `GetDailyReadingDataForBookAsync(bookId, startDate, endDate)` - получение данных о чтении для конкретной книги
-  - Фильтрация по BookId для получения истории чтения только одной книги
-  - Поддержка фильтрации по датам (опционально)
-
-### Изменено
-- 🔄 **Models/BookStatus.cs** (новый файл):
-  - Вынесен enum `BookStatus` в отдельный файл
-  - Содержит три значения: `Planned`, `Reading`, `Finished`
-  - Полная XML-документация для каждого значения
-
-- 🔄 **Models/Book.cs**:
-  - Класс изменен на `partial record Book` для разделения на несколько файлов
-  - Удален enum `BookStatus` (перенесен в отдельный файл)
-  - Оставлены только свойства, которые хранятся в БД:
-    - `Id`, `Title`, `Authors`, `SeriesTitle`, `SeriesNumber`
-    - `TotalPages`, `PagesReadHistory`
-    - `IsCurrentlyReading`, `DateAdded`, `DateFinished`
-  - Все вычисляемые свойства вынесены в `Book.Computed.cs`
-
-- 🔄 **Models/Book.Computed.cs** (новый файл):
-  - Содержит все вычисляемые свойства с атрибутом `[NotMapped]`:
-    - `CurrentPage` - сумма прочитанных страниц
-    - `ProgressPercentage` - процент прогресса
-    - `ProgressText` - текстовое представление прогресса
-    - `Status` - статус книги (enum)
-    - `StatusText` - текстовое представление статуса
-    - `AuthorsText` - строка с именами авторов
-
-- 🔄 **Views/BookDetailPage.xaml.cs**:
-  - Упрощена логика скрытия графика: `_book.Status != BookStatus.Planned` вместо проверки двух полей
-  - Улучшена читаемость кода
-
-- 🔄 **Views/LibraryPage.xaml.cs**:
-  - Метод `LoadBooks()` переписан с использованием `BookStatus` для фильтрации
-  - `BookViewModel` обновлен: определение иконки статуса через switch по enum
-  - Улучшена производительность: один запрос всех книг с последующей фильтрацией в памяти
-
-- 🔄 **Views/AddEditBookPage.xaml.cs**:
-  - Выбор индекса в `StatusPicker` переписан с использованием enum
-  - Улучшена читаемость кода
-
-- 🔄 **Services/LibraryService.cs**:
-  - Метод `GetStatisticsAsync()` обновлен для подсчета книг через `BookStatus`
-  - Упрощены выражения для `ReadBooks`, `CurrentBooks`, `PlannedBooks`
-
-- 🔄 **LibraryPage.xaml**:
-  - Добавлена кнопка `PlannedBooksButton` для фильтра "В планах"
-  - Обернуты кнопки фильтров в `ScrollView` для горизонтальной прокрутки
-  - Обновлен порядок кнопок: Все → Читаю сейчас → В планах → Прочитано
-  - Обновлен метод `OnFilterChanged()` для обработки новой кнопки фильтра
-  - Добавлен сброс стиля для `PlannedBooksButton` при переключении фильтров
-
-- 🔄 **BookDetailPage.xaml**:
-  - Добавлен блок "График чтения по дням" с GraphicsView
-  - Добавлены Label для описания графика и среднего значения
-  - Горизонтальная прокрутка для длинных периодов
-  - Добавлен атрибут `x:Name="ChartBorder"` для управления видимостью графика
-
-- 🔄 **BookDetailPage.xaml.cs**:
-  - Инициализация `ReadingChartDrawable` в конструкторе
-  - Новый метод `LoadChartData()` для загрузки и отображения данных графика
-  - Обновление графика в callback после обновления прогресса
-  - Вспомогательные методы `GetThemeColor()` и `GetDaysText()` для форматирования
-  - Добавлена логика скрытия графика для книг со статусом "В планах"
-
-- 🔄 **StatisticsPage.xaml**:
-  - Добавлен Label `AverageDailyLabel` для отображения среднего значения
-  - Скорректированы отступы (Margin) между элементами
-
-- 🔄 **StatisticsPage.xaml.cs**:
-  - Добавлен расчет среднего значения страниц в день
-  - Обновление `AverageDailyLabel.Text` при загрузке данных графика
-
-### Технические детали
-- 📋 **Enum BookStatus**:
-  ```csharp
-  public enum BookStatus
-  {
-      Planned = 0,   // В планах
-      Reading = 1,   // Читаю сейчас
-      Finished = 2   // Прочитано
-  }
-  ```
-- 🔍 **Вычисление статуса**: Основано на `IsCurrentlyReading` и `DateFinished`
-- 🎯 **Преимущества enum**: Типобезопасность, улучшенная читаемость, упрощенная логика фильтрации
-- 📂 **Структура модели Book**:
-  - `Models/BookStatus.cs` - enum статусов книги (отдельный файл, 24 строки)
-  - `Models/Book.cs` - свойства базы данных (9 полей, 68 строк)
-  - `Models/Book.Computed.cs` - вычисляемые свойства (6 свойств, 67 строк)
-  - Partial файлы компилируются в один класс `Book`
-- 🏗️ **Преимущества разделения**: 
-  - Четкое разделение ответственности (enum / данные / логика)
-  - Улучшенная читаемость и поддерживаемость
-  - Легче понять структуру БД (все в одном файле)
-  - Enum может использоваться независимо от модели
-- 📊 **Расчет среднего значения**: `averagePages = (double)totalPages / daysCount`
-- 🎨 **Форматирование**: Используется формат `{averagePages:F2}` для 2 знаков после запятой
-- 🔄 **Синхронизация**: График на BookDetailPage автоматически обновляется при изменении прогресса чтения
+### Новое
+- На странице **Статистика** — поиск по **названию книги** или **имени автора**; обновляются все блоки: сводка, рейтинг, график, топ авторов.
 
 ---
 
-## [2024-10-09] - Улучшение UI и исправления
+## [1.18] — Библиотека и сборки
 
-### Изменено
-- 🔄 **Обновлены цвета на форме UpdateProgressPage**:
-  - Улучшена цветовая схема для лучшей читаемости
-
-- 🔄 **Исправления на странице YandexDiskPage**:
-  - Добавлена подпись для лучшей информативности
-  - Обновлена инструкция к Яндекс Диску
-  - Удален неиспользуемый код
-
-- 🔄 **Подкорректированы цвета**:
-  - Обновлены цвета в ColorsDark.xaml и ColorsLight.xaml
-  - Улучшена цветовая схема на всех страницах (MainPage, AddEditBookPage, BookDetailPage, LibraryPage, SettingsPage, StatisticsPage, UpdateProgressPage, YandexDiskPage)
-  - Добавлена логика в LibraryPage.xaml.cs для улучшенного отображения
-
-### Добавлено
-- ✅ **Новая иконка приложения**:
-  - Обновлены файлы appicon.svg и appiconfg.svg
-  - Добавлены резервные копии иконок (appiconfg_bu.svg)
-  - Обновлен splash screen (splash.svg, splash_bu.svg)
-  - Добавлены SVG ресурсы (d-mono lib.svg, d-mono lib 2.svg)
-
-- ✅ **Улучшены стили**:
-  - Переработаны ColorsDark.xaml и ColorsLight.xaml
-  - Удалены старые файлы ресурсов Android (drawable/appicon_background.xml, appicon_foreground.xml, splash_screen.xml)
-  - Удален Platforms/Android/Resources/values/styles.xml
-  - Обновлены цвета в Platforms/Android/Resources/values/colors.xml
-
-- ✅ **Добавлен keystore для Android**:
-  - Добавлен файл library.keystore для подписи приложения
-  - Обновлены настройки в Library.csproj для подписи релизных сборок
-
-### Исправлено
-- 🐛 **Исправлено восстановление бэкапа**:
-  - Улучшена работа с темами на всех страницах
-  - Обновлены стили на AddEditBookPage, BookDetailPage, SettingsPage, StatisticsPage, UpdateProgressPage, YandexDiskPage
-  - Исправлены проблемы с YandexDiskPage.xaml.cs
+### Улучшения
+- Удобнее список книг в разделе «Библиотека».
+- Надёжнее сборка и публикация Android-версии.
 
 ---
 
-## [2024-10-06] - Расширенная статистика с графиком и фильтрами
+## [1.17] — Дни чтения в рейтинге
 
-### Добавлено
-- ✅ **Фильтр по датам** на странице статистики:
-  - "За все время" - отображение всех данных
-  - "Последние 30/60/90/180/365 дней" - предустановленные периоды
-  - "Произвольно" - выбор произвольного диапазона дат с помощью двух DatePicker
-  - Валидация корректности выбранных дат (начало не позже окончания)
-  - Автоматическое обновление статистики при изменении фильтра
+### Новое
+- В рейтинге книг в статистике для каждой книги: **«Читалось: N дней»** — сколько разных дней вы вносили прогресс.
 
-- ✅ **График чтения по дням** (`ReadingChartDrawable`):
-  - Столбчатая диаграмма с градиентной заливкой
-  - Ось X - даты (дни с подписями месяцев при переходах)
-  - Ось Y - количество прочитанных страниц
-  - Сетка для улучшенной читаемости
-  - Подписи значений над каждым столбцом
-  - Горизонтальная прокрутка для больших периодов
-  - Динамическая ширина графика (30px на день, минимум 400px)
-  - Адаптация цветов под текущую тему (светлую/тёмную)
-  - Пустое состояние при отсутствии данных
-  - Информативное описание: "Прочитано X страниц за Y дней"
-
-- ✅ **Новый метод в LibraryService**:
-  - `GetDailyReadingDataAsync(startDate, endDate)` - получение данных о чтении по дням
-  - Группировка записей из `PagesReadHistory` по датам
-  - Суммирование страниц за каждый день из всех книг
-  - Поддержка фильтрации по произвольному диапазону дат
-
-- ✅ **Новый класс данных**:
-  - `DailyReadingData` - данные о чтении за один день (дата + количество страниц)
-
-### Изменено
-- 🔄 **LibraryService.GetStatisticsAsync**:
-  - Добавлены параметры `startDate` и `endDate` для фильтрации
-  - **TotalPagesRead** теперь считает ВСЕ прочитанные страницы (из `CurrentPage` всех книг), а не только из завершённых
-  - При указании диапазона дат учитываются только страницы, прочитанные в этот период
-  - Фильтрация книг по датам завершения и наличию записей в `PagesReadHistory`
-  - Топ авторов формируется только из книг, попадающих в выбранный период
-
-- 🔄 **StatisticsPage.xaml**:
-  - Добавлен блок фильтра по датам с Picker и DatePicker'ами
-  - Добавлен блок с GraphicsView для отображения графика
-  - Улучшена структура с разделением на логические секции
-
-- 🔄 **StatisticsPage.xaml.cs**:
-  - Добавлена логика обработки изменений фильтра дат
-  - Новый метод `LoadChartData` для загрузки и отображения графика
-  - Автоматическое получение цветов из текущей темы
-  - Вспомогательные методы для склонения слова "день/дня/дней"
-
-### Технические детали
-- 📊 **График использует**:
-  - `Microsoft.Maui.Graphics.IDrawable` для кастомной отрисовки
-  - `LinearGradientPaint` для красивых градиентов столбцов
-  - Скругленные прямоугольники (`FillRoundedRectangle`)
-  - Автоматическое масштабирование по максимальному значению
-
-- 🎨 **Адаптация под темы**:
-  - `PrimaryColor` - цвет столбцов графика
-  - `PrimaryTextColor` - цвет текста и подписей
-  - `SecondaryTextColor` с прозрачностью - цвет сетки
-
-- 📐 **Оптимизация отображения**:
-  - Ограничение количества горизонтальных линий сетки (5 шагов)
-  - Умное отображение дат (день всегда, месяц при переходе)
-  - Короткие названия месяцев (Янв, Фев, Мар и т.д.)
-
-### Примеры использования
-```
-Пример 1: Фильтр "Последние 30 дней"
-- Показывается статистика за последние 30 дней
-- График отображает столбцы только за этот период
-- Автоматически рассчитывается общее количество прочитанных страниц
-
-Пример 2: Произвольный период (01.09.2024 - 30.09.2024)
-- Пользователь выбирает начальную и конечную дату
-- График адаптируется под выбранный диапазон
-- Описание: "Прочитано 450 страниц за 15 дней"
-```
+### Улучшения
+- Упрощена настройка окружения для разработки; обновлена документация по публикации Android.
 
 ---
 
-## [2024-10-05] - Обновление логики работы с прогрессом чтения
+## [1.13] — Рейтинг книг
 
-### Изменено
-- 🔄 **Модель `Book`**:
-  - `CurrentPage` теперь **вычисляемое свойство** (`[NotMapped]`)
-  - Рассчитывается как сумма всех `PagesRead` из коллекции `PagesReadHistory`
-  - Автоматически обновляется при изменении истории чтения
-
-- 🔄 **LibraryService** - новые методы для работы с прогрессом:
-  - `AddOrUpdateReadingProgressAsync(bookId, date, currentPageNumber)` - добавить/обновить запись о прочитанных страницах
-  - `RemoveReadingProgressAsync(bookId, date)` - удалить запись за определенную дату
-  - `GetReadingHistoryAsync(bookId)` - получить историю чтения книги
-  - Все методы получения книг теперь включают `.Include(b => b.PagesReadHistory)`
-
-- 🔄 **BookDetailPage**:
-  - Обновлен метод `OnUpdateProgressClicked` для использования нового API
-  - Добавлена обработка исключений при валидации прогресса
-  - Используется `AddOrUpdateReadingProgressAsync` вместо старого `UpdateProgressAsync`
-
-- 🔄 **AddEditBookPage**:
-  - При сохранении книги с указанной текущей страницей автоматически создается запись в истории
-  - `CurrentPage` отображается только для справки (read-only)
-  - Обработка ошибок валидации при добавлении прогресса
-
-### Валидация прогресса
-✅ **Автоматические проверки при добавлении записи**:
-1. Текущая страница должна быть **больше** суммы страниц за предыдущие дни
-2. Текущая страница не может превышать `TotalPages`
-3. Только одна запись на книгу на конкретную дату (уникальный индекс)
-4. Количество прочитанных страниц за день автоматически рассчитывается
-
-### Логика работы
-```
-Пример:
-- 01.10: прочитано до страницы 50 → запись: PagesRead = 50
-- 02.10: прочитано до страницы 80 → запись: PagesRead = 30 (80 - 50)
-- 03.10: прочитано до страницы 120 → запись: PagesRead = 40 (120 - 80)
-
-CurrentPage = 50 + 30 + 40 = 120 (вычисляется автоматически)
-```
-
-### Удалено
-- ❌ Метод `UpdateProgressAsync(book, currentPage)` - заменен на `AddOrUpdateReadingProgressAsync`
-- ❌ Прямое изменение `CurrentPage` - теперь это вычисляемое свойство
+### Новое
+- Блок **«Рейтинг книг»** на странице статистики — книги по убыванию среднего числа страниц в день (с учётом выбранного периода).
 
 ---
 
-## [2024-10-05] - Добавление модели PagesReadInDate
+## [1.12] — График чтения по часам
 
-### Добавлено
-- ✅ **Модель `PagesReadInDate`** - запись о количестве прочитанных страниц за день:
-  - `Id` - уникальный идентификатор записи
-  - `BookId` - идентификатор книги
-  - `Book` - навигационное свойство к книге
-  - `Date` - дата, за которую записано количество страниц
-  - `PagesRead` - количество прочитанных страниц за этот день
-  
-- ✅ **Связь один-ко-многим** между `Book` и `PagesReadInDate`:
-  - Одна книга может иметь много записей о прочитанных страницах
-  - При удалении книги все связанные записи удаляются автоматически (Cascade)
-  
-- ✅ **Уникальный индекс** на комбинацию `BookId` и `Date`:
-  - Гарантирует, что для одной книги может быть только одна запись на конкретную дату
-  - Предотвращает дублирование записей
+### Новое
+- **План чтения по часам** для книги: целевая дата окончания, часы, в которые вы обычно читаете, и почасовой список «когда сколько страниц».
+- Экран загрузки при старте приложения.
+- Данные приложения вынесены в отдельный модуль — стабильнее обновления базы.
 
-### Изменено
-- 🔄 **Модель `Book`**:
-  - Добавлено свойство `PagesReadHistory` - коллекция записей о прочитанных страницах
-  - Свойство `CurrentPage` пока остается для обратной совместимости
-
-- 🔄 **LibraryDbContext**:
-  - Добавлен `DbSet<PagesReadInDate>` для работы с записями
-  - Настроена связь один-ко-многим между книгами и записями
-  - Добавлен уникальный индекс для оптимизации и предотвращения дублей
-
-### Структура базы данных
-```
-PagesReadInDate
-├── Id (PK)
-├── BookId (FK → Books.Id)
-├── Date
-└── PagesRead
-
-Индексы:
-- IX_PagesReadInDate_BookId_Date (UNIQUE)
-```
-
-### Примечания
-- ⚠️ **Важно**: Это первый шаг в изменении модели учета прочитанных страниц
-- 💡 **Следующий шаг**: Обновление логики добавления/обновления прогресса чтения
-- 💡 **Валидация**: Потребуется проверка, что текущая страница больше суммы страниц за предыдущие дни
+### Улучшения
+- Кнопка «График чтения по часам» на карточке книги.
 
 ---
 
-## [2024-10-05] - Обновление BookDetailPage
+## [1.11] — Актуальные данные на карточке книги
 
-### Изменено
-- 🔄 **BookDetailPage.xaml** - обновлен интерфейс страницы деталей книги:
-  - Удалена секция для ввода и отображения заметок
-  - Удалено отображение рейтинга
-  - Добавлено отображение названия цикла
-  - Добавлено отображение номера книги в цикле
-  - Упрощен заголовок книги (удалено отображение жанра)
-- 🔄 **BookDetailPage.xaml.cs** - обновлена логика загрузки данных:
-  - Добавлена загрузка и отображение информации о цикле
-  - Удален метод `OnSaveNotesClicked`
-  - Отображение "—" для пустых полей цикла
+### Исправления
+- После редактирования книги или прогресса карточка книги **обновляется** при возврате на неё — не показывает устаревшие цифры.
+
+### Улучшения
+- Новая книга по умолчанию получает статус **«В планах»**.
 
 ---
 
-## [2024-10-05] - Добавление модели авторов
+## [1.10] — Когда закончите книгу
 
-### Добавлено
-- ✅ **Модель `Author`** - отдельная таблица для хранения авторов
-- ✅ **Связь многие-ко-многим** между книгами и авторами через таблицу `BookAuthors`
-- ✅ **Поля для цикла книг**: `SeriesTitle` и `SeriesNumber`
-- ✅ **Методы для работы с авторами** в `LibraryService`:
-  - `GetAllAuthorsAsync()` - получить всех авторов
-  - `GetAuthorByIdAsync(int id)` - получить автора по ID
-  - `AddAuthorAsync(Author author)` - добавить нового автора
-  - `GetOrCreateAuthorAsync(string name)` - найти или создать автора
-- ✅ **Обновленная форма добавления/редактирования книги**:
-  - Выбор авторов из списка
-  - Возможность добавить нового автора прямо из формы
-  - Управление списком выбранных авторов
-  - Поля для указания цикла и номера в цикле
+### Новое
+- Для книги **«Читаю сейчас»** показывается **планируемая дата окончания** по вашему среднему темпу и истории чтения.
 
-### Удалено
-- ❌ **Поле `Author` (string)** - заменено на коллекцию авторов
-- ❌ **Поле `Genre`** - удалено из модели
-- ❌ **Поле `Rating`** - удалено из модели
-- ❌ **Поле `Notes`** - удалено из модели
-
-### Изменено
-- 🔄 **Модель `Book`**:
-  - Добавлено свойство `Authors` (коллекция)
-  - Добавлено свойство `SeriesTitle` (nullable)
-  - Добавлено свойство `SeriesNumber` (nullable)
-  - Добавлено вычисляемое свойство `AuthorsText` для отображения
-- 🔄 **LibraryDbContext**:
-  - Добавлен `DbSet<Author>`
-  - Настроена связь многие-ко-многим
-  - Добавлены индексы для оптимизации
-- 🔄 **LibraryService**:
-  - Все методы теперь включают загрузку авторов через `.Include(b => b.Authors)`
-  - Обновлена статистика для работы с новой моделью авторов
-- 🔄 **UI компоненты**:
-  - `MainPage` - отображает авторов через `AuthorsText`
-  - `LibraryPage` - обновлен `BookViewModel` для работы с авторами
-  - `BookDetailPage` - отображает информацию о цикле вместо жанра
-  - `AddEditBookPage` - полностью переработан для управления авторами
-
-### Миграция базы данных
-Создана миграция `20241005_AddAuthorsAndSeries` которая:
-1. Удаляет старые столбцы: `Author`, `Genre`, `Rating`, `Notes`
-2. Добавляет новые столбцы: `SeriesTitle`, `SeriesNumber`
-3. Создает таблицу `Authors`
-4. Создает таблицу связи `BookAuthors`
-5. Добавляет необходимые индексы
-
-### Примечания
-- ⚠️ **Важно**: При первом запуске приложения после обновления старые данные о жанрах, рейтингах и заметках будут потеряны
-- ⚠️ **Важно**: Существующие книги нужно будет обновить, добавив к ним авторов из нового справочника
-- 💡 **Совет**: Рекомендуется пересоздать базу данных для корректной работы новой структуры
+### Исправления
+- Исправлена ошибка отображения на странице статистики.
 
 ---
 
-## [Предыдущие версии]
+## [1.9] — Обновление базы данных
 
-### [2024-10-04] - Миграция на .NET 9 и добавление Windows
-- Обновление проекта до .NET 9
-- Добавлена поддержка Windows 10
-- Настройка Dependency Injection
-- Исправление проблемы с черным экраном при запуске
+### Новое
+- При обновлении приложения **схема базы обновляется автоматически** — ваши книги и история сохраняются.
+- Единые настройки пути к базе и версии приложения.
 
-### [2024-10-03] - Миграция на EF Core
-- Переход с SQLite-net-pcl на Entity Framework Core
-- Добавление системы миграций
-- Создание `LibraryDbContext` и `LibraryService`
-- Настройка асинхронных операций
+### Улучшения
+- Документация по конфигурации и миграциям для разработчиков.
 
-### [2024-10-02] - Начальная версия
-- Создание базовой структуры MAUI приложения
-- Реализация MVVM архитектуры
-- Создание основных страниц и навигации
-- Базовая работа с SQLite
+---
+
+## [1.8] — График на карточке книги и статусы
+
+### Новое
+- **График чтения по дням** на странице книги (для не «В планах»).
+- **Среднее страниц в день** на карточке книги и в статистике.
+- Фильтр **«В планах»** в библиотеке.
+- Статусы книг оформлены понятнее: в планах, читаю, прочитано.
+
+---
+
+## [2024-10-09] — Оформление и темы
+
+### Новое
+- Обновлённая **иконка** и заставка приложения.
+- Переработаны светлая и тёмная темы.
+
+### Исправления
+- Корректнее восстановление из резервной копии и отображение на экране Яндекс Диска.
+
+---
+
+## [2024-10-06] — Статистика с графиком
+
+### Новое
+- **Фильтр по периоду** на странице статистики: всё время, 30/60/90/180/365 дней или свой диапазон дат.
+- **График чтения по дням** — столбцы по дням, прокрутка, подписи.
+- Сводка «прочитано X страниц за Y дней».
+
+### Улучшения
+- Общее число страниц в статистике считается по всем книгам с учётом выбранного периода.
+
+---
+
+## [2024-10-05] — История чтения по дням
+
+### Новое
+- Прогресс хранится **по дням**: сколько страниц дочитали в каждый день; текущая страница считается из истории.
+- Несколько **авторов** у одной книги, поля **цикла** (название и номер в серии).
+- Форма добавления книги: выбор и добавление авторов, цикл.
+
+### Изменено
+- Убраны жанр, рейтинг и заметки — упрощена карточка книги.
+- ⚠️ При первом обновлении после этой версии старые жанры/рейтинги/заметки не переносятся; книгам нужно заново указать авторов.
+
+---
+
+## [2024-10-04] — Платформы
+
+- Поддержка **Windows 10**.
+- Переход на **.NET 9**, исправлен чёрный экран при запуске.
+
+---
+
+## [2024-10-03] — База данных
+
+- Переход на **Entity Framework Core** и систему миграций — надёжнее хранение данных.
+
+---
+
+## [2024-10-02] — Первый выпуск
+
+- Домашняя библиотека: книги, авторы, статусы, прогресс, статистика, настройки, резерв на Яндекс Диск.
+
+---
+
+*Более ранние технические записи (имена классов, миграций, CI) заменены этим форматом. Подробности по темам оформления см. [Docs/CHANGELOG_THEMES.md](Docs/CHANGELOG_THEMES.md).*
