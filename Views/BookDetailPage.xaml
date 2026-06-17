@@ -226,6 +226,38 @@
                 </StackLayout>
             </Border>
 
+            <!-- Заметки -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
+                   Padding="20"
+                   StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenEditNotesCommand}" />
+                </Border.GestureRecognizers>
+                <StackLayout>
+                    <Label Text="Заметки"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+
+                    <Label Text="{Binding NotesText}"
+                           FontSize="14"
+                           LineBreakMode="WordWrap"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           Margin="0,15,0,0"
+                           IsVisible="{Binding HasNotes}" />
+
+                    <Label Text="Нажмите для редактирования"
+                           FontSize="12"
+                           LineBreakMode="WordWrap"
+                           TextColor="{DynamicResource SecondaryTextColor}"
+                           Margin="0,15,0,0"
+                           IsVisible="{Binding IsNotesEmpty}" />
+                </StackLayout>
+            </Border>
+
             <!-- Действия -->
             <StackLayout Orientation="Horizontal" Spacing="10">
                 <Button Text="✏️ Редактировать" 
