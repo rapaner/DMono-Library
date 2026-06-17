@@ -54,6 +54,15 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private string _shelfName = "—";
 
     [ObservableProperty]
+    private string _notesText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasNotes;
+
+    [ObservableProperty]
+    private bool _isNotesEmpty = true;
+
+    [ObservableProperty]
     private double _progress;
 
     [ObservableProperty]
@@ -158,6 +167,10 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         SeriesNumber = _book.SeriesNumber?.ToString() ?? "—";
         ShelfName = _book.Shelf?.Name ?? "—";
 
+        NotesText = _book.Notes;
+        HasNotes = !string.IsNullOrWhiteSpace(NotesText);
+        IsNotesEmpty = !HasNotes;
+
         Progress = _book.ProgressPercentage / 100;
         ProgressText = _book.ProgressText;
 
@@ -244,6 +257,13 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     {
         if (_book == null) return;
         await _navigation.GoToAsync($"{nameof(AddEditBookPage)}?bookId={_book.Id}");
+    }
+
+    [RelayCommand]
+    private async Task OpenEditNotesAsync()
+    {
+        if (_book == null) return;
+        await _navigation.GoToAsync($"{nameof(EditBookNotesPage)}?bookId={_book.Id}");
     }
 
     [RelayCommand]

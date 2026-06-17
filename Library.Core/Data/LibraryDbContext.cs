@@ -81,6 +81,8 @@ namespace Library.Core.Data
                 entity.Property(e => e.SeriesTitle)
                     .HasMaxLength(200);
 
+                entity.Property(e => e.Notes);
+
                 entity.Property(e => e.DateAdded)
                     .IsRequired();
 

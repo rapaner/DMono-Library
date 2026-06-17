@@ -185,6 +185,7 @@ public static class MauiProgram
             builder.Services.AddTransient<AddEditShelfViewModel>();
             builder.Services.AddTransient<AuthorsViewModel>();
             builder.Services.AddTransient<EditAuthorViewModel>();
+            builder.Services.AddTransient<EditBookNotesViewModel>();
 
             // Регистрация страниц
             builder.Services.AddTransient<Views.LoadingPage>();
@@ -204,6 +205,7 @@ public static class MauiProgram
             builder.Services.AddTransient<Views.AddEditShelfPage>();
             builder.Services.AddTransient<Views.AuthorsPage>();
             builder.Services.AddTransient<Views.EditAuthorPage>();
+            builder.Services.AddTransient<Views.EditBookNotesPage>();
 
             // Сервисы выбора книги (keyed)
             builder.Services.AddKeyedSingleton<IBookChooseService, PrioritizedRandomBookChooseService>(Models.BookChooseServiceKey.PrioritizedRandomId);

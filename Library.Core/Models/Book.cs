@@ -101,5 +101,10 @@ namespace Library.Core.Models
         /// Полка, на которой находится книга (навигационное свойство)
         /// </summary>
         public Shelf? Shelf { get; set; }
+
+        /// <summary>
+        /// Заметки к книге
+        /// </summary>
+        public string Notes { get; set; } = string.Empty;
     }
 }
