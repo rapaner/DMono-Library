@@ -249,8 +249,8 @@
                            Margin="0,15,0,0"
                            IsVisible="{Binding HasNotes}" />
 
-                    <Label Text="нажмите для редактирования"
-                           FontSize="14"
+                    <Label Text="Нажмите для редактирования"
+                           FontSize="12"
                            LineBreakMode="WordWrap"
                            TextColor="{DynamicResource SecondaryTextColor}"
                            Margin="0,15,0,0"
