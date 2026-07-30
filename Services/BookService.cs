@@ -101,6 +101,18 @@ namespace Library.Services
                 .ToListAsync();
         }
 
+        public async Task<List<Book>> GetBooksByAuthorIdAsync(int authorId)
+        {
+            return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
+                .Include(b => b.ReadingSchedule)
+                .Include(b => b.Shelf)
+                .Where(b => b.Authors.Any(a => a.Id == authorId))
+                .OrderByDescending(b => b.DateAdded)
+                .ToListAsync();
+        }
+
         public async Task SetCurrentBookAsync(Book book)
         {
             book.IsCurrentlyReading = true;

@@ -57,7 +57,7 @@
                             <StackLayout>
                                 <Label Text="{Binding Title}"
                                        FontSize="16"
-                                       TextColor="{DynamicResource SecondaryTextColor}" />
+                                       TextColor="{DynamicResource PrimaryTextColor}" />
 
                                 <Label Text="{Binding Author, StringFormat='Автор: {0}'}"
                                        FontSize="14"

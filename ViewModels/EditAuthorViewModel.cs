@@ -2,22 +2,38 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Library.Core.Models;
 using Library.Services;
+using Library.Views;
+using System.Collections.ObjectModel;
 
 namespace Library.ViewModels;
 
 public partial class EditAuthorViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IAuthorService _authorService;
+    private readonly IBookService _bookService;
     private readonly INavigationService _navigation;
     private readonly IDialogService _dialog;
     private Author? _author;
+    private List<Book> _allAuthorBooks = new();
 
     [ObservableProperty]
     private string _name = string.Empty;
 
-    public EditAuthorViewModel(IAuthorService authorService, INavigationService navigation, IDialogService dialog)
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasBooks;
+
+    [ObservableProperty]
+    private bool _isEmpty = true;
+
+    public ObservableCollection<BookItemViewModel> Books { get; } = new();
+
+    public EditAuthorViewModel(IAuthorService authorService, IBookService bookService, INavigationService navigation, IDialogService dialog)
     {
         _authorService = authorService;
+        _bookService = bookService;
         _navigation = navigation;
         _dialog = dialog;
     }
@@ -41,7 +57,51 @@ public partial class EditAuthorViewModel : ObservableObject, IQueryAttributable
         if (_author != null)
         {
             Name = _author.Name;
+            await LoadBooksAsync();
         }
+    }
+
+    [RelayCommand]
+    public async Task LoadBooksAsync()
+    {
+        Books.Clear();
+
+        if (_author == null)
+        {
+            _allAuthorBooks.Clear();
+            HasBooks = false;
+            IsEmpty = true;
+            return;
+        }
+
+        _allAuthorBooks = await _bookService.GetBooksByAuthorIdAsync(_author.Id);
+
+        HasBooks = _allAuthorBooks.Count > 0;
+        IsEmpty = _allAuthorBooks.Count == 0;
+
+        var filtered = _allAuthorBooks.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            filtered = filtered.Where(b => b.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        foreach (var book in filtered)
+        {
+            Books.Add(new BookItemViewModel(book));
+        }
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = LoadBooksAsync();
+    }
+
+    [RelayCommand]
+    private async Task SelectBookAsync(BookItemViewModel? bookItem)
+    {
+        if (bookItem == null) return;
+        await _navigation.GoToAsync($"{nameof(BookDetailPage)}?bookId={bookItem.Id}");
     }
 
     [RelayCommand]
