@@ -14,7 +14,15 @@
             <Editor Text="{Binding Notes}"
                     AutoSize="TextChanges"
                     TextColor="{DynamicResource PrimaryTextColor}"
-                    PlaceholderColor="{DynamicResource SecondaryTextColor}" />
+                    PlaceholderColor="{DynamicResource SecondaryTextColor}">
+                <Editor.Keyboard>
+                    <Keyboard x:FactoryMethod="Create">
+                        <x:Arguments>
+                            <KeyboardFlags>CapitalizeSentence</KeyboardFlags>
+                        </x:Arguments>
+                    </Keyboard>
+                </Editor.Keyboard>
+            </Editor>
         </ScrollView>
 
         <StackLayout Grid.Row="1"
@@ -34,7 +42,5 @@
                     HorizontalOptions="Fill"
                     Command="{Binding CancelCommand}" />
         </StackLayout>
-
     </Grid>
-
 </base:BasePage>
