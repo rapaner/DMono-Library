@@ -143,17 +143,10 @@
                             <DataTemplate x:DataType="models:BookRanking">
                                 <Border BackgroundColor="{DynamicResource PageBackgroundColor}" Padding="15" Margin="0,5" StrokeThickness="0">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                                    <Grid>
-                                        <Label Text="{Binding Rank}"
-                                               FontSize="72"
-                                               FontAttributes="Bold"
-                                               TextColor="{DynamicResource PrimaryTextColor}"
-                                               Opacity="0.12"
-                                               HorizontalOptions="End"
-                                               VerticalOptions="End"
-                                               Margin="0,0,8,0"
-                                               InputTransparent="True" />
-                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <AbsoluteLayout>
+                                        <Grid AbsoluteLayout.LayoutBounds="0,0,1,1"
+                                              AbsoluteLayout.LayoutFlags="All"
+                                              ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
                                             <Label Grid.Column="0" Grid.Row="0" Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" />
                                             <Label Grid.Column="0" Grid.Row="1" Text="{Binding AuthorsText}" FontSize="13" TextColor="{DynamicResource SecondaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" Margin="0,5,0,0" />
                                             <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
@@ -163,7 +156,16 @@
                                             <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding TotalPagesRead, StringFormat='Всего прочитано: {0} страниц'}" FontSize="11" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,8,0,0" />
                                             <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding UniqueDaysCount, StringFormat='Читалось: {0} дней'}" FontSize="11" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,2,0,0" />
                                         </Grid>
-                                    </Grid>
+                                        <Label Text="{Binding Rank}"
+                                               FontSize="72"
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryTextColor}"
+                                               Opacity="0.12"
+                                               InputTransparent="True"
+                                               AbsoluteLayout.LayoutBounds="1,1,AutoSize,AutoSize"
+                                               AbsoluteLayout.LayoutFlags="PositionProportional"
+                                               Margin="0,0,8,0" />
+                                    </AbsoluteLayout>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
