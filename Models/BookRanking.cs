@@ -6,6 +6,11 @@ namespace Library.Models
     public class BookRanking
     {
         /// <summary>
+        /// Порядковый номер в рейтинге
+        /// </summary>
+        public int Rank { get; set; }
+
+        /// <summary>
         /// Идентификатор книги
         /// </summary>
         public int BookId { get; set; }
