@@ -209,6 +209,11 @@ namespace Library.Services
             .ThenByDescending(r => r.TotalPagesRead)
             .ToList();
 
+            for (var i = 0; i < rankings.Count; i++)
+            {
+                rankings[i].Rank = i + 1;
+            }
+
             return rankings;
         }
     }
