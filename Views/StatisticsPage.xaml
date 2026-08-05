@@ -149,8 +149,10 @@
                                                FontAttributes="Bold"
                                                TextColor="{DynamicResource PrimaryTextColor}"
                                                Opacity="0.12"
-                                               HorizontalOptions="End"
-                                               VerticalOptions="Center"
+                                               HorizontalOptions="Fill"
+                                               VerticalOptions="Fill"
+                                               HorizontalTextAlignment="End"
+                                               VerticalTextAlignment="End"
                                                Margin="0,0,8,0"
                                                InputTransparent="True" />
                                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
