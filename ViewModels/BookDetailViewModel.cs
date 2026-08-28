@@ -278,7 +278,6 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         if (result)
         {
             await _bookService.DeleteBookAsync(_book);
-            await _dialog.ShowAlertAsync("Успех", "Книга удалена!", "OK");
             await _navigation.GoBackAsync();
         }
     }

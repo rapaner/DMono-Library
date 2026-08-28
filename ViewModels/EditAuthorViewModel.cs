@@ -147,7 +147,6 @@ public partial class EditAuthorViewModel : ObservableObject, IQueryAttributable
         if (result)
         {
             await _authorService.DeleteAuthorAsync(_author);
-            await _dialog.ShowAlertAsync("Успех", "Автор удалён!", "OK");
             await _navigation.GoBackAsync();
         }
     }
