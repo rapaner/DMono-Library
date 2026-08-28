@@ -92,7 +92,6 @@ public partial class UpdateProgressViewModel : ObservableObject, IQueryAttributa
         try
         {
             await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, ReadingDate, currentPage);
-            await _dialog.ShowAlertAsync("Успех", "Прогресс обновлен!", "OK");
             await _navigation.GoBackAsync();
         }
         catch (InvalidOperationException ex)

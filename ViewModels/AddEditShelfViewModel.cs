@@ -133,10 +133,6 @@ public partial class AddEditShelfViewModel : ObservableObject, IQueryAttributabl
             else
                 await _shelfService.AddShelfAsync(shelf);
 
-            await _dialog.ShowAlertAsync("Успех",
-                _isEditMode ? "Полка обновлена!" : "Полка добавлена!",
-                "OK");
-
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)
@@ -164,7 +160,6 @@ public partial class AddEditShelfViewModel : ObservableObject, IQueryAttributabl
         if (result)
         {
             await _shelfService.DeleteShelfAsync(_shelf);
-            await _dialog.ShowAlertAsync("Успех", "Полка удалена!", "OK");
             await _navigation.GoBackAsync();
         }
     }

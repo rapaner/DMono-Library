@@ -131,12 +131,15 @@ public partial class ReadingHistoryEditViewModel : ObservableObject, IQueryAttri
 
             var existingHistory = await _readingProgressService.GetReadingHistoryAsync(_book.Id);
             foreach (var entry in existingHistory)
+            {
                 await _readingProgressService.RemoveReadingProgressAsync(_book.Id, entry.Date);
+            }
 
             foreach (var item in sortedItems)
+            {
                 await _readingProgressService.AddOrUpdateReadingProgressAsync(_book.Id, item.Date, item.CumulativePages);
+            }
 
-            await _dialog.ShowAlertAsync("Успех", "История чтения обновлена", "OK");
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)

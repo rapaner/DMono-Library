@@ -51,7 +51,6 @@ public partial class EditBookNotesViewModel : ObservableObject, IQueryAttributab
         {
             _book.Notes = Notes.Trim();
             await _bookService.UpdateBookAsync(_book);
-            await _dialog.ShowAlertAsync("Успех", "Книга обновлена!", "OK");
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)

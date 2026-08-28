@@ -248,10 +248,6 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             else
                 await _bookService.AddBookAsync(book);
 
-            await _dialog.ShowAlertAsync("Успех",
-                _isEditMode ? "Книга обновлена!" : "Книга добавлена!",
-                "OK");
-
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)
