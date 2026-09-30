@@ -27,6 +27,9 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
     private string _mainFirstPageText = string.Empty;
 
     [ObservableProperty]
+    private string _mainLastPageText = string.Empty;
+
+    [ObservableProperty]
     private string _alternativeFirstPageText = string.Empty;
 
     [ObservableProperty]
@@ -74,6 +77,7 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
         TotalPagesText = $"Всего страниц: {_book.TotalPages}";
 
         if (_book.MainFirstPage.HasValue) MainFirstPageText = _book.MainFirstPage.Value.ToString();
+        MainLastPageText = (_book.MainLastPage ?? _book.TotalPages).ToString();
         if (_book.AlternativeFirstPage.HasValue) AlternativeFirstPageText = _book.AlternativeFirstPage.Value.ToString();
         if (_book.AlternativeLastPage.HasValue) AlternativeLastPageText = _book.AlternativeLastPage.Value.ToString();
 
@@ -81,6 +85,7 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
     }
 
     partial void OnMainFirstPageTextChanged(string value) { RecalculateCoefficients(); UpdateMainPageConversion(); }
+    partial void OnMainLastPageTextChanged(string value) { RecalculateCoefficients(); UpdateMainPageConversion(); }
     partial void OnAlternativeFirstPageTextChanged(string value) { RecalculateCoefficients(); UpdateAlternativePageConversion(); }
     partial void OnAlternativeLastPageTextChanged(string value) { RecalculateCoefficients(); UpdateAlternativePageConversion(); }
     partial void OnMainPageTextChanged(string value) { UpdateMainPageConversion(); }
@@ -90,17 +95,17 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
     {
         if (_book == null ||
             !int.TryParse(MainFirstPageText, out int mainFirst) ||
+            !int.TryParse(MainLastPageText, out int mainLast) ||
             !int.TryParse(AlternativeFirstPageText, out int altFirst) ||
             !int.TryParse(AlternativeLastPageText, out int altLast) ||
-            mainFirst < 1 || altFirst < 1 || altLast < altFirst ||
-            mainFirst > _book.TotalPages)
+            mainFirst < 1 || mainLast < mainFirst || altFirst < 1 || altLast < altFirst)
         {
             _mainToAlternativeCoefficient = 1.0;
             _alternativeToMainCoefficient = 1.0;
             return;
         }
 
-        int mainPages = _book.TotalPages - mainFirst + 1;
+        int mainPages = mainLast - mainFirst + 1;
         int altPages = altLast - altFirst + 1;
 
         if (mainPages <= 0 || altPages <= 0)
@@ -153,9 +158,9 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
             return;
         }
 
-        if (mainFirst > _book.TotalPages)
+        if (!int.TryParse(MainLastPageText, out int mainLast) || mainLast < mainFirst)
         {
-            await _dialog.ShowAlertAsync("Ошибка", $"Первая страница основного издания не может быть больше {_book.TotalPages}", "OK");
+            await _dialog.ShowAlertAsync("Ошибка", "Последняя страница основного издания должна быть больше или равна первой", "OK");
             return;
         }
 
@@ -174,6 +179,7 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
         try
         {
             _book.MainFirstPage = mainFirst;
+            _book.MainLastPage = mainLast;
             _book.AlternativeFirstPage = altFirst;
             _book.AlternativeLastPage = altLast;
 

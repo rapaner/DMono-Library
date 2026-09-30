@@ -26,7 +26,7 @@
                 <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
                     <Label Text="ℹ️ Как использовать" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Label Text="Этот функционал позволяет переводить страницы между бумажным и электронным изданиями книги.&#x0a;&#x0a;1. Введите первую страницу основного (бумажного) издания. Последняя страница берется из общего количества страниц книги.&#x0a;&#x0a;2. Введите первую и последнюю страницы альтернативного (электронного) издания.&#x0a;&#x0a;3. После ввода данных вы сможете конвертировать страницы в реальном времени:&#x0a;   - Введите страницу основного издания → справа отобразится эквивалент в альтернативном&#x0a;   - Введите страницу альтернативного издания → справа отобразится эквивалент в основном" 
+                    <Label Text="Этот функционал позволяет переводить страницы между бумажным и электронным изданиями книги.&#x0a;&#x0a;1. Введите первую и последнюю страницы основного (бумажного) издания. По умолчанию последняя страница равна общему количеству страниц книги.&#x0a;&#x0a;2. Введите первую и последнюю страницы альтернативного (электронного) издания.&#x0a;&#x0a;3. После ввода данных вы сможете конвертировать страницы в реальном времени:&#x0a;   - Введите страницу основного издания → справа отобразится эквивалент в альтернативном&#x0a;   - Введите страницу альтернативного издания → справа отобразится эквивалент в основном" 
                            FontSize="14" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,10,0,0" />
                 </StackLayout>
             </Border>
@@ -40,7 +40,10 @@
                     <Label Text="Первая страница основного издания:" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" Margin="0,10,0,0" />
                     <Entry Text="{Binding MainFirstPageText}" Placeholder="Введите номер первой страницы" Keyboard="Numeric"
                            TextColor="{DynamicResource PrimaryTextColor}" PlaceholderColor="{DynamicResource SecondaryTextColor}" />
-                    <Label Text="Последняя страница основного издания берется из общего количества страниц книги" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
+
+                    <Label Text="Последняя страница основного издания:" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" Margin="0,15,0,0" />
+                    <Entry Text="{Binding MainLastPageText}" Placeholder="Введите номер последней страницы" Keyboard="Numeric"
+                           TextColor="{DynamicResource PrimaryTextColor}" PlaceholderColor="{DynamicResource SecondaryTextColor}" />
                     
                     <Label Text="Первая страница альтернативного издания:" FontSize="14" TextColor="{DynamicResource PrimaryTextColor}" Margin="0,15,0,0" />
                     <Entry Text="{Binding AlternativeFirstPageText}" Placeholder="Введите номер первой страницы" Keyboard="Numeric"

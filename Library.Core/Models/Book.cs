@@ -83,6 +83,11 @@ namespace Library.Core.Models
         public int? MainFirstPage { get; set; }
 
         /// <summary>
+        /// Последняя страница основного издания книги (для альтернативного расчета страниц)
+        /// </summary>
+        public int? MainLastPage { get; set; }
+
+        /// <summary>
         /// Первая страница альтернативного издания книги (для альтернативного расчета страниц)
         /// </summary>
         public int? AlternativeFirstPage { get; set; }
