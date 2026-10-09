@@ -66,7 +66,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.12" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.110" />
-		<PackageReference Include="Microsoft.Maui.Resizetizer" Version="10.0.110" PrivateAssets="all" NoWarn="NU1605" />
+		<PackageReference Include="Microsoft.Maui.Resizetizer" Version="10.0.100" PrivateAssets="all" NoWarn="NU1605" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
