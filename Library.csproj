@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>2.22</ApplicationDisplayVersion>
-		<ApplicationVersion>49</ApplicationVersion>
+		<ApplicationDisplayVersion>2.23</ApplicationDisplayVersion>
+		<ApplicationVersion>50</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 		
 		<!-- Enable Material 3 design on Android -->
