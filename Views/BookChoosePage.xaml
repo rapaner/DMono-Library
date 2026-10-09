@@ -18,32 +18,43 @@
                     <RoundRectangle CornerRadius="15" />
                 </Border.StrokeShape>
 
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
-                    <Label Text="Предыдущий выбор"
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <Label Text="Полка"
                            Grid.Row="0" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Entry Text="{Binding LastChosenBookNumberText}"
-                           IsReadOnly="True"
-                           Grid.Row="0" Grid.Column="1" />
+                    <Picker Title="Все книги"
+                            ItemsSource="{Binding ShelfOptions}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedIndex="{Binding SelectedShelfIndex}"
+                            Grid.Row="0" Grid.Column="1" />
+
+                    <Label Text="Статус"
+                           Grid.Row="1" Grid.Column="0"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Picker Title="Все"
+                            ItemsSource="{Binding StatusFilters}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedIndex="{Binding SelectedStatusIndex}"
+                            Grid.Row="1" Grid.Column="1" />
 
                     <Label Text="Кол-во книг для расчёта"
-                           Grid.Row="1" Grid.Column="0"
+                           Grid.Row="2" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     <Entry Text="{Binding BooksAmountText}"
                            Keyboard="Numeric"
-                           Grid.Row="1" Grid.Column="1" />
+                           Grid.Row="2" Grid.Column="1" />
 
                     <Label Text="Вариант расчёта"
-                           Grid.Row="2" Grid.Column="0"
+                           Grid.Row="3" Grid.Column="0"
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     <Picker Title="Выберите метод"
                             ItemsSource="{Binding ServiceKeys}"
                             ItemDisplayBinding="{Binding Name}"
                             SelectedIndex="{Binding SelectedServiceIndex}"
-                            Grid.Row="2" Grid.Column="1" />
+                            Grid.Row="3" Grid.Column="1" />
 
                     <Button Text="Рассчитать"
-                            Grid.Row="3" Grid.ColumnSpan="2"
+                            Grid.Row="4" Grid.ColumnSpan="2"
                             BackgroundColor="{DynamicResource PrimaryColor}"
                             TextColor="{DynamicResource SecondaryTextColor}"
                             CornerRadius="10"
@@ -53,12 +64,16 @@
 
             <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
                     StrokeThickness="0"
-                    Padding="20">
+                    Padding="20"
+                    IsVisible="{Binding IsChosenBookVisible}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="15" />
                 </Border.StrokeShape>
-                <StackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Label Text="Выбранный номер"
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenBookCommand}" />
+                </Border.GestureRecognizers>
+                <StackLayout Spacing="8">
+                    <Label Text="Выбранная книга"
                            FontSize="18" FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="{Binding ChosenBookNumberText}"
@@ -66,6 +81,15 @@
                            HorizontalOptions="Center"
                            HorizontalTextAlignment="Center"
                            TextColor="{DynamicResource TertiaryColor}" />
+                    <Label Text="{Binding ChosenBookAuthors}"
+                           FontSize="16"
+                           TextColor="{DynamicResource SecondaryTextColor}" />
+                    <Label Text="{Binding ChosenBookTitle}"
+                           FontSize="20" FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+                    <Label Text="Нажмите, чтобы открыть карточку"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryTextColor}" />
                 </StackLayout>
             </Border>
 

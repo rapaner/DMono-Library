@@ -13,6 +13,7 @@ namespace Library.Services
         private const string BookChooseBooksAmountKey = "BookChooseBooksAmount";
         private const string BookChooseLastChosenBookNumberKey = "BookChooseLastChosenBookNumber";
         private const string BookChooseServiceOptionKey = "BookChooseServiceOption";
+        private const string BookChooseLastBookIdKey = "BookChooseLastBookId";
 
         /// <summary>
         /// Получить настройки Яндекс Диска
@@ -94,22 +95,24 @@ namespace Library.Services
         /// Прочитать настройки выбора книги.
         /// </summary>
         /// <returns>Кортеж (booksAmount, lastChosenBookNumber, currentOption)</returns>
-        public (int BooksAmount, int LastChosenBookNumber, int CurrentBookChooseServiceOption) GetBookChooseSettings()
+        public (int BooksAmount, int LastChosenBookNumber, int CurrentBookChooseServiceOption, int LastBookId) GetBookChooseSettings()
         {
             int booksAmount = Preferences.Get(BookChooseBooksAmountKey, 1000);
             int lastChosen = Preferences.Get(BookChooseLastChosenBookNumberKey, 0);
             int option = Preferences.Get(BookChooseServiceOptionKey, -1);
-            return (booksAmount, lastChosen, option);
+            int lastBookId = Preferences.Get(BookChooseLastBookIdKey, 0);
+            return (booksAmount, lastChosen, option, lastBookId);
         }
 
         /// <summary>
         /// Сохранить настройки выбора книги.
         /// </summary>
-        public void SaveBookChooseSettings(int booksAmount, int lastChosenBookNumber, int currentBookChooseServiceOption)
+        public void SaveBookChooseSettings(int booksAmount, int lastChosenBookNumber, int currentBookChooseServiceOption, int lastBookId)
         {
             Preferences.Set(BookChooseBooksAmountKey, booksAmount);
             Preferences.Set(BookChooseLastChosenBookNumberKey, lastChosenBookNumber);
             Preferences.Set(BookChooseServiceOptionKey, currentBookChooseServiceOption);
+            Preferences.Set(BookChooseLastBookIdKey, lastBookId);
         }
     }
 }
