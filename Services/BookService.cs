@@ -15,7 +15,7 @@ namespace Library.Services
 
         public async Task<List<Book>> GetAllBooksAsync()
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -26,7 +26,7 @@ namespace Library.Services
 
         public async Task<Book?> GetCurrentBookAsync()
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -36,7 +36,7 @@ namespace Library.Services
 
         public async Task<List<Book>> GetBooksByStatusAsync(bool isCurrentlyReading)
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -50,7 +50,7 @@ namespace Library.Services
 
         public async Task<Book?> GetBookByIdAsync(int id)
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -93,7 +93,7 @@ namespace Library.Services
 
         public async Task<List<Book>> GetBooksByShelfIdAsync(int shelfId)
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -105,7 +105,7 @@ namespace Library.Services
 
         public async Task<List<Book>> GetBooksByAuthorIdAsync(int authorId)
         {
-            return await _context.Books
+            return await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
@@ -118,6 +118,52 @@ namespace Library.Services
         public async Task SetCurrentBookAsync(Book book)
         {
             book.Status = BookStatus.Reading;
+            book.DateFinished = null;
+            ReadingSessionHelper.EnsureOpenSession(book, _context);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RestartReadingAsync(int bookId)
+        {
+            var book = await ReadingSessionHelper.WithReadingData(_context.Books)
+                .Include(b => b.ReadingSchedule)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book == null)
+                throw new InvalidOperationException("Книга не найдена");
+
+            var openSession = ReadingSessionHelper.GetOpenSession(book);
+            if (openSession != null)
+                ReadingSessionHelper.CloseSession(openSession);
+
+            book.Status = BookStatus.Planned;
+            book.DateFinished = null;
+
+            if (book.ReadingSchedule != null)
+                book.ReadingSchedule.TargetFinishDate = DateTime.Now.AddDays(20);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CloseCurrentReadingSessionAsync(Book book, DateTime? finishDate = null)
+        {
+            if (!book.ReadingSessions.Any())
+            {
+                var loaded = await GetBookByIdAsync(book.Id);
+                if (loaded != null)
+                    book = loaded;
+            }
+
+            var openSession = ReadingSessionHelper.GetOpenSession(book);
+            if (openSession != null)
+                ReadingSessionHelper.CloseSession(openSession, finishDate);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task EnsureOpenReadingSessionAsync(Book book)
+        {
+            ReadingSessionHelper.EnsureOpenSession(book, _context);
             await _context.SaveChangesAsync();
         }
     }

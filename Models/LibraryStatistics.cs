@@ -36,6 +36,16 @@ namespace Library.Models
         public int TotalPagesRead { get; set; }
 
         /// <summary>
+        /// Количество завершённых прочтений (включая перечитывания)
+        /// </summary>
+        public int TotalReadings { get; set; }
+
+        /// <summary>
+        /// Количество книг, прочитанных более одного раза
+        /// </summary>
+        public int RereadBooks { get; set; }
+
+        /// <summary>
         /// Популярные авторы
         /// </summary>
         public List<AuthorStatistic> PopularAuthors { get; set; } = new List<AuthorStatistic>();

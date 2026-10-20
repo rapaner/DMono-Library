@@ -223,9 +223,12 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                     break;
                 case "Прочитано":
                     book.Status = BookStatus.Finished;
-                    book.DateFinished ??= book.PagesReadHistory.Any()
-                        ? book.PagesReadHistory.Max(p => p.Date)
-                        : DateTime.Now;
+                    {
+                        var currentHistory = book.CurrentSession?.PagesReadHistory;
+                        book.DateFinished ??= currentHistory != null && currentHistory.Any()
+                            ? currentHistory.Max(p => p.Date)
+                            : DateTime.Now;
+                    }
                     break;
                 case "Прочитана давно":
                     book.Status = BookStatus.FinishedLongAgo;
@@ -242,12 +245,33 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             }
 
             if (book.Status == BookStatus.Reading)
-                await _bookService.SetCurrentBookAsync(book);
+            {
+                if (_isEditMode)
+                    await _bookService.UpdateBookAsync(book);
+                else
+                    await _bookService.AddBookAsync(book);
 
-            if (_isEditMode)
-                await _bookService.UpdateBookAsync(book);
+                await _bookService.SetCurrentBookAsync(book);
+            }
+            else if (book.Status == BookStatus.Finished)
+            {
+                if (_isEditMode)
+                    await _bookService.UpdateBookAsync(book);
+                else
+                    await _bookService.AddBookAsync(book);
+
+                await _bookService.CloseCurrentReadingSessionAsync(book, book.DateFinished);
+            }
             else
-                await _bookService.AddBookAsync(book);
+            {
+                if (book.Status == BookStatus.FinishedLongAgo)
+                    await _bookService.CloseCurrentReadingSessionAsync(book);
+
+                if (_isEditMode)
+                    await _bookService.UpdateBookAsync(book);
+                else
+                    await _bookService.AddBookAsync(book);
+            }
 
             await _navigation.GoBackAsync();
         }

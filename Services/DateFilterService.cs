@@ -37,6 +37,27 @@ public class DateFilterService : IDateFilterService
         if (!start.HasValue && !end.HasValue)
             return true;
 
+        if (book.ReadingSessions.Any())
+        {
+            foreach (var session in book.ReadingSessions)
+            {
+                if (session.FinishDate.HasValue)
+                {
+                    var finish = session.FinishDate.Value.Date;
+                    if ((!start.HasValue || finish >= start.Value.Date) &&
+                        (!end.HasValue || finish <= end.Value.Date))
+                        return true;
+                }
+
+                if (session.PagesReadHistory.Any(p =>
+                        (!start.HasValue || p.Date >= start.Value.Date) &&
+                        (!end.HasValue || p.Date <= end.Value.Date)))
+                    return true;
+            }
+
+            return false;
+        }
+
         if (book.DateFinished.HasValue)
         {
             var dateToCheck = book.DateFinished.Value.Date;

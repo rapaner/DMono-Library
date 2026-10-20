@@ -64,7 +64,7 @@
                 <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
                 <StackLayout>
                     <Label Text="📊 Общая статистика" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*" ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
                         <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
@@ -100,7 +100,21 @@
                                 <Label Text="Не буду читать" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="3" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource SuccessColor}" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="3" Grid.Column="0" BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0" Opacity="0.9">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <StackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding TotalReadings}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Прочтений всего" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="1" BackgroundColor="{DynamicResource SecondaryColor}" Padding="15" StrokeThickness="0" Opacity="0.9">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <StackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding RereadBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                                <Label Text="Перечитано книг" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
+                            </StackLayout>
+                        </Border>
+                        <Border Grid.Row="4" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource SuccessColor}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding TotalPagesRead}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
@@ -163,7 +177,7 @@
                                                Margin="0,0,8,0"
                                                InputTransparent="True" />
                                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-                                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" />
+                                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding TitleWithReadingLabel}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" />
                                             <Label Grid.Column="0" Grid.Row="1" Text="{Binding AuthorsText}" FontSize="13" TextColor="{DynamicResource SecondaryTextColor}" LineBreakMode="WordWrap" MaxLines="2" Margin="0,5,0,0" />
                                             <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
                                                 <Label Text="{Binding AveragePagesPerDay, StringFormat='{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryColor}" HorizontalOptions="End" />

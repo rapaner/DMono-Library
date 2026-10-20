@@ -35,6 +35,12 @@ public partial class StatisticsViewModel : ObservableObject
     private string _totalPagesRead = "0";
 
     [ObservableProperty]
+    private string _totalReadings = "0";
+
+    [ObservableProperty]
+    private string _rereadBooks = "0";
+
+    [ObservableProperty]
     private string _chartDescription = "Страниц прочитано по дням";
 
     [ObservableProperty]
@@ -93,6 +99,8 @@ public partial class StatisticsViewModel : ObservableObject
         PlannedBooks = statistics.PlannedBooks.ToString();
         WontReadBooks = statistics.WontReadBooks.ToString();
         TotalPagesRead = statistics.TotalPagesRead.ToString();
+        TotalReadings = statistics.TotalReadings.ToString();
+        RereadBooks = statistics.RereadBooks.ToString();
 
         PopularAuthors = new ObservableCollection<AuthorStatistic>(statistics.PopularAuthors);
 

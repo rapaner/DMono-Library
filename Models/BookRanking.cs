@@ -16,9 +16,30 @@ namespace Library.Models
         public int BookId { get; set; }
 
         /// <summary>
+        /// Идентификатор прочтения
+        /// </summary>
+        public int ReadingSessionId { get; set; }
+
+        /// <summary>
+        /// Номер прочтения для книги
+        /// </summary>
+        public int ReadingNumber { get; set; }
+
+        /// <summary>
+        /// Метка перечитывания (например, «×2»)
+        /// </summary>
+        public string ReadingLabel { get; set; } = string.Empty;
+
+        /// <summary>
         /// Название книги
         /// </summary>
         public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Заголовок с меткой перечитывания для отображения
+        /// </summary>
+        public string TitleWithReadingLabel =>
+            string.IsNullOrEmpty(ReadingLabel) ? Title : $"{Title} {ReadingLabel}";
 
         /// <summary>
         /// Авторы книги (текстовое представление)

@@ -4,8 +4,10 @@ using Library.Controls;
 using Library.Core.Models;
 using Library.Extensions;
 using Library.Helpers;
+using Library.Models;
 using Library.Services;
 using Library.Views;
+using System.Collections.ObjectModel;
 
 namespace Library.ViewModels;
 
@@ -16,6 +18,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private readonly INavigationService _navigation;
     private readonly IDialogService _dialog;
     private Book? _book;
+    private int? _selectedSessionId;
 
     [ObservableProperty]
     private string _bookTitle = string.Empty;
@@ -96,10 +99,19 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
     private bool _isAlternativeCalculationVisible;
 
     [ObservableProperty]
+    private bool _isRestartReadingVisible;
+
+    [ObservableProperty]
     private bool _isChartVisible;
 
     [ObservableProperty]
     private bool _isChartHintVisible;
+
+    [ObservableProperty]
+    private bool _isReadingSessionsVisible;
+
+    [ObservableProperty]
+    private bool _isSessionPickerVisible;
 
     [ObservableProperty]
     private string _chartDescription = "Страниц прочитано по дням";
@@ -112,6 +124,9 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
 
     [ObservableProperty]
     private double _chartWidth = 400;
+
+    [ObservableProperty]
+    private ObservableCollection<ReadingSessionDisplayItem> _readingSessions = new();
 
     private int _bookId;
 
@@ -155,13 +170,8 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         StatusText = _book.StatusText;
         DateAdded = _book.DateAdded.ToString("dd.MM.yyyy");
 
-        var startDate = _book.StartDateFromHistory;
-        IsDateStartedVisible = startDate.HasValue;
-        DateStarted = startDate?.ToString("dd.MM.yyyy") ?? string.Empty;
-
-        var finishedDate = _book.DateFinished;
-        IsDateFinishedVisible = finishedDate.HasValue;
-        DateFinished = finishedDate?.ToString("dd.MM.yyyy") ?? string.Empty;
+        LoadReadingSessionsList();
+        ApplySelectedSessionDates();
 
         SeriesTitle = !string.IsNullOrEmpty(_book.SeriesTitle) ? _book.SeriesTitle : "—";
         SeriesNumber = _book.SeriesNumber?.ToString() ?? "—";
@@ -184,15 +194,106 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         IsUpdateProgressVisible = !isFinished;
         IsReadingScheduleVisible = !isFinished;
         IsAlternativeCalculationVisible = !isFinished;
-        IsChartVisible = _book.Status != BookStatus.Planned;
+        IsRestartReadingVisible = isFinished;
+        IsChartVisible = _book.Status != BookStatus.Planned || ReadingSessions.Count > 0;
         IsChartHintVisible = _book.Status == BookStatus.Reading;
+    }
+
+    private void LoadReadingSessionsList()
+    {
+        if (_book == null) return;
+
+        var sessions = _book.ReadingSessions.OrderBy(s => s.Number).ToList();
+        IsReadingSessionsVisible = sessions.Count > 0;
+        IsSessionPickerVisible = sessions.Count > 1;
+
+        if (_selectedSessionId == null || sessions.All(s => s.Id != _selectedSessionId))
+        {
+            _selectedSessionId = _book.CurrentSession?.Id ?? sessions.LastOrDefault()?.Id;
+        }
+
+        ReadingSessions.Clear();
+        foreach (var session in sessions)
+        {
+            var pages = session.PagesReadHistory.Sum(p => p.PagesRead);
+            var days = session.PagesReadHistory.Select(p => p.Date.Date).Distinct().Count();
+            var finish = session.FinishDate?.ToString("dd.MM.yyyy") ?? "в процессе";
+            var start = session.PagesReadHistory.Any()
+                ? session.PagesReadHistory.Min(p => p.Date).ToString("dd.MM.yyyy")
+                : session.StartDate.ToString("dd.MM.yyyy");
+
+            ReadingSessions.Add(new ReadingSessionDisplayItem
+            {
+                SessionId = session.Id,
+                Number = session.Number,
+                Title = $"Прочтение №{session.Number}",
+                DateRangeText = $"{start} — {finish}",
+                StatsText = days > 0
+                    ? $"{pages} стр., {days} {RussianPluralization.Days(days)}"
+                    : $"{pages} стр.",
+                IsSelected = session.Id == _selectedSessionId
+            });
+        }
+    }
+
+    private void ApplySelectedSessionDates()
+    {
+        if (_book == null || _selectedSessionId == null)
+        {
+            var startDate = _book?.StartDateFromHistory;
+            IsDateStartedVisible = startDate.HasValue;
+            DateStarted = startDate?.ToString("dd.MM.yyyy") ?? string.Empty;
+
+            var finishedDate = _book?.DateFinished;
+            IsDateFinishedVisible = finishedDate.HasValue;
+            DateFinished = finishedDate?.ToString("dd.MM.yyyy") ?? string.Empty;
+            return;
+        }
+
+        var session = _book.ReadingSessions.FirstOrDefault(s => s.Id == _selectedSessionId);
+        if (session == null)
+            return;
+
+        if (session.PagesReadHistory.Any())
+        {
+            IsDateStartedVisible = true;
+            DateStarted = session.PagesReadHistory.Min(p => p.Date).ToString("dd.MM.yyyy");
+        }
+        else
+        {
+            IsDateStartedVisible = true;
+            DateStarted = session.StartDate.ToString("dd.MM.yyyy");
+        }
+
+        if (session.FinishDate.HasValue)
+        {
+            IsDateFinishedVisible = true;
+            DateFinished = session.FinishDate.Value.ToString("dd.MM.yyyy");
+        }
+        else
+        {
+            IsDateFinishedVisible = false;
+            DateFinished = string.Empty;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectReadingSessionAsync(ReadingSessionDisplayItem? item)
+    {
+        if (item == null || _book == null) return;
+
+        _selectedSessionId = item.SessionId;
+        LoadReadingSessionsList();
+        ApplySelectedSessionDates();
+        await LoadChartData();
     }
 
     private async Task LoadChartData()
     {
         if (_book == null) return;
 
-        var dailyData = await _statisticsService.GetDailyReadingDataForBookAsync(_book.Id);
+        var dailyData = await _statisticsService.GetDailyReadingDataForBookAsync(
+            _book.Id, readingSessionId: _selectedSessionId);
 
         ChartDrawable.Data = dailyData.Select(d => new Library.Controls.DailyReadingData
         {
@@ -214,7 +315,7 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
             ChartDescription = $"Прочитано {totalPagesRead} страниц за {daysCount} {RussianPluralization.Days(daysCount)}";
             AverageDailyText = $"Среднее количество в день - {averagePages:F2}";
 
-            if (_book.Status == BookStatus.Reading && averagePages > 0)
+            if (_book.Status == BookStatus.Reading && averagePages > 0 && _selectedSessionId == _book.CurrentSession?.Id)
             {
                 if (RemainingPages > 0)
                 {
@@ -243,6 +344,21 @@ public partial class BookDetailViewModel : ObservableObject, IQueryAttributable
         }
 
         OnPropertyChanged(nameof(ChartDrawable));
+    }
+
+    [RelayCommand]
+    private async Task RestartReadingAsync()
+    {
+        if (_book == null) return;
+
+        bool result = await _dialog.ShowConfirmAsync("Перечитать книгу",
+            $"Книга «{_book.Title}» будет переведена в статус «В планах». История прошлых прочтений сохранится. Начать перечитывание?",
+            "Да", "Нет");
+
+        if (!result) return;
+
+        await _bookService.RestartReadingAsync(_book.Id);
+        await LoadDataAsync();
     }
 
     [RelayCommand]

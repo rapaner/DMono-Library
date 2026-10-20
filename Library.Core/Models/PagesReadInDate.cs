@@ -28,6 +28,17 @@ namespace Library.Core.Models
         public Book Book { get; set; } = null!;
 
         /// <summary>
+        /// Идентификатор прочтения, к которому относится запись
+        /// </summary>
+        [Required]
+        public int ReadingSessionId { get; set; }
+
+        /// <summary>
+        /// Прочтение, к которому относится запись
+        /// </summary>
+        public ReadingSession ReadingSession { get; set; } = null!;
+
+        /// <summary>
         /// Дата, за которую записано количество прочитанных страниц
         /// </summary>
         [Required]

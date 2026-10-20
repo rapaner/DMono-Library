@@ -24,6 +24,11 @@ namespace Library.Core.Data
         public DbSet<PagesReadInDate> PagesReadHistory { get; set; }
 
         /// <summary>
+        /// Коллекция прочтений книг
+        /// </summary>
+        public DbSet<ReadingSession> ReadingSessions { get; set; }
+
+        /// <summary>
         /// Коллекция расписаний чтения книг
         /// </summary>
         public DbSet<BookReadingSchedule> BookReadingSchedules { get; set; }
@@ -93,6 +98,11 @@ namespace Library.Core.Data
 
                 // Настройка связи один-ко-многим с записями о прочитанных страницах
                 entity.HasMany(e => e.PagesReadHistory)
+                    .WithOne(e => e.Book)
+                    .HasForeignKey(e => e.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(e => e.ReadingSessions)
                     .WithOne(e => e.Book)
                     .HasForeignKey(e => e.BookId)
                     .OnDelete(DeleteBehavior.Cascade);
@@ -174,6 +184,25 @@ namespace Library.Core.Data
                 entity.HasData(new Shelf { Id = 1, Name = "Дом" });
             });
 
+            // Настройка таблицы ReadingSessions
+            modelBuilder.Entity<ReadingSession>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Number)
+                    .IsRequired();
+
+                entity.Property(e => e.StartDate)
+                    .IsRequired();
+
+                entity.HasIndex(e => new { e.BookId, e.Number })
+                    .HasDatabaseName("IX_ReadingSessions_BookId_Number")
+                    .IsUnique();
+            });
+
             // Настройка таблицы PagesReadInDate
             modelBuilder.Entity<PagesReadInDate>(entity =>
             {
@@ -188,10 +217,14 @@ namespace Library.Core.Data
                 entity.Property(e => e.PagesRead)
                     .IsRequired();
 
-                // Индекс для быстрого поиска по книге и дате
-                entity.HasIndex(e => new { e.BookId, e.Date })
-                    .HasDatabaseName("IX_PagesReadInDate_BookId_Date")
-                    .IsUnique(); // Только одна запись на книгу на дату
+                entity.HasOne(e => e.ReadingSession)
+                    .WithMany(e => e.PagesReadHistory)
+                    .HasForeignKey(e => e.ReadingSessionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => new { e.ReadingSessionId, e.Date })
+                    .HasDatabaseName("IX_PagesReadInDate_SessionId_Date")
+                    .IsUnique();
             });
         }
     }
