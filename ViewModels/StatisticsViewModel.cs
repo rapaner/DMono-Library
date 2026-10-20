@@ -38,7 +38,7 @@ public partial class StatisticsViewModel : ObservableObject
     private string _averageDailyText = "Среднее количество в день - 0.00";
 
     [ObservableProperty]
-    private int _selectedDateFilterIndex;
+    private int _selectedDateFilterIndex = 1;
 
     [ObservableProperty]
     private bool _isCustomDateRangeVisible;
