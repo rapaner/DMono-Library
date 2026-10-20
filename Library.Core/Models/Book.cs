@@ -52,6 +52,11 @@ namespace Library.Core.Models
         public ICollection<PagesReadInDate> PagesReadHistory { get; set; } = new List<PagesReadInDate>();
 
         /// <summary>
+        /// Все прочтения книги (включая перечитывания)
+        /// </summary>
+        public ICollection<ReadingSession> ReadingSessions { get; set; } = new List<ReadingSession>();
+
+        /// <summary>
         /// Статус чтения книги
         /// </summary>
         public BookStatus Status { get; set; } = BookStatus.Planned;

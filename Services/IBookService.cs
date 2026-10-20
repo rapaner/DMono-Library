@@ -12,6 +12,9 @@ namespace Library.Services
         Task<Book> UpdateBookAsync(Book book);
         Task<bool> DeleteBookAsync(Book book);
         Task SetCurrentBookAsync(Book book);
+        Task RestartReadingAsync(int bookId);
+        Task CloseCurrentReadingSessionAsync(Book book, DateTime? finishDate = null);
+        Task EnsureOpenReadingSessionAsync(Book book);
         Task<List<Book>> GetBooksByShelfIdAsync(int shelfId);
         Task<List<Book>> GetBooksByAuthorIdAsync(int authorId);
     }

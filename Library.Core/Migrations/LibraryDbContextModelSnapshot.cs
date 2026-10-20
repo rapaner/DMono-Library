@@ -169,13 +169,45 @@ namespace Library.Core.Migrations
                     b.Property<int>("PagesRead")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ReadingSessionId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId", "Date")
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("ReadingSessionId", "Date")
                         .IsUnique()
-                        .HasDatabaseName("IX_PagesReadInDate_BookId_Date");
+                        .HasDatabaseName("IX_PagesReadInDate_SessionId_Date");
 
                     b.ToTable("PagesReadInDate");
+                });
+
+            modelBuilder.Entity("Library.Core.Models.ReadingSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("FinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId", "Number")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ReadingSessions_BookId_Number");
+
+                    b.ToTable("ReadingSessions");
                 });
 
             modelBuilder.Entity("Library.Core.Models.Shelf", b =>
@@ -249,6 +281,25 @@ namespace Library.Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Library.Core.Models.ReadingSession", "ReadingSession")
+                        .WithMany("PagesReadHistory")
+                        .HasForeignKey("ReadingSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("ReadingSession");
+                });
+
+            modelBuilder.Entity("Library.Core.Models.ReadingSession", b =>
+                {
+                    b.HasOne("Library.Core.Models.Book", "Book")
+                        .WithMany("ReadingSessions")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Book");
                 });
 
@@ -257,6 +308,13 @@ namespace Library.Core.Migrations
                     b.Navigation("PagesReadHistory");
 
                     b.Navigation("ReadingSchedule");
+
+                    b.Navigation("ReadingSessions");
+                });
+
+            modelBuilder.Entity("Library.Core.Models.ReadingSession", b =>
+                {
+                    b.Navigation("PagesReadHistory");
                 });
 
             modelBuilder.Entity("Library.Core.Models.Shelf", b =>

@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:base="clr-namespace:Library.Views"
              xmlns:vm="clr-namespace:Library.ViewModels"
+             xmlns:models="clr-namespace:Library.Models"
              x:DataType="vm:BookDetailViewModel"
              Title="Детали книги"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
@@ -96,6 +97,87 @@
                             Margin="0,10,0,0" 
                             IsVisible="{Binding IsAlternativeCalculationVisible}"
                             Command="{Binding GoToAlternativeCalculationCommand}" />
+
+                    <Button Text="🔁 Перечитать"
+                            BackgroundColor="{DynamicResource AccentColor}"
+                            TextColor="{DynamicResource PrimaryTextColor}"
+                            CornerRadius="10"
+                            Margin="0,10,0,0"
+                            IsVisible="{Binding IsRestartReadingVisible}"
+                            Command="{Binding RestartReadingCommand}" />
+                </StackLayout>
+            </Border>
+
+            <!-- Прочтения -->
+            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
+                   Padding="20"
+                   StrokeThickness="0"
+                   IsVisible="{Binding IsReadingSessionsVisible}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <StackLayout>
+                    <Label Text="📚 Прочтения"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}" />
+
+                    <ScrollView Orientation="Horizontal"
+                                Margin="0,10,0,0"
+                                IsVisible="{Binding IsSessionPickerVisible}">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding ReadingSessions}"
+                                               Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:ReadingSessionDisplayItem">
+                                    <Button Text="{Binding Title}"
+                                            FontSize="12"
+                                            Padding="12,6"
+                                            CornerRadius="8"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type base:BookDetailPage}}, Path=BindingContext.SelectReadingSessionCommand}"
+                                            CommandParameter="{Binding .}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+                                                <Setter Property="TextColor" Value="{DynamicResource SecondaryTextColor}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource PageBackgroundColor}" />
+                                                <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding ReadingSessions}"
+                                         Margin="0,10,0,0"
+                                         Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:ReadingSessionDisplayItem">
+                                <Border BackgroundColor="{DynamicResource PageBackgroundColor}"
+                                        Padding="12"
+                                        StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <StackLayout>
+                                        <Label Text="{Binding Title}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryTextColor}" />
+                                        <Label Text="{Binding DateRangeText}"
+                                               FontSize="13"
+                                               TextColor="{DynamicResource SecondaryTextColor}" />
+                                        <Label Text="{Binding StatsText}"
+                                               FontSize="13"
+                                               TextColor="{DynamicResource PrimaryTextColor}" />
+                                    </StackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </StackLayout>
             </Border>
 

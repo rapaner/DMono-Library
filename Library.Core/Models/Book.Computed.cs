@@ -9,11 +9,33 @@ namespace Library.Core.Models
     public partial class Book
     {
         /// <summary>
-        /// Текущая страница, на которой остановился читатель (вычисляемое свойство)
-        /// Рассчитывается как сумма всех прочитанных страниц из истории
+        /// Текущее прочтение: открытое (без даты завершения) или последнее по номеру
         /// </summary>
         [NotMapped]
-        public int CurrentPage => PagesReadHistory?.Sum(p => p.PagesRead) ?? 0;
+        public ReadingSession? CurrentSession
+        {
+            get
+            {
+                if (ReadingSessions == null || !ReadingSessions.Any())
+                    return null;
+
+                var open = ReadingSessions.FirstOrDefault(s => s.FinishDate == null);
+                return open ?? ReadingSessions.OrderByDescending(s => s.Number).First();
+            }
+        }
+
+        /// <summary>
+        /// Записи истории текущего прочтения
+        /// </summary>
+        [NotMapped]
+        private IEnumerable<PagesReadInDate> CurrentSessionHistory =>
+            CurrentSession?.PagesReadHistory ?? Enumerable.Empty<PagesReadInDate>();
+
+        /// <summary>
+        /// Текущая страница в рамках текущего прочтения
+        /// </summary>
+        [NotMapped]
+        public int CurrentPage => CurrentSessionHistory.Sum(p => p.PagesRead);
 
         /// <summary>
         /// Процент прочитанных страниц (вычисляемое свойство)
@@ -56,13 +78,25 @@ namespace Library.Core.Models
             : "Автор не указан";
 
         /// <summary>
-        /// Дата начала чтения, вычисленная по первой записи в истории (null, если записи отсутствуют)
+        /// Дата начала текущего прочтения по первой записи в его истории
         /// </summary>
         [NotMapped]
-        public DateTime? StartDateFromHistory =>
-            PagesReadHistory != null && PagesReadHistory.Any()
-                ? PagesReadHistory.Min(p => p.Date)
-                : null;
+        public DateTime? StartDateFromHistory
+        {
+            get
+            {
+                var history = CurrentSessionHistory.ToList();
+                if (history.Count == 0)
+                    return CurrentSession?.StartDate;
 
+                return history.Min(p => p.Date);
+            }
+        }
+
+        /// <summary>
+        /// Число завершённых прочтений
+        /// </summary>
+        [NotMapped]
+        public int ReadCount => ReadingSessions?.Count(s => s.FinishDate != null) ?? 0;
     }
 }
