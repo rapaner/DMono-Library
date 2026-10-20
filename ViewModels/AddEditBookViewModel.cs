@@ -104,6 +104,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                 BookStatus.Reading => 1,
                 BookStatus.Finished => 2,
                 BookStatus.FinishedLongAgo => 3,
+                BookStatus.WontRead => 4,
                 _ => 0
             };
 
@@ -209,7 +210,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 
             book.ShelfId = SelectedShelf?.Id ?? 1;
 
-            var statusItems = new[] { "В планах", "Читаю сейчас", "Прочитано", "Прочитана давно" };
+            var statusItems = new[] { "В планах", "Читаю сейчас", "Прочитано", "Прочитана давно", "Не буду читать" };
             var selectedStatus = StatusPickerIndex >= 0 && StatusPickerIndex < statusItems.Length
                 ? statusItems[StatusPickerIndex]
                 : "В планах";
@@ -228,6 +229,10 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                     break;
                 case "Прочитана давно":
                     book.Status = BookStatus.FinishedLongAgo;
+                    book.DateFinished = null;
+                    break;
+                case "Не буду читать":
+                    book.Status = BookStatus.WontRead;
                     book.DateFinished = null;
                     break;
                 default:

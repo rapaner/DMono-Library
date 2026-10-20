@@ -43,6 +43,7 @@ namespace Library.Core.Models
             BookStatus.Finished => "Прочитано",
             BookStatus.FinishedLongAgo => "Прочитана давно",
             BookStatus.Planned => "В планах",
+            BookStatus.WontRead => "Не буду читать",
             _ => "Неизвестно"
         };
 

@@ -66,6 +66,7 @@ namespace Library.Services
                 ReadBooks = filteredBooks.Count(b => b.Status == BookStatus.Finished || b.Status == BookStatus.FinishedLongAgo),
                 CurrentBooks = filteredBooks.Count(b => b.Status == BookStatus.Reading),
                 PlannedBooks = filteredBooks.Count(b => b.Status == BookStatus.Planned),
+                WontReadBooks = filteredBooks.Count(b => b.Status == BookStatus.WontRead),
                 TotalPagesRead = totalPagesRead,
                 PopularAuthors = authorStats
             };

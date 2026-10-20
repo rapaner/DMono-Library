@@ -29,6 +29,9 @@ public partial class StatisticsViewModel : ObservableObject
     private string _plannedBooks = "0";
 
     [ObservableProperty]
+    private string _wontReadBooks = "0";
+
+    [ObservableProperty]
     private string _totalPagesRead = "0";
 
     [ObservableProperty]
@@ -88,6 +91,7 @@ public partial class StatisticsViewModel : ObservableObject
         ReadBooks = statistics.ReadBooks.ToString();
         CurrentBooks = statistics.CurrentBooks.ToString();
         PlannedBooks = statistics.PlannedBooks.ToString();
+        WontReadBooks = statistics.WontReadBooks.ToString();
         TotalPagesRead = statistics.TotalPagesRead.ToString();
 
         PopularAuthors = new ObservableCollection<AuthorStatistic>(statistics.PopularAuthors);

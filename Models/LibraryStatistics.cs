@@ -26,6 +26,11 @@ namespace Library.Models
         public int PlannedBooks { get; set; }
 
         /// <summary>
+        /// Количество книг со статусом «Не буду читать»
+        /// </summary>
+        public int WontReadBooks { get; set; }
+
+        /// <summary>
         /// Общее количество прочитанных страниц
         /// </summary>
         public int TotalPagesRead { get; set; }

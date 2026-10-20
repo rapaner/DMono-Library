@@ -42,6 +42,7 @@ public partial class LibraryViewModel : ObservableObject
             "Planned" => allBooks.Where(b => b.Status == BookStatus.Planned).ToList(),
             "Finished" => allBooks.Where(b => b.Status == BookStatus.Finished).ToList(),
             "FinishedLongAgo" => allBooks.Where(b => b.Status == BookStatus.FinishedLongAgo).ToList(),
+            "WontRead" => allBooks.Where(b => b.Status == BookStatus.WontRead).ToList(),
             _ => allBooks
         };
 
