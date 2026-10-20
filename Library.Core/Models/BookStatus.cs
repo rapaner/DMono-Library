@@ -23,6 +23,11 @@ namespace Library.Core.Models
         /// <summary>
         /// Книга прочитана давно (без известной даты завершения)
         /// </summary>
-        FinishedLongAgo = 3
+        FinishedLongAgo = 3,
+
+        /// <summary>
+        /// Книга отмечена как не планируемая к чтению
+        /// </summary>
+        WontRead = 4
     }
 }

@@ -33,6 +33,7 @@ public class BookItemViewModel
             BookStatus.Finished => "✅",
             BookStatus.FinishedLongAgo => "📗",
             BookStatus.Planned => "📚",
+            BookStatus.WontRead => "🚫",
             _ => "📚"
         };
     }

@@ -52,14 +52,9 @@ namespace Library.Core.Models
         public ICollection<PagesReadInDate> PagesReadHistory { get; set; } = new List<PagesReadInDate>();
 
         /// <summary>
-        /// Флаг, указывающий читается ли книга в данный момент
+        /// Статус чтения книги
         /// </summary>
-        public bool IsCurrentlyReading { get; set; }
-
-        /// <summary>
-        /// Флаг, указывающий что книга была прочитана давно (без известной даты завершения)
-        /// </summary>
-        public bool IsFinishedLongAgo { get; set; }
+        public BookStatus Status { get; set; } = BookStatus.Planned;
 
         /// <summary>
         /// Дата добавления книги в библиотеку

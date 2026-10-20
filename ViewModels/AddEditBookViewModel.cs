@@ -104,6 +104,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
                 BookStatus.Reading => 1,
                 BookStatus.Finished => 2,
                 BookStatus.FinishedLongAgo => 3,
+                BookStatus.WontRead => 4,
                 _ => 0
             };
 
@@ -209,7 +210,7 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
 
             book.ShelfId = SelectedShelf?.Id ?? 1;
 
-            var statusItems = new[] { "В планах", "Читаю сейчас", "Прочитано", "Прочитана давно" };
+            var statusItems = new[] { "В планах", "Читаю сейчас", "Прочитано", "Прочитана давно", "Не буду читать" };
             var selectedStatus = StatusPickerIndex >= 0 && StatusPickerIndex < statusItems.Length
                 ? statusItems[StatusPickerIndex]
                 : "В планах";
@@ -217,30 +218,30 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             switch (selectedStatus)
             {
                 case "Читаю сейчас":
-                    book.IsCurrentlyReading = true;
+                    book.Status = BookStatus.Reading;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = false;
                     break;
                 case "Прочитано":
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.Finished;
                     book.DateFinished ??= book.PagesReadHistory.Any()
                         ? book.PagesReadHistory.Max(p => p.Date)
                         : DateTime.Now;
-                    book.IsFinishedLongAgo = false;
                     break;
                 case "Прочитана давно":
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.FinishedLongAgo;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = true;
+                    break;
+                case "Не буду читать":
+                    book.Status = BookStatus.WontRead;
+                    book.DateFinished = null;
                     break;
                 default:
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.Planned;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = false;
                     break;
             }
 
-            if (book.IsCurrentlyReading)
+            if (book.Status == BookStatus.Reading)
                 await _bookService.SetCurrentBookAsync(book);
 
             if (_isEditMode)

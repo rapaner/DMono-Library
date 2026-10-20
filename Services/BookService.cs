@@ -31,7 +31,7 @@ namespace Library.Services
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
                 .Include(b => b.Shelf)
-                .FirstOrDefaultAsync(b => b.IsCurrentlyReading);
+                .FirstOrDefaultAsync(b => b.Status == BookStatus.Reading);
         }
 
         public async Task<List<Book>> GetBooksByStatusAsync(bool isCurrentlyReading)
@@ -41,7 +41,9 @@ namespace Library.Services
                 .Include(b => b.PagesReadHistory)
                 .Include(b => b.ReadingSchedule)
                 .Include(b => b.Shelf)
-                .Where(b => b.IsCurrentlyReading == isCurrentlyReading)
+                .Where(b => isCurrentlyReading
+                    ? b.Status == BookStatus.Reading
+                    : b.Status != BookStatus.Reading)
                 .OrderByDescending(b => b.DateAdded)
                 .ToListAsync();
         }
@@ -115,7 +117,7 @@ namespace Library.Services
 
         public async Task SetCurrentBookAsync(Book book)
         {
-            book.IsCurrentlyReading = true;
+            book.Status = BookStatus.Reading;
             await _context.SaveChangesAsync();
         }
     }

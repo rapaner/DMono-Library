@@ -22,5 +22,6 @@ public record BookChooseStatusFilterOption(string Key, string Name, BookStatus? 
         new("Current", "Читаю сейчас", BookStatus.Reading),
         new("Finished", "Прочитано", BookStatus.Finished),
         new("FinishedLongAgo", "Прочитана давно", BookStatus.FinishedLongAgo),
+        new("WontRead", "Не буду читать", BookStatus.WontRead),
     ];
 }

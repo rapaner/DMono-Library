@@ -28,22 +28,10 @@ namespace Library.Core.Models
         public string ProgressText => $"{CurrentPage} / {TotalPages} страниц";
 
         /// <summary>
-        /// Статус чтения книги (вычисляемое свойство)
+        /// Книга читается в данный момент (для UI и фильтров, не хранится в БД)
         /// </summary>
         [NotMapped]
-        public BookStatus Status
-        {
-            get
-            {
-                if (IsCurrentlyReading)
-                    return BookStatus.Reading;
-                if (DateFinished.HasValue)
-                    return BookStatus.Finished;
-                if (IsFinishedLongAgo)
-                    return BookStatus.FinishedLongAgo;
-                return BookStatus.Planned;
-            }
-        }
+        public bool IsCurrentlyReading => Status == BookStatus.Reading;
 
         /// <summary>
         /// Текстовое представление статуса книги (вычисляемое свойство)
@@ -55,6 +43,7 @@ namespace Library.Core.Models
             BookStatus.Finished => "Прочитано",
             BookStatus.FinishedLongAgo => "Прочитана давно",
             BookStatus.Planned => "В планах",
+            BookStatus.WontRead => "Не буду читать",
             _ => "Неизвестно"
         };
 

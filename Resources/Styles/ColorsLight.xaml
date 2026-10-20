@@ -20,6 +20,7 @@
     <Color x:Key="SuccessColor">#3C7A58</Color>
     <Color x:Key="WarningColor">#D7A94B</Color>
     <Color x:Key="ErrorColor">#C65A4A</Color>
+    <Color x:Key="MutedColor">#B08978</Color>
 
     <!-- Дополнительные цвета для совместимости -->
     <Color x:Key="Primary">#1B3324</Color>
