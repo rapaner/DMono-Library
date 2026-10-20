@@ -62,13 +62,14 @@ namespace Library.Services
 
             if (currentPageNumber >= book.TotalPages)
             {
-                book.IsCurrentlyReading = false;
+                book.Status = BookStatus.Finished;
                 book.DateFinished = DateTime.Now;
-                book.IsFinishedLongAgo = false;
             }
-            else if (!book.IsCurrentlyReading && currentPageNumber < book.TotalPages)
+            else if (book.Status != BookStatus.Reading && currentPageNumber < book.TotalPages)
             {
                 book.DateFinished = null;
+                if (book.Status == BookStatus.Finished)
+                    book.Status = BookStatus.Planned;
             }
 
             await _context.SaveChangesAsync();
@@ -101,6 +102,8 @@ namespace Library.Services
                 if (currentPage < book.TotalPages)
                 {
                     book.DateFinished = null;
+                    if (book.Status == BookStatus.Finished)
+                        book.Status = BookStatus.Planned;
                 }
 
                 await _context.SaveChangesAsync();

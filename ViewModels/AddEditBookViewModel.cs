@@ -217,30 +217,26 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             switch (selectedStatus)
             {
                 case "Читаю сейчас":
-                    book.IsCurrentlyReading = true;
+                    book.Status = BookStatus.Reading;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = false;
                     break;
                 case "Прочитано":
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.Finished;
                     book.DateFinished ??= book.PagesReadHistory.Any()
                         ? book.PagesReadHistory.Max(p => p.Date)
                         : DateTime.Now;
-                    book.IsFinishedLongAgo = false;
                     break;
                 case "Прочитана давно":
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.FinishedLongAgo;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = true;
                     break;
                 default:
-                    book.IsCurrentlyReading = false;
+                    book.Status = BookStatus.Planned;
                     book.DateFinished = null;
-                    book.IsFinishedLongAgo = false;
                     break;
             }
 
-            if (book.IsCurrentlyReading)
+            if (book.Status == BookStatus.Reading)
                 await _bookService.SetCurrentBookAsync(book);
 
             if (_isEditMode)

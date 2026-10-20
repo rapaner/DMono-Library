@@ -15,7 +15,7 @@ namespace Library.Core.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
 
             modelBuilder.Entity("AuthorBook", b =>
                 {
@@ -69,14 +69,6 @@ namespace Library.Core.Migrations
                     b.Property<DateTime?>("DateFinished")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsCurrentlyReading")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsFinishedLongAgo")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("MainFirstPage")
                         .HasColumnType("INTEGER");
 
@@ -99,6 +91,11 @@ namespace Library.Core.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -115,14 +112,14 @@ namespace Library.Core.Migrations
                     b.HasIndex("DateFinished")
                         .HasDatabaseName("IX_Books_DateFinished");
 
-                    b.HasIndex("IsCurrentlyReading")
-                        .HasDatabaseName("IX_Books_IsCurrentlyReading");
-
                     b.HasIndex("SeriesTitle")
                         .HasDatabaseName("IX_Books_SeriesTitle");
 
                     b.HasIndex("ShelfId")
                         .HasDatabaseName("IX_Books_ShelfId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Books_Status");
 
                     b.HasIndex("Title")
                         .HasDatabaseName("IX_Books_Title");

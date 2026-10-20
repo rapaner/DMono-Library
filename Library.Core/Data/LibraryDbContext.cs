@@ -101,8 +101,8 @@ namespace Library.Core.Data
                 entity.HasIndex(e => e.Title)
                     .HasDatabaseName("IX_Books_Title");
 
-                entity.HasIndex(e => e.IsCurrentlyReading)
-                    .HasDatabaseName("IX_Books_IsCurrentlyReading");
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_Books_Status");
 
                 entity.HasIndex(e => e.DateAdded)
                     .HasDatabaseName("IX_Books_DateAdded");
@@ -113,9 +113,8 @@ namespace Library.Core.Data
                 entity.HasIndex(e => e.SeriesTitle)
                     .HasDatabaseName("IX_Books_SeriesTitle");
 
-                // Значения по умолчанию
-                entity.Property(e => e.IsCurrentlyReading)
-                    .HasDefaultValue(false);
+                entity.Property(e => e.Status)
+                    .HasDefaultValue(BookStatus.Planned);
 
                 // Настройка связи one-to-one с расписанием чтения
                 entity.HasOne(e => e.ReadingSchedule)
