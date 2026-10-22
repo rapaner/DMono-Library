@@ -18,26 +18,47 @@ namespace Library.Services
 
         public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
-            var books = await ReadingSessionHelper.WithReadingData(_context.Books)
-                .Include(b => b.Authors)
-                .Include(b => b.PagesReadHistory)
-                .ToListAsync();
+            var books = await LoadBooksWithReadingDataAsync(searchText);
+            var hasPeriod = startDate.HasValue || endDate.HasValue;
 
-            if (!string.IsNullOrWhiteSpace(searchText))
+            if (!hasPeriod)
             {
-                books = books.Where(b =>
-                    b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                    b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
+                var authorStats = books
+                    .SelectMany(b => b.Authors)
+                    .GroupBy(a => a.Name)
+                    .Select(g => new AuthorStatistic { Author = g.Key, Count = g.Count() })
+                    .OrderByDescending(a => a.Count)
+                    .Take(10)
+                    .ToList();
+
+                var totalPagesRead = books.Sum(b => b.PagesReadHistory.Sum(p => p.PagesRead));
+                var completedSessions = books
+                    .SelectMany(b => b.ReadingSessions)
+                    .Where(s => s.FinishDate != null)
+                    .ToList();
+
+                return new LibraryStatistics
+                {
+                    TotalBooks = books.Count,
+                    ReadBooks = books.Count(b => b.Status == BookStatus.Finished || b.Status == BookStatus.FinishedLongAgo),
+                    CurrentBooks = books.Count(b => b.Status == BookStatus.Reading),
+                    PlannedBooks = books.Count(b => b.Status == BookStatus.Planned),
+                    WontReadBooks = books.Count(b => b.Status == BookStatus.WontRead),
+                    TotalPagesRead = totalPagesRead,
+                    TotalReadings = completedSessions.Count,
+                    RereadBooks = books.Count(b => b.ReadingSessions.Count(s => s.FinishDate != null) >= 2),
+                    PopularAuthors = authorStats
+                };
             }
 
-            var filteredBooks = books;
-            if (startDate.HasValue || endDate.HasValue)
-            {
-                filteredBooks = books.Where(b => _dateFilter.IsBookInDateRange(b, startDate, endDate)).ToList();
-            }
+            var selectedSessions = SelectSessionsInPeriod(books, startDate, endDate);
+            var bookById = books.ToDictionary(b => b.Id);
+            var booksInScope = selectedSessions
+                .Select(s => bookById[s.BookId])
+                .DistinctBy(b => b.Id)
+                .ToList();
 
-            var authorStats = filteredBooks
+            var authorStatsPeriod = booksInScope
                 .SelectMany(b => b.Authors)
                 .GroupBy(a => a.Name)
                 .Select(g => new AuthorStatistic { Author = g.Key, Count = g.Count() })
@@ -45,54 +66,27 @@ namespace Library.Services
                 .Take(10)
                 .ToList();
 
-            int totalPagesRead = 0;
-            foreach (var book in filteredBooks)
-            {
-                if (startDate.HasValue || endDate.HasValue)
-                {
-                    totalPagesRead += _dateFilter
-                        .FilterByDateRange(book.PagesReadHistory, startDate, endDate, p => p.Date)
-                        .Sum(p => p.PagesRead);
-                }
-                else
-                {
-                    totalPagesRead += book.PagesReadHistory.Sum(p => p.PagesRead);
-                }
-            }
-
-            var allSessions = filteredBooks.SelectMany(b => b.ReadingSessions).ToList();
-            var completedSessions = allSessions.Where(s => s.FinishDate != null).ToList();
-
-            if (startDate.HasValue || endDate.HasValue)
-            {
-                completedSessions = completedSessions.Where(s =>
-                {
-                    var finish = s.FinishDate!.Value.Date;
-                    return (!startDate.HasValue || finish >= startDate.Value.Date) &&
-                           (!endDate.HasValue || finish <= endDate.Value.Date);
-                }).ToList();
-            }
-
-            var rereadBooks = filteredBooks.Count(b => b.ReadingSessions.Count(s => s.FinishDate != null) >= 2);
+            var totalPagesReadPeriod = selectedSessions.Sum(s => s.PagesReadHistory.Sum(p => p.PagesRead));
+            var completedInScope = selectedSessions.Count(s => s.FinishDate != null);
 
             return new LibraryStatistics
             {
-                TotalBooks = filteredBooks.Count,
-                ReadBooks = filteredBooks.Count(b => b.Status == BookStatus.Finished || b.Status == BookStatus.FinishedLongAgo),
-                CurrentBooks = filteredBooks.Count(b => b.Status == BookStatus.Reading),
-                PlannedBooks = filteredBooks.Count(b => b.Status == BookStatus.Planned),
-                WontReadBooks = filteredBooks.Count(b => b.Status == BookStatus.WontRead),
-                TotalPagesRead = totalPagesRead,
-                TotalReadings = completedSessions.Count,
-                RereadBooks = rereadBooks,
-                PopularAuthors = authorStats
+                TotalBooks = booksInScope.Count,
+                ReadBooks = booksInScope.Count(b => b.Status == BookStatus.Finished || b.Status == BookStatus.FinishedLongAgo),
+                CurrentBooks = booksInScope.Count(b => b.Status == BookStatus.Reading),
+                PlannedBooks = booksInScope.Count(b => b.Status == BookStatus.Planned),
+                WontReadBooks = booksInScope.Count(b => b.Status == BookStatus.WontRead),
+                TotalPagesRead = totalPagesReadPeriod,
+                TotalReadings = completedInScope,
+                RereadBooks = selectedSessions.Where(s => s.Number >= 2).Select(s => s.BookId).Distinct().Count(),
+                PopularAuthors = authorStatsPeriod
             };
         }
 
         public async Task<List<DailyReadingData>> GetMonthlyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
-            var books = await FilterBooksAsync(searchText);
-            var allReadingHistory = await GetFilteredHistoryForBooksAsync(books, startDate, endDate);
+            var books = await LoadBooksWithReadingDataAsync(searchText);
+            var allReadingHistory = await GetReadingHistoryForStatisticsAsync(books, startDate, endDate);
 
             var monthlyData = allReadingHistory
                 .GroupBy(p => new { p.Date.Year, p.Date.Month })
@@ -109,8 +103,8 @@ namespace Library.Services
 
         public async Task<List<DailyReadingData>> GetDailyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
-            var books = await FilterBooksAsync(searchText);
-            var allReadingHistory = await GetFilteredHistoryForBooksAsync(books, startDate, endDate);
+            var books = await LoadBooksWithReadingDataAsync(searchText);
+            var allReadingHistory = await GetReadingHistoryForStatisticsAsync(books, startDate, endDate);
 
             var dailyData = allReadingHistory
                 .GroupBy(p => p.Date.Date)
@@ -151,32 +145,18 @@ namespace Library.Services
 
         public async Task<List<BookRanking>> GetBookRankingsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
-            var books = await ReadingSessionHelper.WithReadingData(_context.Books)
-                .Include(b => b.Authors)
-                .ToListAsync();
-
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                books = books.Where(b =>
-                    b.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                    b.Authors.Any(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
-            }
-
+            var books = await LoadBooksWithReadingDataAsync(searchText);
+            var hasPeriod = startDate.HasValue || endDate.HasValue;
             var rankings = new List<BookRanking>();
 
             foreach (var book in books)
             {
                 foreach (var session in book.ReadingSessions.Where(s => s.PagesReadHistory.Any()))
                 {
-                    var history = session.PagesReadHistory.AsEnumerable();
-                    if (startDate.HasValue || endDate.HasValue)
-                    {
-                        history = _dateFilter.FilterByDateRange(history.ToList(), startDate, endDate, p => p.Date);
-                        if (!history.Any())
-                            continue;
-                    }
+                    if (hasPeriod && !_dateFilter.IsReadingSessionInDateRange(session, startDate, endDate))
+                        continue;
 
+                    var history = session.PagesReadHistory;
                     var totalPagesRead = history.Sum(p => p.PagesRead);
                     var uniqueDaysCount = history.Select(p => p.Date.Date).Distinct().Count();
                     var averagePagesPerDay = uniqueDaysCount > 0 ? (double)totalPagesRead / uniqueDaysCount : 0;
@@ -207,10 +187,11 @@ namespace Library.Services
             return rankings;
         }
 
-        private async Task<List<Book>> FilterBooksAsync(string? searchText)
+        private async Task<List<Book>> LoadBooksWithReadingDataAsync(string? searchText)
         {
-            var books = await _context.Books
+            var books = await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
+                .Include(b => b.PagesReadHistory)
                 .ToListAsync();
 
             if (!string.IsNullOrWhiteSpace(searchText))
@@ -224,15 +205,31 @@ namespace Library.Services
             return books;
         }
 
-        private async Task<List<PagesReadInDate>> GetFilteredHistoryForBooksAsync(List<Book> books, DateTime? startDate, DateTime? endDate)
+        private List<ReadingSession> SelectSessionsInPeriod(List<Book> books, DateTime? startDate, DateTime? endDate)
         {
-            var bookIds = books.Select(b => b.Id).ToList();
-            var allReadingHistory = await _context.PagesReadHistory
-                .Where(p => bookIds.Contains(p.BookId))
-                .OrderBy(p => p.Date)
-                .ToListAsync();
+            return books
+                .SelectMany(b => b.ReadingSessions)
+                .Where(s => _dateFilter.IsReadingSessionInDateRange(s, startDate, endDate))
+                .ToList();
+        }
 
-            return _dateFilter.FilterByDateRange(allReadingHistory, startDate, endDate, p => p.Date);
+        private Task<List<PagesReadInDate>> GetReadingHistoryForStatisticsAsync(List<Book> books, DateTime? startDate, DateTime? endDate)
+        {
+            if (!startDate.HasValue && !endDate.HasValue)
+            {
+                var bookIds = books.Select(b => b.Id).ToList();
+                return _context.PagesReadHistory
+                    .Where(p => bookIds.Contains(p.BookId))
+                    .OrderBy(p => p.Date)
+                    .ToListAsync();
+            }
+
+            var history = SelectSessionsInPeriod(books, startDate, endDate)
+                .SelectMany(s => s.PagesReadHistory)
+                .OrderBy(p => p.Date)
+                .ToList();
+
+            return Task.FromResult(history);
         }
     }
 }

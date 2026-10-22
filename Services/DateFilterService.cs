@@ -32,46 +32,16 @@ public class DateFilterService : IDateFilterService
         }).ToList();
     }
 
-    public bool IsBookInDateRange(Book book, DateTime? start, DateTime? end)
+    public bool IsReadingSessionInDateRange(ReadingSession session, DateTime? start, DateTime? end)
     {
         if (!start.HasValue && !end.HasValue)
             return true;
 
-        if (book.ReadingSessions.Any())
+        return session.PagesReadHistory.Any(p =>
         {
-            foreach (var session in book.ReadingSessions)
-            {
-                if (session.FinishDate.HasValue)
-                {
-                    var finish = session.FinishDate.Value.Date;
-                    if ((!start.HasValue || finish >= start.Value.Date) &&
-                        (!end.HasValue || finish <= end.Value.Date))
-                        return true;
-                }
-
-                if (session.PagesReadHistory.Any(p =>
-                        (!start.HasValue || p.Date >= start.Value.Date) &&
-                        (!end.HasValue || p.Date <= end.Value.Date)))
-                    return true;
-            }
-
-            return false;
-        }
-
-        if (book.DateFinished.HasValue)
-        {
-            var dateToCheck = book.DateFinished.Value.Date;
-            return (!start.HasValue || dateToCheck >= start.Value.Date) &&
-                   (!end.HasValue || dateToCheck <= end.Value.Date);
-        }
-
-        if (book.PagesReadHistory.Any())
-        {
-            return book.PagesReadHistory.Any(p =>
-                (!start.HasValue || p.Date >= start.Value.Date) &&
-                (!end.HasValue || p.Date <= end.Value.Date));
-        }
-
-        return false;
+            var date = p.Date.Date;
+            return (!start.HasValue || date >= start.Value.Date) &&
+                   (!end.HasValue || date <= end.Value.Date);
+        });
     }
 }
