@@ -66,7 +66,12 @@ namespace Library.Services
                 .Take(10)
                 .ToList();
 
-            var totalPagesReadPeriod = selectedSessions.Sum(s => s.PagesReadHistory.Sum(p => p.PagesRead));
+            var pagesInPeriod = _dateFilter.FilterByDateRange(
+                selectedSessions.SelectMany(s => s.PagesReadHistory),
+                startDate,
+                endDate,
+                p => p.Date.Date);
+            var totalPagesReadPeriod = pagesInPeriod.Sum(p => p.PagesRead);
             var completedInScope = selectedSessions.Count(s => s.FinishDate != null);
 
             return new LibraryStatistics
@@ -224,8 +229,11 @@ namespace Library.Services
                     .ToListAsync();
             }
 
-            var history = SelectSessionsInPeriod(books, startDate, endDate)
-                .SelectMany(s => s.PagesReadHistory)
+            var history = _dateFilter.FilterByDateRange(
+                    SelectSessionsInPeriod(books, startDate, endDate).SelectMany(s => s.PagesReadHistory),
+                    startDate,
+                    endDate,
+                    p => p.Date.Date)
                 .OrderBy(p => p.Date)
                 .ToList();
 
