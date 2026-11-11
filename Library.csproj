@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<TargetFrameworks>net11.0-android</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Library</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -10,14 +10,14 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display Version -->
-		<ApplicationDisplayVersion>2.27</ApplicationDisplayVersion>
-		<ApplicationVersion>54</ApplicationVersion>
+		<ApplicationDisplayVersion>3.0</ApplicationDisplayVersion>
+		<ApplicationVersion>55</ApplicationVersion>
 		<ApplicationId>ru.rapaner.library</ApplicationId>
 		
 		<!-- Enable Material 3 design on Android -->
 		<UseMaterial3>true</UseMaterial3>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
 		<DefaultLanguage>ru</DefaultLanguage>
 		<UserSecretsId>422cc14c-905c-44a6-8595-8587dfb6c594</UserSecretsId>
 	</PropertyGroup>
@@ -60,23 +60,25 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.13" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.13" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.13" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.120" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.120" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="11.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="11.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="11.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="11.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="11.0.10" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.130" />
 		<!--<PackageReference Include="Microsoft.Maui.Resizetizer" Version="[10.0.100]" PrivateAssets="all" NoWarn="NU1605" />-->
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.13" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13">
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="11.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="11.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="11.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="11.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 		<PackageReference Include="YandexDisk.Client" Version="1.3.27" />
 	</ItemGroup>
 
