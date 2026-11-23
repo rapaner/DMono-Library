@@ -14,8 +14,7 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Фильтр по датам -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     <Label Text="📅 Период" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Picker Title="Выберите период"
@@ -47,8 +46,7 @@
             </Border>
             
             <!-- Поиск -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     <Label Text="🔍 Поиск" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Entry Text="{Binding SearchText}"
@@ -60,62 +58,53 @@
             </Border>
             
             <!-- Общая статистика -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="📊 Общая статистика" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="15" RowSpacing="15" Margin="0,20,0,0">
-                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource PrimaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding TotalBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Всего книг" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{DynamicResource SecondaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource SecondaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding ReadBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Прочитано" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{DynamicResource TertiaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource TertiaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding TotalPagesRead}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Всего страниц прочитано" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="2" Grid.Column="0" BackgroundColor="{DynamicResource AccentColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource AccentColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding CurrentBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Читаю сейчас" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="2" Grid.Column="1" BackgroundColor="{DynamicResource MutedColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource MutedColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding PlannedBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="В планах" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="3" Grid.Column="0" BackgroundColor="{DynamicResource TertiaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource TertiaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding RereadBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Перечитано книг" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="3" Grid.Column="1" BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource PrimaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding TotalReadings}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Прочтений всего" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" HorizontalOptions="Center" />
                             </StackLayout>
                         </Border>
-                        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource SecondaryColor}" Padding="15" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource SecondaryColor}">
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding WontReadBooks}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
                                 <Label Text="Не буду читать" FontSize="12" TextColor="{DynamicResource PrimaryTextColor}" HorizontalOptions="Center" />
@@ -126,8 +115,7 @@
             </Border>
 
             <!-- График -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="📈 График чтения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="{Binding ChartDescription}" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,5" />
@@ -151,8 +139,7 @@
             </Border>
 
             <!-- Рейтинг книг -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="📚 Рейтинг книг" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="По среднему количеству страниц в день" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,10" />
@@ -162,8 +149,7 @@
                                      SelectionChanged="OnBookRankingSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:BookRanking">
-                                <Border BackgroundColor="{DynamicResource PageBackgroundColor}" Padding="15" Margin="0,5" StrokeThickness="0">
-                                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Border Style="{StaticResource InnerCardStyle}" Margin="0,5">
                                     <Grid>
                                         <Label Text="{Binding Rank}"
                                                FontSize="72"
@@ -195,8 +181,7 @@
             </Border>
 
             <!-- Топ авторов -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="👨‍💼 Любимые авторы" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <CollectionView ItemsSource="{Binding PopularAuthors}" Margin="0,15,0,0">

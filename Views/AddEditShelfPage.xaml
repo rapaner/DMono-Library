@@ -11,8 +11,7 @@
     <ScrollView>
         <StackLayout Padding="20" Spacing="20">
             
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     
                     <Label Text="📚 Информация о полке" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />

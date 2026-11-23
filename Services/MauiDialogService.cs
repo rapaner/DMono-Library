@@ -1,3 +1,6 @@
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+
 namespace Library.Services;
 
 public class MauiDialogService : IDialogService
@@ -15,6 +18,9 @@ public class MauiDialogService : IDialogService
 
     public Task<string?> ShowPromptAsync(string title, string message, string accept, string cancel) =>
         CurrentPage.DisplayPromptAsync(title, message, accept, cancel);
+
+    public Task ShowToastAsync(string message) =>
+        Toast.Make(message, ToastDuration.Short).Show();
 
     public Task<string?> ShowActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons) =>
         CurrentPage.DisplayActionSheetAsync(title, cancel, destruction, buttons);

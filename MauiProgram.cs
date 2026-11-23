@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using Library.Converters;
 using Library.Core.Data;
 using Library.Models;
@@ -22,6 +23,7 @@ public static class MauiProgram
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     // Шрифты временно закомментированы, так как файлы отсутствуют

@@ -12,8 +12,7 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Информация о книге -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="{Binding BookTitleText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="{Binding BookAuthorText}" FontSize="16" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
@@ -22,8 +21,7 @@
             </Border>
 
             <!-- Форма ввода -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     
                     <Label Text="📅 Дата чтения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />

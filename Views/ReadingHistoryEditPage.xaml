@@ -15,9 +15,8 @@
                          Margin="10">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ReadingHistoryItemViewModel">
-                    <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
-                           Padding="15" Margin="0,5" StrokeThickness="0">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Border Style="{StaticResource InnerCardStyle}"
+                            BackgroundColor="{DynamicResource CardBackgroundColor}" Margin="0,5">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="15">
                             
                             <Grid Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="5">
@@ -55,7 +54,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         
-        <Border Grid.Row="1" BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="10" StrokeThickness="0">
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="10">
             <Border.StrokeShape><RoundRectangle CornerRadius="0"/></Border.StrokeShape>
             <Button Text="💾 Сохранить"
                     BackgroundColor="{DynamicResource PrimaryColor}"

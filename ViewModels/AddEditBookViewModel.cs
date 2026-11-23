@@ -153,15 +153,13 @@ public partial class AddEditBookViewModel : ObservableObject, IQueryAttributable
             var existingAuthor = _allAuthors.FirstOrDefault(a => a.Name == result);
             if (existingAuthor != null)
             {
-                await _dialog.ShowAlertAsync("Информация", "Такой автор уже существует", "OK");
+                await _dialog.ShowAlertAsync("Внимание", "Такой автор уже существует", "OK");
                 return;
             }
 
             var newAuthor = await _authorService.AddAuthorAsync(new Author { Name = result });
             _allAuthors.Add(newAuthor);
             SelectedAuthors.Add(newAuthor);
-
-            await _dialog.ShowAlertAsync("Успех", "Автор добавлен!", "OK");
         }
     }
 

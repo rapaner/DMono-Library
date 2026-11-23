@@ -19,7 +19,7 @@ public partial class LibraryPage : BasePage
         SafeExecute(async () => await _viewModel.LoadBooksCommand.ExecuteAsync(null));
     }
 
-    private void OnBookSelected(object sender, SelectionChangedEventArgs e)
+    private void OnBookSelected(object? sender, SelectionChangedEventArgs e)
     {
         SafeExecute(async () =>
         {

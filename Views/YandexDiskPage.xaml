@@ -13,8 +13,7 @@
         <VerticalStackLayout Padding="20" Spacing="15">
             
             <!-- Статус -->
-            <Border BackgroundColor="{DynamicResource PrimaryColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+            <Border Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource PrimaryColor}">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Статус подключения" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource SecondaryTextColor}"/>
                     <Label Text="{Binding StatusText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
@@ -23,8 +22,7 @@
             </Border>
 
             <!-- Авторизация -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+            <Border Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource CardBackgroundColor}">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Авторизация" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
                     <Label Text="Выберите способ авторизации:" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
@@ -41,8 +39,7 @@
             </Border>
 
             <!-- Резервное копирование -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+            <Border Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource CardBackgroundColor}">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Резервное копирование" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
                     <Label Text="{Binding LastBackupText}" FontSize="14" TextColor="{DynamicResource SecondaryTextColor}"/>
@@ -62,8 +59,7 @@
             </Border>
 
             <!-- Список резервных копий -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="15" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+            <Border Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource CardBackgroundColor}">
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Резервные копии" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
@@ -105,8 +101,7 @@
             </Border>
 
             <!-- Инструкция -->
-            <Border Padding="15" BackgroundColor="{DynamicResource Gray100}" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+            <Border Style="{StaticResource InnerCardStyle}" BackgroundColor="{DynamicResource Gray100}">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="💡 Как подключить Яндекс Диск?" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}"/>
                     <Label FontSize="14" TextColor="{DynamicResource SecondaryTextColor}">

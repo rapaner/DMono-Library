@@ -104,7 +104,7 @@ public partial class SettingsViewModel : ObservableObject
                     await _bookService.DeleteBookAsync(book);
                 }
 
-                await _dialog.ShowAlertAsync("Успех", "Все данные удалены!", "OK");
+                await _dialog.ShowToastAsync("Все данные удалены");
             }
             catch (Exception ex)
             {
