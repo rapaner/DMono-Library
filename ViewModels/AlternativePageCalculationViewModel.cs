@@ -185,7 +185,6 @@ public partial class AlternativePageCalculationViewModel : ObservableObject, IQu
 
             await _bookService.UpdateBookAsync(_book);
 
-            await _dialog.ShowAlertAsync("Успех", "Настройки сохранены!", "OK");
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)

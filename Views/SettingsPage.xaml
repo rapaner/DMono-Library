@@ -12,12 +12,7 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Информация о приложении -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="ℹ️ О приложении" 
                            FontSize="20" 
@@ -63,12 +58,7 @@
             </Border>
 
             <!-- Внешний вид -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     <Label Text="🎨 Внешний вид" 
                            FontSize="18" 
@@ -98,12 +88,7 @@
             </Border>
 
             <!-- Резервное копирование -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="☁️ Резервное копирование" 
                            FontSize="18" 
@@ -124,12 +109,7 @@
             </Border>
 
             <!-- Действия -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" 
-                   Padding="20" 
-                   StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15"/>
-                </Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="🔧 Действия" 
                            FontSize="18" 

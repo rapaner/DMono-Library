@@ -119,7 +119,6 @@ public partial class EditAuthorViewModel : ObservableObject, IQueryAttributable
         {
             _author.Name = Name.Trim();
             await _authorService.UpdateAuthorAsync(_author);
-            await _dialog.ShowAlertAsync("Успех", "Автор обновлён!", "OK");
             await _navigation.GoBackAsync();
         }
         catch (Exception ex)

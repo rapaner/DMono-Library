@@ -151,7 +151,6 @@ public partial class YandexDiskViewModel : ObservableObject
             await UpdateStatusAsync();
             await LoadBackupsAsync();
 
-            await _dialog.ShowAlertAsync("Успех", "OAuth токен сохранен и проверен", "OK");
             TokenText = string.Empty;
         }
         catch (Exception ex)
@@ -171,7 +170,6 @@ public partial class YandexDiskViewModel : ObservableObject
             IsDiskInfoVisible = false;
             Backups.Clear();
             IsNoBackupsVisible = false;
-            await _dialog.ShowAlertAsync("Успех", "Яндекс Диск отключен", "OK");
         }
     }
 
@@ -202,7 +200,7 @@ public partial class YandexDiskViewModel : ObservableObject
                 _settingsService.SaveYandexDiskSettings(settings);
 
                 LastBackupText = $"Последняя резервная копия: {DateTime.Now:dd.MM.yyyy HH:mm}";
-                await _dialog.ShowAlertAsync("Успех", "Резервная копия создана", "OK");
+                await _dialog.ShowToastAsync("Резервная копия создана");
                 await LoadBackupsAsync();
             }
             else
@@ -290,7 +288,6 @@ public partial class YandexDiskViewModel : ObservableObject
             var success = await _yandexDiskService.DeleteFileAsync(_selectedBackup.Path, permanently: true);
             if (success)
             {
-                await _dialog.ShowAlertAsync("Успех", "Резервная копия удалена", "OK");
                 _selectedBackup = null;
                 await LoadBackupsAsync();
             }
@@ -326,7 +323,7 @@ public partial class YandexDiskViewModel : ObservableObject
             var settings = _settingsService.GetYandexDiskSettings();
             settings.AutoBackupFrequencyDays = frequency;
             _settingsService.SaveYandexDiskSettings(settings);
-            await _dialog.ShowAlertAsync("Успех", $"Частота резервного копирования установлена: {frequency} дней", "OK");
+            await _dialog.ShowToastAsync($"Частота резервного копирования установлена: {frequency} дней");
         }
         else
         {

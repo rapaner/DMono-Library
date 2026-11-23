@@ -16,9 +16,42 @@ namespace Library.Services
             _dateFilter = dateFilter;
         }
 
-        public async Task<LibraryStatistics> GetStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
+        public async Task<StatisticsPageData> GetStatisticsPageDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
         {
             var books = await LoadBooksWithReadingDataAsync(searchText);
+
+            return new StatisticsPageData(
+                BuildStatistics(books, startDate, endDate),
+                BuildBookRankings(books, startDate, endDate),
+                BuildDailyReadingData(books, startDate, endDate));
+        }
+
+        public async Task<List<DailyReadingData>> GetDailyReadingDataForBookAsync(int bookId, DateTime? startDate = null, DateTime? endDate = null, int? readingSessionId = null)
+        {
+            IQueryable<PagesReadInDate> query = _context.PagesReadHistory.Where(p => p.BookId == bookId);
+
+            if (readingSessionId.HasValue)
+                query = query.Where(p => p.ReadingSessionId == readingSessionId.Value);
+
+            var bookReadingHistory = await query.OrderBy(p => p.Date).ToListAsync();
+
+            bookReadingHistory = _dateFilter.FilterByDateRange(bookReadingHistory, startDate, endDate, p => p.Date);
+
+            var dailyData = bookReadingHistory
+                .GroupBy(p => p.Date.Date)
+                .Select(g => new DailyReadingData
+                {
+                    Date = g.Key,
+                    PagesRead = g.Sum(p => p.PagesRead)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            return dailyData;
+        }
+
+        private LibraryStatistics BuildStatistics(List<Book> books, DateTime? startDate, DateTime? endDate)
+        {
             var hasPeriod = startDate.HasValue || endDate.HasValue;
 
             if (!hasPeriod)
@@ -88,30 +121,9 @@ namespace Library.Services
             };
         }
 
-        public async Task<List<DailyReadingData>> GetMonthlyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
+        private List<DailyReadingData> BuildDailyReadingData(List<Book> books, DateTime? startDate, DateTime? endDate)
         {
-            var books = await LoadBooksWithReadingDataAsync(searchText);
-            var allReadingHistory = await GetReadingHistoryForStatisticsAsync(books, startDate, endDate);
-
-            var monthlyData = allReadingHistory
-                .GroupBy(p => new { p.Date.Year, p.Date.Month })
-                .Select(g => new DailyReadingData
-                {
-                    Date = new DateTime(g.Key.Year, g.Key.Month, 1),
-                    PagesRead = g.Sum(p => p.PagesRead)
-                })
-                .OrderBy(d => d.Date)
-                .ToList();
-
-            return monthlyData;
-        }
-
-        public async Task<List<DailyReadingData>> GetDailyReadingDataAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
-        {
-            var books = await LoadBooksWithReadingDataAsync(searchText);
-            var allReadingHistory = await GetReadingHistoryForStatisticsAsync(books, startDate, endDate);
-
-            var dailyData = allReadingHistory
+            return GetReadingHistoryForStatistics(books, startDate, endDate)
                 .GroupBy(p => p.Date.Date)
                 .Select(g => new DailyReadingData
                 {
@@ -120,37 +132,10 @@ namespace Library.Services
                 })
                 .OrderBy(d => d.Date)
                 .ToList();
-
-            return dailyData;
         }
 
-        public async Task<List<DailyReadingData>> GetDailyReadingDataForBookAsync(int bookId, DateTime? startDate = null, DateTime? endDate = null, int? readingSessionId = null)
+        private List<BookRanking> BuildBookRankings(List<Book> books, DateTime? startDate, DateTime? endDate)
         {
-            IQueryable<PagesReadInDate> query = _context.PagesReadHistory.Where(p => p.BookId == bookId);
-
-            if (readingSessionId.HasValue)
-                query = query.Where(p => p.ReadingSessionId == readingSessionId.Value);
-
-            var bookReadingHistory = await query.OrderBy(p => p.Date).ToListAsync();
-
-            bookReadingHistory = _dateFilter.FilterByDateRange(bookReadingHistory, startDate, endDate, p => p.Date);
-
-            var dailyData = bookReadingHistory
-                .GroupBy(p => p.Date.Date)
-                .Select(g => new DailyReadingData
-                {
-                    Date = g.Key,
-                    PagesRead = g.Sum(p => p.PagesRead)
-                })
-                .OrderBy(d => d.Date)
-                .ToList();
-
-            return dailyData;
-        }
-
-        public async Task<List<BookRanking>> GetBookRankingsAsync(DateTime? startDate = null, DateTime? endDate = null, string? searchText = null)
-        {
-            var books = await LoadBooksWithReadingDataAsync(searchText);
             var hasPeriod = startDate.HasValue || endDate.HasValue;
             var rankings = new List<BookRanking>();
 
@@ -197,6 +182,8 @@ namespace Library.Services
             var books = await ReadingSessionHelper.WithReadingData(_context.Books)
                 .Include(b => b.Authors)
                 .Include(b => b.PagesReadHistory)
+                .AsSplitQuery()
+                .AsNoTracking()
                 .ToListAsync();
 
             if (!string.IsNullOrWhiteSpace(searchText))
@@ -218,26 +205,16 @@ namespace Library.Services
                 .ToList();
         }
 
-        private Task<List<PagesReadInDate>> GetReadingHistoryForStatisticsAsync(List<Book> books, DateTime? startDate, DateTime? endDate)
+        private IEnumerable<PagesReadInDate> GetReadingHistoryForStatistics(List<Book> books, DateTime? startDate, DateTime? endDate)
         {
             if (!startDate.HasValue && !endDate.HasValue)
-            {
-                var bookIds = books.Select(b => b.Id).ToList();
-                return _context.PagesReadHistory
-                    .Where(p => bookIds.Contains(p.BookId))
-                    .OrderBy(p => p.Date)
-                    .ToListAsync();
-            }
+                return books.SelectMany(b => b.PagesReadHistory);
 
-            var history = _dateFilter.FilterByDateRange(
-                    SelectSessionsInPeriod(books, startDate, endDate).SelectMany(s => s.PagesReadHistory),
-                    startDate,
-                    endDate,
-                    p => p.Date.Date)
-                .OrderBy(p => p.Date)
-                .ToList();
-
-            return Task.FromResult(history);
+            return _dateFilter.FilterByDateRange(
+                SelectSessionsInPeriod(books, startDate, endDate).SelectMany(s => s.PagesReadHistory),
+                startDate,
+                endDate,
+                p => p.Date.Date);
         }
     }
 }

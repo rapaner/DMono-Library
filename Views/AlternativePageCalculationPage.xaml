@@ -12,8 +12,7 @@
         <StackLayout Padding="20" Spacing="20">
             
             <!-- Информация о книге -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="{Binding BookTitleText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="{Binding BookAuthorText}" FontSize="16" TextColor="{DynamicResource SecondaryTextColor}" Margin="0,5,0,0" />
@@ -22,8 +21,7 @@
             </Border>
 
             <!-- Инструкции -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout>
                     <Label Text="ℹ️ Как использовать" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     <Label Text="Этот функционал позволяет переводить страницы между бумажным и электронным изданиями книги.&#x0a;&#x0a;1. Введите первую и последнюю страницы основного (бумажного) издания. По умолчанию последняя страница равна общему количеству страниц книги.&#x0a;&#x0a;2. Введите первую и последнюю страницы альтернативного (электронного) издания.&#x0a;&#x0a;3. После ввода данных вы сможете конвертировать страницы в реальном времени:&#x0a;   - Введите страницу основного издания → справа отобразится эквивалент в альтернативном&#x0a;   - Введите страницу альтернативного издания → справа отобразится эквивалент в основном" 
@@ -32,8 +30,7 @@
             </Border>
 
             <!-- Настройка диапазонов -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     <Label Text="📖 Настройка диапазонов страниц" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     
@@ -56,8 +53,7 @@
             </Border>
 
             <!-- Конвертация -->
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}" Padding="20" StrokeThickness="0">
-                <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
                 <StackLayout Spacing="15">
                     <Label Text="🔄 Конвертация страниц" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource PrimaryTextColor}" />
                     

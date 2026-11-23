@@ -19,12 +19,12 @@ public partial class YandexDiskPage : BasePage
         SafeExecute(async () => await _viewModel.LoadSettingsCommand.ExecuteAsync(null));
     }
 
-    private void OnAutoBackupToggled(object sender, ToggledEventArgs e)
+    private void OnAutoBackupToggled(object? sender, ToggledEventArgs e)
     {
         _viewModel.AutoBackupToggledCommand.Execute(e.Value);
     }
 
-    private void OnBackupSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnBackupSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         SafeExecute(async () =>
         {

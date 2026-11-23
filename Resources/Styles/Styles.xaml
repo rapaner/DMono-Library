@@ -21,11 +21,26 @@
     </Style>
 
     <!-- Стили для карточек -->
-    <Style x:Key="CardStyle" TargetType="Frame">
+    <Style x:Key="CardStyle" TargetType="Border">
         <Setter Property="BackgroundColor" Value="{DynamicResource CardBackgroundColor}" />
-        <Setter Property="CornerRadius" Value="15" />
         <Setter Property="Padding" Value="20" />
-        <Setter Property="HasShadow" Value="True" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="15" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Вложенная карточка (элемент списка, плашка внутри карточки) -->
+    <Style x:Key="InnerCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PageBackgroundColor}" />
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="10" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Стили для заголовков -->

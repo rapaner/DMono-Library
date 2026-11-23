@@ -24,14 +24,9 @@
                    FontAttributes="Bold"
                    TextColor="{DynamicResource PrimaryTextColor}" />
 
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
-                    StrokeThickness="0"
-                    Padding="20"
+            <Border Style="{StaticResource CardStyle}"
                     Margin="0"
                     IsVisible="{Binding HasNoCurrentBooks}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15" />
-                </Border.StrokeShape>
                 <Label Text="Нет активной книги"
                        FontSize="16"
                        TextColor="{DynamicResource SecondaryTextColor}" />
@@ -42,13 +37,8 @@
                          Spacing="20">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="vm:BookItemViewModel">
-                        <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
-                                StrokeThickness="0"
-                                Padding="20"
+                        <Border Style="{StaticResource CardStyle}"
                                 Margin="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="15" />
-                            </Border.StrokeShape>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=ViewBookCommand}"
@@ -89,12 +79,7 @@
 
                 <!-- Просмотр библиотеки -->
                 <Border Grid.Row="0" Grid.Column="0"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToLibraryCommand}" />
                     </Border.GestureRecognizers>
@@ -114,12 +99,7 @@
 
                 <!-- Добавить книгу -->
                 <Border Grid.Row="0" Grid.Column="1"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToAddBookCommand}" />
                     </Border.GestureRecognizers>
@@ -139,12 +119,7 @@
 
                 <!-- Статистика -->
                 <Border Grid.Row="1" Grid.Column="0"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToStatisticsCommand}" />
                     </Border.GestureRecognizers>
@@ -164,12 +139,7 @@
 
                 <!-- Выбор книги -->
                 <Border Grid.Row="1" Grid.Column="1"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToBookChooseCommand}" />
                     </Border.GestureRecognizers>
@@ -189,12 +159,7 @@
 
                 <!-- Полки -->
                 <Border Grid.Row="2" Grid.Column="0"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToShelvesCommand}" />
                     </Border.GestureRecognizers>
@@ -214,12 +179,7 @@
 
                 <!-- Авторы -->
                 <Border Grid.Row="2" Grid.Column="1"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToAuthorsCommand}" />
                     </Border.GestureRecognizers>
@@ -239,12 +199,7 @@
 
                 <!-- Настройки -->
                 <Border Grid.Row="3" Grid.Column="0"
-                        BackgroundColor="{DynamicResource CardBackgroundColor}"
-                        StrokeThickness="0"
-                        Padding="20">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToSettingsCommand}" />
                     </Border.GestureRecognizers>

@@ -20,22 +20,22 @@ public partial class StatisticsPage : BasePage
         SafeExecute(async () => await _viewModel.LoadStatisticsCommand.ExecuteAsync(null));
     }
 
-    private void OnDateFilterChanged(object sender, EventArgs e)
+    private void OnDateFilterChanged(object? sender, EventArgs e)
     {
         SafeExecute(async () => await _viewModel.DateFilterChangedCommand.ExecuteAsync(null));
     }
 
-    private void OnCustomDateChanged(object sender, DateChangedEventArgs e)
+    private void OnCustomDateChanged(object? sender, DateChangedEventArgs e)
     {
         SafeExecute(async () => await _viewModel.CustomDateChangedCommand.ExecuteAsync(null));
     }
 
-    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    private void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
     {
         SafeExecute(async () => await _viewModel.SearchChangedCommand.ExecuteAsync(null));
     }
 
-    private void OnBookRankingSelected(object sender, SelectionChangedEventArgs e)
+    private void OnBookRankingSelected(object? sender, SelectionChangedEventArgs e)
     {
         SafeExecute(async () =>
         {

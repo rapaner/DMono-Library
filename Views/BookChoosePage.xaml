@@ -11,12 +11,7 @@
     <ScrollView>
         <StackLayout Padding="20" Spacing="20">
 
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
-                    StrokeThickness="0"
-                    Padding="20">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15" />
-                </Border.StrokeShape>
+            <Border Style="{StaticResource CardStyle}">
 
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                     <Label Text="Полка"
@@ -62,13 +57,8 @@
                 </Grid>
             </Border>
 
-            <Border BackgroundColor="{DynamicResource CardBackgroundColor}"
-                    StrokeThickness="0"
-                    Padding="20"
+            <Border Style="{StaticResource CardStyle}"
                     IsVisible="{Binding IsChosenBookVisible}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="15" />
-                </Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenBookCommand}" />
                 </Border.GestureRecognizers>
